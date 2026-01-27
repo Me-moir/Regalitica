@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import logoImage from '../assets/Logo.png';
+const logoImage = '/assets/Logo.png';
 
 interface LoadingScreenProps {
   onLoadingComplete: () => void;

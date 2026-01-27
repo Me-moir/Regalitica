@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import logoImage from '../assets/Logo.png';
+const logoImage = '/assets/Logo.png';
 
 interface NavbarProps {
   activeTab: string;
@@ -583,7 +583,14 @@ const Navbar = ({ activeTab, setActiveTab, sidebarOpen, setSidebarOpen }: Navbar
       <div ref={sidebarRef} className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
         {/* Logo Section */}
         <div className="p-6 border-b border-white/10">
-          <Image src={logoImage} alt="The Fool" className="h-14 w-auto mx-auto" priority />
+          <Image 
+            src={logoImage} 
+            alt="Regalitica" 
+            width={200} 
+            height={56} 
+            className="h-14 w-auto mx-auto" 
+            priority 
+          />
         </div>
 
         {/* Scrollable Content */}

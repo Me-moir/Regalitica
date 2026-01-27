@@ -78,6 +78,17 @@ const HeroSection = () => {
             />
           </div>
         )}
+
+{/* Logo Row - Tech Stack */}
+<div className="mt-32 flex items-center justify-center gap-3 sm:gap-5 md:gap-7 opacity-40 hover:opacity-70 transition-opacity duration-500 flex-wrap px-4">
+  <img src="/assets/nextjs.png" alt="Next.js" className="grayscale hover:grayscale-0 transition-all duration-300 h-7 sm:h-9 md:h-11" style={{ width: 'auto', objectFit: 'contain' }} />
+  <img src="/assets/react.png" alt="React" className="grayscale hover:grayscale-0 transition-all duration-300 h-7 sm:h-9 md:h-11" style={{ width: 'auto', objectFit: 'contain' }} />
+  <img src="/assets/framer.png" alt="Framer Motion" className="grayscale hover:grayscale-0 transition-all duration-300 h-7 sm:h-9 md:h-11" style={{ width: 'auto', objectFit: 'contain' }} />
+  <img src="/assets/gsap.png" alt="GSAP" className="grayscale hover:grayscale-0 transition-all duration-300 h-7 sm:h-9 md:h-11" style={{ width: 'auto', objectFit: 'contain' }} />
+  <img src="/assets/spline.png" alt="Spline" className="grayscale hover:grayscale-0 transition-all duration-300 h-7 sm:h-9 md:h-11" style={{ width: 'auto', objectFit: 'contain' }} />
+  <img src="/assets/tailwind.png" alt="Tailwind CSS" className="grayscale hover:grayscale-0 transition-all duration-300 h-7 sm:h-9 md:h-11" style={{ width: 'auto', objectFit: 'contain' }} />
+  <img src="/assets/aceternity.png" alt="Aceternity UI" className="grayscale hover:grayscale-0 transition-all duration-300 h-7 sm:h-9 md:h-11" style={{ width: 'auto', objectFit: 'contain' }} />
+</div>
       </div>
     </section>
   );

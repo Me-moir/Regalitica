@@ -1,6 +1,6 @@
 "use client";
 import Image from 'next/image';
-import logoImage from '../assets/Logo.png';
+const logoImage = '/assets/Logo.png';
 
 const Footer = () => {
   const sections = [
@@ -60,11 +60,13 @@ const Footer = () => {
         <div className="border-t border-gray-800 pt-8 pb-6">
           <div className="flex flex-col items-center text-center">
             {/* Logo */}
-            <Image 
-              src={logoImage} 
-              alt="The Fool Logo" 
-              className="h-16 w-auto mb-4"
-            />
+              <Image 
+                src={logoImage} 
+                alt="Regalitica" 
+                width={256} 
+                height={64} 
+                className="h-16 w-auto mb-4"
+              />
             
             {/* Title */}
             <h3 className="text-2xl font-bold mb-4 text-red-500">
