@@ -1,0 +1,348 @@
+export interface Statement {
+  id: string;
+  title: string;
+  date: string;
+  tags: Array<'Public Disclosure' | 'Compliance' |  'Recruitment' | 'Governance' | 'Venture' | 'Capital' | 'Research & Development' | 'Partnerships' | 'Operations'>;
+  content: string;
+  pdfUrl?: string;
+  linkUrl?: string;
+}
+
+export type InfoContentType = 
+  | 'statements' 
+  | 'news' 
+  | 'attributions' 
+  | 'licenses' 
+  | 'terms' 
+  | 'privacy' 
+  | 'acceptable-use' 
+  | 'disclaimer';
+
+export interface ContentData {
+  title: string;
+  icon: string;
+  sections: {
+    heading?: string;
+    content: string[];
+  }[];
+}
+
+export interface InformationGrid {
+  id: InfoContentType;
+  icon: string;
+  title: string;
+  description: string;
+}
+
+// Information Grid Items
+export const informationGrids: InformationGrid[] = [
+  {
+    id: 'statements',
+    icon: 'bi-megaphone',
+    title: 'Statements & Notices',
+    description: 'Official announcements and important notices'
+  },
+  {
+    id: 'news',
+    icon: 'bi-newspaper',
+    title: 'News & Media',
+    description: 'Latest updates and media coverage'
+  },
+  {
+    id: 'attributions',
+    icon: 'bi-award',
+    title: 'Attributions',
+    description: 'Acknowledgments and credits'
+  },
+  {
+    id: 'licenses',
+    icon: 'bi-file-earmark-text',
+    title: 'Licenses',
+    description: 'Software and content licensing information'
+  },
+  {
+    id: 'terms',
+    icon: 'bi-file-earmark-ruled',
+    title: 'Terms & Conditions',
+    description: 'Terms of service and usage agreements'
+  },
+  {
+    id: 'privacy',
+    icon: 'bi-shield-check',
+    title: 'Privacy & Cookie Policy',
+    description: 'Data protection and privacy practices'
+  },
+  {
+    id: 'acceptable-use',
+    icon: 'bi-check-circle',
+    title: 'Acceptable Use Policy',
+    description: 'Guidelines for proper platform usage'
+  },
+  {
+    id: 'disclaimer',
+    icon: 'bi-exclamation-triangle',
+    title: 'Disclaimer',
+    description: 'Legal disclaimers and limitations'
+  }
+];
+
+// Statements Data
+export const statements: Statement[] = [
+  {
+    id: 'statement-001',
+    title: 'Regalitica Holdings Announces Formation and Stealth Operating Framework',
+    date: 'January 15, 2025',
+    tags: ['Public Disclosure', 'Recruitment'],
+    content: 'Regalitica Holdings has been formally established as a holding and venture-building entity focused on developing, stewarding, and scaling early-stage systems across multiple industries. Operating in a pre-seed, stealth phase, the entity will pursue capital-efficient experimentation and validation through a centralized platform designed for long-term value creation, prioritizing repeatable operating systems, shared infrastructure, and disciplined governance over isolated project execution.',
+    pdfUrl: '/documents/formation-announcement.pdf',
+    linkUrl: 'https://regalitica.com/announcements/formation'
+  },
+  {
+    id: 'statement-002',
+    title: 'Portfolio Development Update: Healthcare and FinTech Ventures Progress to Beta',
+    date: 'December 8, 2024',
+    tags: ['Venture', 'Research & Development', 'Operations'],
+    content: 'Two ventures under the Regalitica umbrella—AI Telemedicine Platform and Micro-Lending Blockchain—have successfully transitioned to private beta and beta testing phases respectively. The AI Telemedicine Platform is currently undergoing controlled deployment with select healthcare partners in underserved regions, demonstrating offline diagnostic capabilities and real-time synchronization protocols, while the blockchain-based microfinancing platform has completed smart contract audits and is conducting pilot programs with small business borrowers in three emerging markets.',
+    pdfUrl: '/documents/q4-2024-venture-update.pdf'
+  },
+  {
+    id: 'statement-003',
+    title: 'Governance Framework and Operational Principles Published',
+    date: 'November 22, 2024',
+    tags: ['Governance', 'Compliance', 'Public Disclosure'],
+    content: 'Regalitica has formalized its governance framework outlining decision-making protocols, resource allocation methodologies, and venture oversight mechanisms. The framework establishes clear delineation between holding entity responsibilities and individual venture operations, ensuring institutional discipline while maintaining operational flexibility through systems-first thinking, capital efficiency, asymmetric opportunity prioritization, and founder-operator alignment with long-term ownership structures, including standardized processes for venture validation, stage-gate advancement criteria, and risk management protocols across the portfolio.',
+    linkUrl: 'https://regalitica.com/governance/framework'
+  },
+  {
+    id: 'statement-004',
+    title: 'CleanTech Initiative Reaches Pilot Stage with Industrial Partners',
+    date: 'October 30, 2024',
+    tags: ['Venture', 'Research & Development', 'Partnerships'],
+    content: 'The Smart Carbon Capture system has advanced to pilot deployment following successful prototype validation and environmental impact assessment, with three industrial facilities across manufacturing and energy sectors selected as initial pilot sites for IoT-enabled carbon monitoring and capture technology. Preliminary data indicates potential emissions reductions of 40-50% with real-time analytics capabilities significantly exceeding baseline projections, while strategic partnerships with carbon credit verification agencies are in advanced discussions to establish tradeable credit generation protocols.',
+    pdfUrl: '/documents/cleantech-pilot-report.pdf',
+    linkUrl: 'https://regalitica.com/ventures/cleantech'
+  },
+  {
+    id: 'statement-005',
+    title: 'Strategic Infrastructure Investment: Shared Technical Platform Operational',
+    date: 'September 18, 2024',
+    tags: ['Operations', 'Capital', 'Research & Development'],
+    content: 'Regalitica has completed development and deployment of centralized technical infrastructure designed to support multiple ventures simultaneously, including shared development environments, API frameworks, data analytics pipelines, and security protocols that compound execution efficiency across the portfolio. This infrastructure investment enables ventures to achieve production readiness 35-40% faster than traditional standalone development approaches, with modular architecture supporting integration that allows new ventures to leverage existing systems while maintaining operational independence where strategically appropriate.'
+  },
+  {
+    id: 'statement-006',
+    title: 'EdTech Platform Enters Testing Phase with Education Partners',
+    date: 'August 12, 2024',
+    tags: ['Venture', 'Partnerships', 'Research & Development'],
+    content: 'The Adaptive STEM Learning platform has commenced testing phase in partnership with educational institutions across three developing regions, with initial cohorts of 500+ students engaging with AI-powered personalized learning paths showing promising engagement and comprehension improvements. Teacher feedback sessions have informed iterative refinements to interface design, content delivery mechanisms, and progress tracking analytics, while platform architecture supports both online and offline learning modes to address connectivity challenges prevalent in target deployment regions.',
+    pdfUrl: '/documents/edtech-testing-report.pdf'
+  },
+  {
+    id: 'statement-007',
+    title: 'Regalitica Establishes Advisory Board for Long-Term Strategic Guidance',
+    date: 'July 5, 2024',
+    tags: ['Governance', 'Partnerships', 'Operations'],
+    content: 'An advisory board comprising industry veterans, academic researchers, and operational experts has been established to provide strategic oversight and domain-specific guidance across healthcare technology, financial systems, sustainable infrastructure, and educational innovation. The advisory structure is designed to complement founder-operator decision-making with external perspective while maintaining operational autonomy, with quarterly strategic reviews assessing portfolio performance, validating market assumptions, and informing resource allocation decisions.',
+    linkUrl: 'https://regalitica.com/about/advisory-board'
+  },
+  {
+    id: 'statement-008',
+    title: 'Compliance and Regulatory Framework Certification Achieved',
+    date: 'June 20, 2024',
+    tags: ['Compliance', 'Governance', 'Operations'],
+    content: 'Regalitica has completed comprehensive compliance assessments across all active ventures, achieving necessary certifications and regulatory approvals including HIPAA compliance certification for healthcare venture operations ensuring patient data protection and privacy standards, KYC/AML framework implementation for FinTech platform with preliminary regulatory approval in initial deployment markets, and ongoing compliance monitoring systems established to maintain adherence to evolving regulatory requirements across all sectors.',
+    pdfUrl: '/documents/compliance-certification.pdf'
+  }
+];
+
+// Content Data for each Information Hub section
+export const contentData: Record<InfoContentType, ContentData> = {
+  'statements': {
+    title: 'Statements & Notices',
+    icon: 'bi-megaphone',
+    sections: [
+      {
+        heading: 'Official Announcements',
+        content: [
+          'Welcome to our official statements and notices section. Here you will find important announcements, policy updates, and official communications from Regalitica.',
+          'We are committed to transparency and keeping our stakeholders informed about significant developments, changes, and initiatives within our organization.'
+        ]
+      },
+      {
+        heading: 'Recent Updates',
+        content: [
+          'All statements are reviewed and approved by our communications team to ensure accuracy and clarity.',
+          'For media inquiries or questions regarding any statement, please contact our press office.'
+        ]
+      }
+    ]
+  },
+  'news': {
+    title: 'News & Media',
+    icon: 'bi-newspaper',
+    sections: [
+      {
+        heading: 'Latest News',
+        content: [
+          'Stay up to date with the latest news, press releases, and media coverage about Regalitica and our ventures.',
+          'Our media section features company announcements, partnership news, product launches, and industry insights.'
+        ]
+      },
+      {
+        heading: 'Media Resources',
+        content: [
+          'Members of the press can access our media kit, high-resolution images, executive bios, and press contact information.',
+          'For interview requests or media inquiries, please reach out to our communications team.'
+        ]
+      }
+    ]
+  },
+  'attributions': {
+    title: 'Attributions',
+    icon: 'bi-award',
+    sections: [
+      {
+        heading: 'Acknowledgments',
+        content: [
+          'We acknowledge and express gratitude to all contributors, partners, and open-source projects that have supported our journey.',
+          'This section recognizes the individuals and organizations whose work and collaboration have been instrumental to our success.'
+        ]
+      },
+      {
+        heading: 'Third-Party Resources',
+        content: [
+          'We utilize various third-party libraries, frameworks, and resources in our projects. Full attribution details are provided for transparency.',
+          'Icons provided by Bootstrap Icons. Animations and effects built with modern web technologies and best practices.'
+        ]
+      }
+    ]
+  },
+  'licenses': {
+    title: 'Licenses',
+    icon: 'bi-file-earmark-text',
+    sections: [
+      {
+        heading: 'Software Licenses',
+        content: [
+          'All software developed by Regalitica is subject to specific licensing terms. Please review the applicable license for each product or service.',
+          'We respect intellectual property rights and comply with all relevant open-source licenses for third-party components used in our projects.'
+        ]
+      },
+      {
+        heading: 'Content Licensing',
+        content: [
+          'Original content, including text, graphics, and multimedia elements, is protected by copyright and may not be reproduced without permission.',
+          'For licensing inquiries or permission requests, please contact our legal department.'
+        ]
+      }
+    ]
+  },
+  'terms': {
+    title: 'Terms & Conditions',
+    icon: 'bi-file-earmark-ruled',
+    sections: [
+      {
+        heading: 'General Terms',
+        content: [
+          'By accessing and using our services, you agree to be bound by these Terms and Conditions. Please read them carefully.',
+          'These terms govern your use of our website, products, and services. We reserve the right to modify these terms at any time with notice.'
+        ]
+      },
+      {
+        heading: 'User Responsibilities',
+        content: [
+          'Users are responsible for maintaining the confidentiality of their account information and for all activities that occur under their account.',
+          'You agree to use our services in compliance with all applicable laws and regulations and to respect the rights of other users.'
+        ]
+      },
+      {
+        heading: 'Limitation of Liability',
+        content: [
+          'Our services are provided "as is" without warranties of any kind. We are not liable for any indirect, incidental, or consequential damages.',
+          'The maximum liability shall not exceed the amount paid by you for the specific service giving rise to the claim.'
+        ]
+      }
+    ]
+  },
+  'privacy': {
+    title: 'Privacy & Cookie Policy',
+    icon: 'bi-shield-check',
+    sections: [
+      {
+        heading: 'Data Collection',
+        content: [
+          'We collect information to provide better services to our users. This includes personal information you provide and data collected automatically.',
+          'We are committed to protecting your privacy and handling your data with care and respect in accordance with applicable data protection laws.'
+        ]
+      },
+      {
+        heading: 'Cookie Usage',
+        content: [
+          'Our website uses cookies to enhance user experience, analyze site traffic, and personalize content. You can control cookie settings through your browser.',
+          'Essential cookies are necessary for the website to function properly, while optional cookies help us improve our services.'
+        ]
+      },
+      {
+        heading: 'Data Protection',
+        content: [
+          'We implement appropriate security measures to protect your personal information from unauthorized access, alteration, or disclosure.',
+          'You have rights regarding your personal data, including the right to access, correct, delete, or restrict processing of your information.'
+        ]
+      }
+    ]
+  },
+  'acceptable-use': {
+    title: 'Acceptable Use Policy',
+    icon: 'bi-check-circle',
+    sections: [
+      {
+        heading: 'Permitted Use',
+        content: [
+          'Our services are intended for lawful purposes only. You may use our platform to access information, engage with content, and utilize provided features.',
+          'We encourage responsible and ethical use of our services that respects the rights and dignity of all users and stakeholders.'
+        ]
+      },
+      {
+        heading: 'Prohibited Activities',
+        content: [
+          'Users must not engage in activities that could harm, disable, or impair our services or interfere with other users\' access.',
+          'Prohibited activities include: distributing malware, attempting unauthorized access, harassing other users, violating intellectual property rights, or using our services for illegal purposes.'
+        ]
+      },
+      {
+        heading: 'Enforcement',
+        content: [
+          'Violations of this policy may result in immediate termination of access, removal of content, and legal action if necessary.',
+          'We reserve the right to investigate suspected violations and cooperate with law enforcement authorities when appropriate.'
+        ]
+      }
+    ]
+  },
+  'disclaimer': {
+    title: 'Disclaimer',
+    icon: 'bi-exclamation-triangle',
+    sections: [
+      {
+        heading: 'General Disclaimer',
+        content: [
+          'The information provided on this website is for general informational purposes only. While we strive for accuracy, we make no warranties about the completeness or reliability of information.',
+          'Content on this site should not be considered professional advice. Users should consult with appropriate professionals for specific guidance.'
+        ]
+      },
+      {
+        heading: 'External Links',
+        content: [
+          'Our website may contain links to external sites. We are not responsible for the content, privacy practices, or availability of third-party websites.',
+          'The inclusion of any link does not imply endorsement by Regalitica. Users access external sites at their own risk.'
+        ]
+      },
+      {
+        heading: 'Changes and Updates',
+        content: [
+          'We reserve the right to modify or discontinue any aspect of our services without notice. We are not liable for any modifications or interruptions.',
+          'Information on this website is subject to change without notice. Please check back regularly for updates.'
+        ]
+      }
+    ]
+  }
+};
