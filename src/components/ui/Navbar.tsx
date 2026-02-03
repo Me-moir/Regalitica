@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo, memo } from 'react';
 import Sidebar from './Sidebar';
 
 interface NavbarProps {
@@ -21,84 +21,117 @@ const Navbar = ({ activeTab, setActiveTab, sidebarOpen, setSidebarOpen }: Navbar
   const [isMobile, setIsMobile] = useState(false);
   const navContainerRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const rafIdRef = useRef<number | null>(null);
 
-  // Check for mobile on mount and resize
+  // Memoize nav items to prevent recreation on every render
+  const navItems: NavItem[] = useMemo(() => [
+    { id: 'discover', label: 'Discover', icon: 'bi-rocket-takeoff' },
+    { id: 'information', label: 'Information', icon: 'bi-pin' },
+    { id: 'ventures', label: 'Ventures', icon: 'bi-stars', isSpecial: true }
+  ], []);
+
+  // Check for mobile on mount and resize with debouncing
   useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 640);
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        setIsMobile(window.innerWidth < 640);
+      }, 150); // Debounce resize events
     };
+    
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener('resize', checkMobile, { passive: true });
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener('resize', checkMobile);
+    };
   }, []);
 
-  // Scroll detection
+  // Scroll detection with requestAnimationFrame throttling
   useEffect(() => {
+    let ticking = false;
+    
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setScrolled(window.scrollY > 20);
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Mouse tracking for gradient effects
+  // Optimized mouse tracking for gradient effects with RAF throttling
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      // Update navbar container
-      if (navContainerRef.current) {
-        try {
-          const rect = navContainerRef.current.getBoundingClientRect();
-          if (rect && rect.width && rect.height) {
-            const x = ((e.clientX - rect.left) / rect.width) * 100;
-            const y = ((e.clientY - rect.top) / rect.height) * 100;
-            navContainerRef.current.style.setProperty('--mouse-x', `${x}%`);
-            navContainerRef.current.style.setProperty('--mouse-y', `${y}%`);
-          }
-        } catch (err) {
-          // Silently handle any errors during mouse tracking
-        }
-      }
+      // Cancel previous frame if still pending
+      if (rafIdRef.current !== null) return;
 
-      // Update menu button
-      if (menuButtonRef.current) {
-        try {
-          const rect = menuButtonRef.current.getBoundingClientRect();
-          if (rect && rect.width && rect.height) {
-            const x = ((e.clientX - rect.left) / rect.width) * 100;
-            const y = ((e.clientY - rect.top) / rect.height) * 100;
-            menuButtonRef.current.style.setProperty('--mouse-x', `${x}%`);
-            menuButtonRef.current.style.setProperty('--mouse-y', `${y}%`);
+      rafIdRef.current = requestAnimationFrame(() => {
+        // Update navbar container
+        if (navContainerRef.current) {
+          try {
+            const rect = navContainerRef.current.getBoundingClientRect();
+            if (rect && rect.width && rect.height) {
+              const x = ((e.clientX - rect.left) / rect.width) * 100;
+              const y = ((e.clientY - rect.top) / rect.height) * 100;
+              navContainerRef.current.style.setProperty('--mouse-x', `${x}%`);
+              navContainerRef.current.style.setProperty('--mouse-y', `${y}%`);
+            }
+          } catch (err) {
+            // Silently handle any errors during mouse tracking
           }
-        } catch (err) {
-          // Silently handle any errors during mouse tracking
         }
-      }
+
+        // Update menu button
+        if (menuButtonRef.current) {
+          try {
+            const rect = menuButtonRef.current.getBoundingClientRect();
+            if (rect && rect.width && rect.height) {
+              const x = ((e.clientX - rect.left) / rect.width) * 100;
+              const y = ((e.clientY - rect.top) / rect.height) * 100;
+              menuButtonRef.current.style.setProperty('--mouse-x', `${x}%`);
+              menuButtonRef.current.style.setProperty('--mouse-y', `${y}%`);
+            }
+          } catch (err) {
+            // Silently handle any errors during mouse tracking
+          }
+        }
+
+        rafIdRef.current = null;
+      });
     };
 
-    // Add a small delay to ensure refs are initialized
-    const timeoutId = setTimeout(() => {
-      document.addEventListener('mousemove', handleMouseMove);
-    }, 100);
+    document.addEventListener('mousemove', handleMouseMove, { passive: true });
 
     return () => {
-      clearTimeout(timeoutId);
       document.removeEventListener('mousemove', handleMouseMove);
+      if (rafIdRef.current !== null) {
+        cancelAnimationFrame(rafIdRef.current);
+      }
     };
   }, []);
 
-  // Handle tab click - switch tabs and scroll to top
-  const handleTabClick = (tabId: string) => {
+  // Memoize tab click handler
+  const handleTabClick = useCallback((tabId: string) => {
     setActiveTab(tabId);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  }, [setActiveTab]);
 
-  const navItems: NavItem[] = [
-    { id: 'discover', label: 'Discover', icon: 'bi-rocket-takeoff' },
-    { id: 'information', label: 'Information', icon: 'bi-pin' },
-    { id: 'affiliations', label: 'Affiliations', icon: 'bi-patch-check' },
-    { id: 'ventures', label: 'Ventures', icon: 'bi-stars', isSpecial: true }
-  ];
+  // Memoize sidebar toggle
+  const toggleSidebar = useCallback(() => {
+    setSidebarOpen(!sidebarOpen);
+  }, [sidebarOpen, setSidebarOpen]);
+
+  const closeSidebar = useCallback(() => {
+    setSidebarOpen(false);
+  }, [setSidebarOpen]);
 
   return (
     <>
@@ -130,6 +163,7 @@ const Navbar = ({ activeTab, setActiveTab, sidebarOpen, setSidebarOpen }: Navbar
           mask-composite: exclude;
           animation: orbitBorder 3s linear infinite;
           background-size: 200% 100%;
+          will-change: background-position;
         }
 
         .sandbox-border {
@@ -148,102 +182,106 @@ const Navbar = ({ activeTab, setActiveTab, sidebarOpen, setSidebarOpen }: Navbar
           100% { background-position: 200% 0%; }
         }
 
-        .sandbox-loader-wrapper {
+        .sphere-loader-wrapper {
           width: 16px;
           height: 16px;
-          display: inline-block;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
           margin-right: 6px;
           position: relative;
-          overflow: hidden;
           flex-shrink: 0;
         }
 
         @media (max-width: 640px) {
-          .sandbox-loader-wrapper {
-            width: 10px;
-            height: 10px;
-            margin-right: 3px;
+          .sphere-loader-wrapper {
+            width: 14px;
+            height: 14px;
+            margin-right: 4px;
           }
         }
 
-        .sandbox-loader {
-          --color-one: #E52B50;
-          --color-two: #C41E3A;
-          --color-three: rgba(229, 43, 80, 0.5);
-          --color-four: rgba(196, 30, 58, 0.5);
-          --color-five: rgba(229, 43, 80, 0.25);
-          --time-animation: 2s;
+        .loader-container {
           position: absolute;
+          width: 100%;
+          height: 100%;
+          perspective: 800px;
+          transform-style: preserve-3d;
+        }
+
+        .sphere-core {
+          position: absolute;
+          width: 60%;
+          height: 60%;
           top: 50%;
           left: 50%;
-          width: 100px;
-          height: 100px;
-          margin-left: -50px;
-          margin-top: -50px;
-          transform: scale(0.16);
+          transform: translate(-50%, -50%);
+          background: radial-gradient(circle at 40% 40%, rgba(220, 220, 220, 0.8), rgba(180, 180, 180, 0.7));
           border-radius: 50%;
-          animation: colorize calc(var(--time-animation) * 3) ease-in-out infinite;
+          box-shadow: 0 0 4px rgba(200, 200, 200, 0.5);
+          animation: pulse 2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+          will-change: transform, box-shadow;
         }
 
-        @media (max-width: 640px) {
-          .sandbox-loader { transform: scale(0.1); }
-        }
-
-        .sandbox-loader::before {
-          content: "";
+        .orbit-ring {
           position: absolute;
-          top: 0;
-          left: 0;
-          width: 100px;
-          height: 100px;
+          width: 100%;
+          height: 100%;
+          border: 1px solid rgba(220, 220, 220, 0.6);
           border-radius: 50%;
-          border-top: solid 1px var(--color-one);
-          border-bottom: solid 1px var(--color-two);
-          background: linear-gradient(180deg, var(--color-five), var(--color-four));
-          box-shadow:
-            inset 0 8px 8px 0 var(--color-three),
-            inset 0 -8px 8px 0 var(--color-four);
+          box-shadow: 0 0 3px rgba(200, 200, 200, 0.4);
+          transform-style: preserve-3d;
         }
 
-        .sandbox-loader .box {
-          width: 100px;
-          height: 100px;
-          background: linear-gradient(180deg, var(--color-one) 30%, var(--color-two) 70%);
-          mask: url(#clipping);
-          -webkit-mask: url(#clipping);
+        .orbit-ring-1 {
+          animation: rotateX 2.5s cubic-bezier(0.65, 0, 0.35, 1) infinite;
         }
 
-        .sandbox-loader svg { position: absolute; }
-        .sandbox-loader svg #clipping {
-          filter: contrast(15);
-          animation: roundness calc(var(--time-animation) / 2) linear infinite;
-        }
-        .sandbox-loader svg #clipping polygon { filter: blur(7px); }
-        .sandbox-loader svg #clipping polygon:nth-child(1) { transform-origin: 75% 25%; transform: rotate(90deg); }
-        .sandbox-loader svg #clipping polygon:nth-child(2) { transform-origin: 50% 50%; animation: rotation var(--time-animation) linear infinite reverse; }
-        .sandbox-loader svg #clipping polygon:nth-child(3) { transform-origin: 50% 60%; animation: rotation var(--time-animation) linear infinite; animation-delay: calc(var(--time-animation) / -3); }
-        .sandbox-loader svg #clipping polygon:nth-child(4) { transform-origin: 40% 40%; animation: rotation var(--time-animation) linear infinite reverse; }
-        .sandbox-loader svg #clipping polygon:nth-child(5) { transform-origin: 40% 40%; animation: rotation var(--time-animation) linear infinite reverse; animation-delay: calc(var(--time-animation) / -2); }
-        .sandbox-loader svg #clipping polygon:nth-child(6) { transform-origin: 60% 40%; animation: rotation var(--time-animation) linear infinite; }
-        .sandbox-loader svg #clipping polygon:nth-child(7) { transform-origin: 60% 40%; animation: rotation var(--time-animation) linear infinite; animation-delay: calc(var(--time-animation) / -1.5); }
-
-        @keyframes rotation {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
+        .orbit-ring-2 {
+          animation: rotateY 2s cubic-bezier(0.55, 0, 0.45, 1) infinite;
+          width: 80%;
+          height: 80%;
+          top: 10%;
+          left: 10%;
+          border-color: rgba(220, 220, 220, 0.5);
         }
 
-        @keyframes roundness {
-          0%, 100% { filter: contrast(15); }
-          20%, 40% { filter: contrast(3); }
-          60% { filter: contrast(15); }
+        .orbit-ring-3 {
+          animation: rotateXY 3s cubic-bezier(0.7, 0, 0.3, 1) infinite;
+          width: 60%;
+          height: 60%;
+          top: 20%;
+          left: 20%;
+          border-color: rgba(220, 220, 220, 0.4);
         }
 
-        @keyframes colorize {
-          0%, 100% { filter: hue-rotate(0deg); }
-          20% { filter: hue-rotate(-30deg); }
-          40% { filter: hue-rotate(-60deg); }
-          60% { filter: hue-rotate(-90deg); }
-          80% { filter: hue-rotate(-45deg); }
+        @keyframes rotateX {
+          0% { transform: rotateX(0deg); }
+          50% { transform: rotateX(180deg); }
+          100% { transform: rotateX(360deg); }
+        }
+
+        @keyframes rotateY {
+          0% { transform: rotateY(0deg); }
+          50% { transform: rotateY(180deg); }
+          100% { transform: rotateY(360deg); }
+        }
+
+        @keyframes rotateXY {
+          0% { transform: rotateX(0deg) rotateY(0deg); }
+          50% { transform: rotateX(90deg) rotateY(180deg); }
+          100% { transform: rotateX(360deg) rotateY(360deg); }
+        }
+
+        @keyframes pulse {
+          0%, 100% {
+            transform: translate(-50%, -50%) scale(1);
+            box-shadow: 0 0 4px rgba(200, 200, 200, 0.5);
+          }
+          50% {
+            transform: translate(-50%, -50%) scale(1.1);
+            box-shadow: 0 0 6px rgba(200, 200, 200, 0.6);
+          }
         }
 
         .glass-nav {
@@ -256,6 +294,25 @@ const Navbar = ({ activeTab, setActiveTab, sidebarOpen, setSidebarOpen }: Navbar
             0 12px 48px rgba(0, 0, 0, 0.4),
             inset 0 1px 1px rgba(255, 255, 255, 0.1),
             inset 0 -1px 1px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Active state for Ventures icon - Teal/Aurora */
+        .nav-button-active .sphere-core {
+          background: radial-gradient(circle at 40% 40%, #00ffcc, #00d9b8);
+          box-shadow: 0 0 8px rgba(0, 255, 204, 0.6);
+        }
+
+        .nav-button-active .orbit-ring {
+          border-color: rgba(0, 255, 204, 0.8);
+          box-shadow: 0 0 5px rgba(0, 255, 204, 0.4);
+        }
+
+        .nav-button-active .orbit-ring-2 {
+          border-color: rgba(0, 255, 204, 0.6);
+        }
+
+        .nav-button-active .orbit-ring-3 {
+          border-color: rgba(0, 255, 204, 0.4);
         }
 
         /* Navbar hover gradient effect */
@@ -281,6 +338,7 @@ const Navbar = ({ activeTab, setActiveTab, sidebarOpen, setSidebarOpen }: Navbar
           transition: opacity 0.4s ease-in-out;
           pointer-events: none;
           z-index: -1;
+          will-change: opacity;
         }
 
         .glass-nav:hover::before {
@@ -314,6 +372,7 @@ const Navbar = ({ activeTab, setActiveTab, sidebarOpen, setSidebarOpen }: Navbar
           transition: opacity 0.4s ease-in-out;
           pointer-events: none;
           z-index: -1;
+          will-change: opacity;
         }
 
         .hamburger-btn:hover::before {
@@ -325,6 +384,7 @@ const Navbar = ({ activeTab, setActiveTab, sidebarOpen, setSidebarOpen }: Navbar
             0 2px 8px rgba(0, 0, 0, 0.2),
             inset 0 1px 0 rgba(255, 255, 255, 0.05);
           transition: all 0.3s ease;
+          will-change: transform, box-shadow;
         }
 
         .nav-button:hover {
@@ -353,7 +413,7 @@ const Navbar = ({ activeTab, setActiveTab, sidebarOpen, setSidebarOpen }: Navbar
       `}</style>
 
       {/* Sidebar Component */}
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
 
       {/* Main Navbar */}
       <nav className={`fixed top-0 left-0 right-0 z-50 flex justify-center transition-all duration-500 ${
@@ -381,7 +441,7 @@ const Navbar = ({ activeTab, setActiveTab, sidebarOpen, setSidebarOpen }: Navbar
                           font-semibold tracking-wide transition-all duration-300
                           ${isActive 
                             ? 'nav-button-active' 
-                            : 'bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white'
+                            : 'text-gray-400 hover:text-gray-200 hover:bg-white/10'
                           }
                         `}
                         style={{ 
@@ -389,22 +449,12 @@ const Navbar = ({ activeTab, setActiveTab, sidebarOpen, setSidebarOpen }: Navbar
                           fontSize: isMobile ? '0.7rem' : '0.875rem'
                         }}
                       >
-                        <div className="sandbox-loader-wrapper">
-                          <div className="sandbox-loader">
-                            <svg width="100" height="100" viewBox="0 0 100 100">
-                              <defs>
-                                <mask id="clipping">
-                                  <polygon points="0,0 100,0 100,100 0,100" fill="black"></polygon>
-                                  <polygon points="25,25 75,25 50,75" fill="white"></polygon>
-                                  <polygon points="50,25 75,75 25,75" fill="white"></polygon>
-                                  <polygon points="35,35 65,35 50,65" fill="white"></polygon>
-                                  <polygon points="35,35 65,35 50,65" fill="white"></polygon>
-                                  <polygon points="35,35 65,35 50,65" fill="white"></polygon>
-                                  <polygon points="35,35 65,35 50,65" fill="white"></polygon>
-                                </mask>
-                              </defs>
-                            </svg>
-                            <div className="box"></div>
+                        <div className="sphere-loader-wrapper">
+                          <div className="loader-container">
+                            <div className="sphere-core"></div>
+                            <div className="orbit-ring orbit-ring-1"></div>
+                            <div className="orbit-ring orbit-ring-2"></div>
+                            <div className="orbit-ring orbit-ring-3"></div>
                           </div>
                         </div>
                         <span className={isActive ? 'nav-button-active-text' : ''}>{item.label}</span>
@@ -436,32 +486,43 @@ const Navbar = ({ activeTab, setActiveTab, sidebarOpen, setSidebarOpen }: Navbar
                   </div>
                 );
               })}
+
+              {/* Vertical Divider */}
+              <div 
+                className="h-6 w-px bg-gradient-to-b from-transparent via-white/20 to-transparent"
+                style={{
+                  margin: isMobile ? '0 2px' : '0 4px'
+                }}
+              ></div>
+
+              {/* More Button */}
+              <div className={sidebarOpen ? 'nav-button-active-border' : ''}>
+                <button
+                  ref={menuButtonRef}
+                  onClick={toggleSidebar}
+                  className={`
+                    nav-button hamburger-btn relative rounded-full
+                    font-medium tracking-wide transition-all duration-300
+                    ${sidebarOpen 
+                      ? 'nav-button-active' 
+                      : 'text-gray-400 hover:text-gray-200 hover:bg-white/10'
+                    }
+                  `}
+                  style={{ 
+                    padding: isMobile ? '4px 8px' : '7px 16px',
+                    fontSize: isMobile ? '0.7rem' : '0.875rem'
+                  }}
+                >
+                  <i className={`bi ${sidebarOpen ? 'bi-dash-square' : 'bi-grid'} ${isMobile ? 'text-[10px]' : 'text-sm'} mr-1`}></i>
+                  <span className={sidebarOpen ? 'nav-button-active-text' : ''}>More</span>
+                </button>
+              </div>
             </div>
           </div>
-
-          {/* Hamburger Menu Button - Compact on mobile */}
-          <button
-            ref={menuButtonRef}
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className={`hamburger-btn glass-nav rounded-full border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 transition-all ${sidebarOpen ? 'open' : ''}`}
-            style={{
-              padding: isMobile ? '8px' : '14px',
-              width: isMobile ? '32px' : '52px',
-              height: isMobile ? '32px' : '52px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            <i 
-              className={`bi ${sidebarOpen ? 'bi-dash-square' : 'bi-grid'} transition-all duration-300`}
-              style={{ fontSize: isMobile ? '14px' : '20px' }}
-            ></i>
-          </button>
         </div>
       </nav>
     </>
   );
 };
 
-export default Navbar;
+export default memo(Navbar);

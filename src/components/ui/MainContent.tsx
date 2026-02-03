@@ -4,7 +4,6 @@ import { useState, useEffect, useRef, Suspense, lazy } from 'react';
 // Lazy load tab components for code splitting
 const DiscoverTab = lazy(() => import('@/components/tabs/Discover'));
 const VenturesTab = lazy(() => import('@/components/tabs/Ventures'));
-const AffiliatesTab = lazy(() => import('@/components/tabs/Affiliations'));
 const InformationTab = lazy(() => import('@/components/tabs/Information'));
 
 interface MainContentProps {
@@ -166,8 +165,6 @@ const MainContent = ({ activeTab }: MainContentProps) => {
         );
       case 'ventures':
         return <VenturesTab />;
-      case 'affiliations':
-        return <AffiliatesTab />;
       case 'information':
         return <InformationTab />;
       default:
