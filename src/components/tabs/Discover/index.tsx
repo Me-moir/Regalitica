@@ -3,7 +3,9 @@ import { lazy, Suspense } from 'react';
 
 // Eager load: These are preloaded during LoadingScreen
 import HeroSection from './HeroSection';
+import BufferSection from './BufferSection';
 import Overview from './Overview';
+import InsideOurWorld from './InsideOurWorld';
 import ProjectHighlightsTitle from './ProjectHighlightsTitle';
 import FeatureSection from './FeatureSection';
 
@@ -29,8 +31,14 @@ const Discover = ({
       {/* Home - Hero Section */}
       <HeroSection />
       
-      {/* About Us - Overview Section */}
+      {/* Buffer Section - "What's in Regalitica?" */}
+      <BufferSection />
+      
+      {/* Overview Section - 4x2 Grid */}
       <Overview />
+      
+      {/* Inside Our World Section */}
+      <InsideOurWorld />
       
       {/* Project Highlights Section */}
       <ProjectHighlightsTitle />

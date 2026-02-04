@@ -1,7 +1,31 @@
 "use client";
-import { useEffect, useState } from 'react';
+import { useEffect, useState, memo } from 'react';
 import Prism from '@/components/ui/Prism';
 import { ContainerTextFlip } from "@/components/ui/container-text-flip";
+
+// Memoize the logo data to prevent recreating on each render
+const LOGOS = [
+  { src: "/assets/nextjs.png", alt: "Next.js" },
+  { src: "/assets/react.png", alt: "React" },
+  { src: "/assets/framer.png", alt: "Framer Motion" },
+  { src: "/assets/gsap.png", alt: "GSAP" },
+  { src: "/assets/spline.png", alt: "Spline" },
+  { src: "/assets/tailwind.png", alt: "Tailwind CSS" },
+  { src: "/assets/aceternity.png", alt: "Aceternity UI" },
+] as const;
+
+// Extract Logo component for better performance
+const Logo = memo<{ src: string; alt: string }>(({ src, alt }) => (
+  <img 
+    src={src} 
+    alt={alt} 
+    className="grayscale hover:grayscale-0 transition-all duration-300 h-5 sm:h-7 md:h-9 lg:h-11 hover:scale-110" 
+    style={{ width: 'auto', objectFit: 'contain' }}
+    loading="lazy"
+    decoding="async"
+  />
+));
+Logo.displayName = 'Logo';
 
 const HeroSection = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -32,14 +56,42 @@ const HeroSection = () => {
           50% { background-position: 100% 50%; }
           100% { background-position: 0% 50%; }
         }
+
+        /* Use transform and opacity for better performance */
+        .animate-shimmer {
+          animation: shimmer 3s infinite;
+          will-change: transform;
+        }
+
+        .animate-liquid {
+          animation: liquidFlow 8s ease infinite;
+          will-change: background-position;
+        }
+
+        /* Optimize for GPU acceleration */
+        .gpu-accelerated {
+          transform: translateZ(0);
+          backface-visibility: hidden;
+          perspective: 1000px;
+        }
       `}</style>
       
-      {/* Prism Background */}
-      <div style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }}>
+      {/* Prism Background - use pointer-events-none to prevent interaction overhead */}
+      <div 
+        className="gpu-accelerated" 
+        style={{ 
+          width: '100%', 
+          height: '100%', 
+          position: 'absolute', 
+          top: 0, 
+          left: 0,
+          pointerEvents: 'none'
+        }}
+      >
         <Prism
           animationType="hover"
           timeScale={1}
-          height={4.1}
+          height={3}
           baseWidth={5}
           scale={2.5}
           hueShift={0}
@@ -57,8 +109,16 @@ const HeroSection = () => {
               We build systems that build
             </span>
             {isMounted && (
-              <span className="inline-flex justify-center sm:justify-start items-center w-full sm:w-auto overflow-visible" 
-                style={{ minWidth: 'auto', maxWidth: '100%', minHeight: '1.5em', paddingTop: '0.1em', paddingBottom: '0.1em' }}>
+              <span 
+                className="inline-flex justify-center sm:justify-start items-center w-full sm:w-auto overflow-visible" 
+                style={{ 
+                  minWidth: 'auto', 
+                  maxWidth: '100%', 
+                  minHeight: '1.5em', 
+                  paddingTop: '0.1em', 
+                  paddingBottom: '0.1em' 
+                }}
+              >
                 <div className="overflow-visible w-full">
                   <ContainerTextFlip 
                     words={["Companies", "Possibilities", "Dominance"]} 
@@ -77,46 +137,40 @@ const HeroSection = () => {
         <div className="mt-16 sm:mt-24 md:mt-32 mb-0 pb-0 flex items-center justify-center px-2 sm:px-4">
           {/* Liquid Glass Container */}
           <div className="relative group">
-            {/* Glass Effect */}
+            {/* Glass Effect - use will-change sparingly */}
             <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent rounded-3xl blur-xl"></div>
             
             {/* Main Glass Container */}
             <div 
-              className="relative backdrop-blur-2xl bg-white/5 rounded-3xl border border-white/10 shadow-2xl overflow-hidden transition-all duration-700 hover:border-white/20 hover:bg-white/10"
+              className="relative backdrop-blur-2xl bg-white/5 rounded-3xl border border-white/10 shadow-2xl overflow-hidden transition-all duration-700 hover:border-white/20 hover:bg-white/10 gpu-accelerated"
               style={{
                 boxShadow: '0 8px 32px 0 rgba(255, 255, 255, 0.05), inset 0 1px 0 0 rgba(255, 255, 255, 0.1)',
               }}
             >
-              {/* Shimmer Effect */}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+              {/* Shimmer Effect - optimize with will-change on hover only */}
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none">
                 <div 
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer"
                   style={{
-                    animation: 'shimmer 3s infinite',
                     backgroundSize: '200% 100%',
                   }}
                 ></div>
               </div>
 
-              {/* Liquid Gradient Border Animation */}
+              {/* Liquid Gradient Border Animation - limit will-change scope */}
               <div 
-                className="absolute inset-0 opacity-50 group-hover:opacity-75 transition-opacity duration-700 rounded-3xl"
+                className="absolute inset-0 opacity-50 group-hover:opacity-75 transition-opacity duration-700 rounded-3xl animate-liquid pointer-events-none"
                 style={{
                   background: 'linear-gradient(45deg, rgba(139, 92, 246, 0.1), rgba(59, 130, 246, 0.1), rgba(236, 72, 153, 0.1), rgba(139, 92, 246, 0.1))',
                   backgroundSize: '400% 400%',
-                  animation: 'liquidFlow 8s ease infinite',
                 }}
               ></div>
 
               {/* Logos Container */}
               <div className="relative flex items-center justify-center gap-3 sm:gap-4 md:gap-6 lg:gap-8 px-6 sm:px-8 md:px-10 lg:px-12 py-4 sm:py-5 md:py-6 flex-wrap">
-                <img src="/assets/nextjs.png" alt="Next.js" className="grayscale hover:grayscale-0 transition-all duration-300 h-5 sm:h-7 md:h-9 lg:h-11 hover:scale-110" style={{ width: 'auto', objectFit: 'contain' }} />
-                <img src="/assets/react.png" alt="React" className="grayscale hover:grayscale-0 transition-all duration-300 h-5 sm:h-7 md:h-9 lg:h-11 hover:scale-110" style={{ width: 'auto', objectFit: 'contain' }} />
-                <img src="/assets/framer.png" alt="Framer Motion" className="grayscale hover:grayscale-0 transition-all duration-300 h-5 sm:h-7 md:h-9 lg:h-11 hover:scale-110" style={{ width: 'auto', objectFit: 'contain' }} />
-                <img src="/assets/gsap.png" alt="GSAP" className="grayscale hover:grayscale-0 transition-all duration-300 h-5 sm:h-7 md:h-9 lg:h-11 hover:scale-110" style={{ width: 'auto', objectFit: 'contain' }} />
-                <img src="/assets/spline.png" alt="Spline" className="grayscale hover:grayscale-0 transition-all duration-300 h-5 sm:h-7 md:h-9 lg:h-11 hover:scale-110" style={{ width: 'auto', objectFit: 'contain' }} />
-                <img src="/assets/tailwind.png" alt="Tailwind CSS" className="grayscale hover:grayscale-0 transition-all duration-300 h-5 sm:h-7 md:h-9 lg:h-11 hover:scale-110" style={{ width: 'auto', objectFit: 'contain' }} />
-                <img src="/assets/aceternity.png" alt="Aceternity UI" className="grayscale hover:grayscale-0 transition-all duration-300 h-5 sm:h-7 md:h-9 lg:h-11 hover:scale-110" style={{ width: 'auto', objectFit: 'contain' }} />
+                {LOGOS.map((logo) => (
+                  <Logo key={logo.alt} src={logo.src} alt={logo.alt} />
+                ))}
               </div>
 
               {/* Bottom Reflection */}
@@ -129,4 +183,4 @@ const HeroSection = () => {
   );
 };
 
-export default HeroSection;
+export default memo(HeroSection);
