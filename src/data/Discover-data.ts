@@ -42,18 +42,37 @@ export interface FeatureSection {
   description: string;
 }
 
+// New Affiliation Entry Interface for table-like layout
+export interface AffiliationEntry {
+  id: string;
+  name: string;
+  dateJoined: string;
+  logo?: string; // Optional logo URL/path
+}
+
 export interface SubSection {
   key: string;
   label: string;
   description: string[];
+  entries?: AffiliationEntry[]; // For Affiliations section
+}
+
+// Executive Card Interface
+export interface ExecutiveCard {
+  id: string;
+  position: string;
+  initials: string;
+  name: string;
+  department?: string;
 }
 
 export interface WorldContent {
   title: string;
   subsections: SubSection[];
-  buttonType: 'link' | 'tabs';
+  buttonType: 'link' | 'tabs' | 'cards';
   buttonText?: string;
   buttonLink?: string;
+  executives?: ExecutiveCard[]; // For Teams section
 }
 
 export interface WorldGridItem {
@@ -76,12 +95,6 @@ export const FeatureSections: FeatureSection[] = [
       'Our activities are sector-agnostic, allowing capital and effort to be allocated toward opportunities with asymmetric impact.'
   },
   {
-    icon: 'bi-bounding-box',
-    title: 'Systems-First Governance',
-    description:
-      'We prioritize repeatable operating systems for ideation, validation, execution, and scale over isolated experimentation.'
-  },
-  {
     icon: 'bi-mortarboard',
     title: 'Founder-Operator Model',
     description:
@@ -98,18 +111,6 @@ export const FeatureSections: FeatureSection[] = [
     title: 'Stealth Operations',
     description:
       'Operating in stealth enables concentrated development, reduced external signaling, and strategic optionality ahead of public exposure.'
-  },
-  {
-    icon: 'bi-stars',
-    title: 'Shared Infrastructure',
-    description:
-      'Ventures leverage centralized technical, operational, and strategic infrastructure designed to compound execution efficiency.'
-  },
-  {
-    icon: 'bi-share',
-    title: 'Selective External Alignment',
-    description:
-      'We engage selectively with external partners and institutions where alignment supports long-term structural objectives.'
   }
 ];
 
@@ -242,7 +243,7 @@ export const WORLD_GRID_ITEMS: WorldGridItem[] = [
   { key: 'direction', title: 'Direction', subtitle: 'Vision, Mission, Focus' },
   { key: 'teams', title: 'Teams', subtitle: 'Core Executives, Venture Teams' },
   { key: 'governance', title: 'Governance', subtitle: 'Structure, Principles' },
-  { key: 'affiliations', title: 'Affiliations', subtitle: 'Sponsors, Partners' },
+  { key: 'affiliations', title: 'Affiliations', subtitle: 'Investors, Sponsors, Partners' },
   { key: 'reachout', title: 'Reach Out', subtitle: 'Inquiry, Funding & Support, Partner With Us' }
 ];
 
@@ -318,15 +319,13 @@ export const WORLD_CONTENT_DATA: Record<'company' | 'direction' | 'teams' | 'gov
   },
   teams: {
     title: 'Teams',
-    buttonType: 'tabs',
+    buttonType: 'cards',
     subsections: [
       {
         key: 'core-executives',
         label: 'Core Executives',
         description: [
-          'Our executive leadership brings together decades of experience in technology, business strategy, and venture development.',
-          'Led by visionary founders and seasoned operators, our core team provides strategic direction, oversees portfolio management, and ensures operational excellence across all ventures.',
-          'The executive team combines deep technical expertise with business acumen, creating a foundation for sustainable growth and long-term success.'
+            'Meet the visionaries and operators driving Regalitica forward.'
         ]
       },
       {
@@ -337,6 +336,43 @@ export const WORLD_CONTENT_DATA: Record<'company' | 'direction' | 'teams' | 'gov
           'Our venture teams operate with autonomy while leveraging shared resources and infrastructure, enabling rapid iteration and efficient execution.',
           'We cultivate a culture of excellence, creativity, and accountability, attracting top talent passionate about building solutions that matter.'
         ]
+      }
+    ],
+    executives: [
+      {
+        id: 'ceo',
+        position: 'Chief Executive Officer',
+        initials: 'CEO',
+        name: '[Name]',
+        department: 'Executive Leadership'
+      },
+      {
+        id: 'cto',
+        position: 'Chief Technology Officer',
+        initials: 'CTO',
+        name: '[Name]',
+        department: 'Technology'
+      },
+      {
+        id: 'cfo',
+        position: 'Chief Financial Officer',
+        initials: 'CFO',
+        name: '[Name]',
+        department: 'Finance'
+      },
+      {
+        id: 'cao',
+        position: 'Chief Administrative Officer',
+        initials: 'CAO',
+        name: '[Name]',
+        department: 'Internal Administration'
+      },
+      {
+        id: 'coo',
+        position: 'Chief Operating Officer',
+        initials: 'COO',
+        name: '[Name]',
+        department: 'Operations'
       }
     ]
   },
@@ -369,21 +405,85 @@ export const WORLD_CONTENT_DATA: Record<'company' | 'direction' | 'teams' | 'gov
     buttonType: 'tabs',
     subsections: [
       {
+        key: 'investors',
+        label: 'Investors',
+        description: [
+          'Our partner ecosystem includes technology providers, research institutions, industry leaders, and strategic investors.'
+        ],
+        entries: [
+          {
+            id: 'inv-1',
+            name: 'Venture Capital Fund A',
+            dateJoined: 'Q1 2024'
+          },
+          {
+            id: 'inv-2',
+            name: 'Strategic Investment Group B',
+            dateJoined: 'Q2 2024'
+          },
+          {
+            id: 'inv-3',
+            name: 'Angel Investor Network C',
+            dateJoined: 'Q3 2024'
+          },
+          {
+            id: 'inv-4',
+            name: 'Corporate Venture Partner D',
+            dateJoined: 'Q4 2024'
+          }
+        ]
+      },
+      {
         key: 'sponsors',
         label: 'Sponsors',
         description: [
-          'We partner with leading organizations and institutions that share our commitment to innovation and excellence.',
-          'Our sponsors provide strategic support, mentorship, and resources that accelerate venture development and market entry.',
-          'These partnerships enable us to access cutting-edge research, industry expertise, and networks that amplify our impact across sectors.'
+          'We partner with leading organizations and institutions that share our commitment to innovation and excellence.'
+        ],
+        entries: [
+          {
+            id: 'spo-1',
+            name: 'Technology Institute A',
+            dateJoined: 'Jan 2024'
+          },
+          {
+            id: 'spo-2',
+            name: 'Innovation Foundation B',
+            dateJoined: 'Mar 2024'
+          },
+          {
+            id: 'spo-3',
+            name: 'Research University C',
+            dateJoined: 'Jun 2024'
+          }
         ]
       },
       {
         key: 'partners',
         label: 'Partners',
         description: [
-          'Our partner ecosystem includes technology providers, research institutions, industry leaders, and strategic investors.',
-          'Through these collaborations, we gain access to specialized knowledge, advanced tools, and market opportunities that enhance our competitive advantage.',
-          'We carefully select partners who align with our values and contribute meaningfully to our mission of creating transformative solutions.'
+          'Our partner ecosystem includes technology providers, research institutions, industry leaders, and strategic investors.'
+        ],
+        entries: [
+          {
+            id: 'par-1',
+            name: 'Cloud Services Provider A',
+            dateJoined: 'Feb 2024'
+          },
+          {
+            id: 'par-2',
+            name: 'AI Research Lab B',
+            dateJoined: 'Apr 2024'
+          },
+          {
+            id: 'par-3',
+            name: 'Industry Solutions Partner C',
+            dateJoined: 'Jul 2024'
+          },
+          {
+            id: 'par-4',
+            name: 'Global Consultancy Firm D',
+            dateJoined: 'Sep 2024'
+          }
         ]
       }
     ]

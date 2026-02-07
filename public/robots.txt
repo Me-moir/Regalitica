@@ -1,0 +1,64 @@
+# SELECTIVE SEARCH ENGINE BLOCKING
+# Allow general site indexing, but block Teams/About pages with executive information
+
+# Default: Allow all pages EXCEPT specific paths
+User-agent: *
+Allow: /
+
+# Block Teams page and all sub-pages
+Disallow: /teams
+Disallow: /teams/
+
+# Block About page if it contains executive info
+Disallow: /about
+Disallow: /about/
+
+# Optional: Block any other pages with sensitive executive data
+# Disallow: /leadership
+# Disallow: /executives
+
+# Allow everything else for SEO
+Allow: /
+Allow: /projects
+Allow: /ventures
+Allow: /contact
+Allow: /blog
+# Add more paths you want indexed
+
+# Sitemap location (recommended for SEO)
+Sitemap: https://yourdomain.com/sitemap.xml
+
+# Specific crawler instructions
+User-agent: Googlebot
+Allow: /
+Disallow: /teams
+Disallow: /about
+
+User-agent: Bingbot
+Allow: /
+Disallow: /teams
+Disallow: /about
+
+User-agent: DuckDuckBot
+Allow: /
+Disallow: /teams
+Disallow: /about
+
+# Block AI crawlers from everything (optional)
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Claude-Web
+Disallow: /
+
+# Note: This allows your entire site to be indexed for SEO
+# Only the /teams and /about pages are blocked from search engines

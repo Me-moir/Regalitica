@@ -22,9 +22,9 @@ const Overview = memo(() => {
         }}
       />
 
-      <div className="relative z-10 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-20 py-16 md:py-24 lg:py-32">
-        {/* 3x3 Grid Layout with equal gaps */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+      <div className="relative z-10 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-20 py-12 md:py-16 lg:py-20">
+        {/* 2x3 Grid on mobile/tablet, 3x2 on desktop with adjusted gaps */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
           {FeatureSections.map((feature, index) => (
             <div 
               key={index}
@@ -33,7 +33,7 @@ const Overview = memo(() => {
                 borderRadius: '1rem',
                 border: '1px solid rgba(255, 255, 255, 0.1)',
                 padding: '0.25rem',
-                minHeight: '200px',
+                minHeight: '180px',
               }}
               onMouseMove={(e) => {
                 const rect = e.currentTarget.getBoundingClientRect();
@@ -106,7 +106,7 @@ const Overview = memo(() => {
               borderRadius: '1rem',
               border: '1px solid rgba(255, 255, 255, 0.1)',
               padding: '0.25rem',
-              minHeight: '200px',
+              minHeight: '180px',
             }}
             onMouseMove={(e) => {
               const rect = e.currentTarget.getBoundingClientRect();
