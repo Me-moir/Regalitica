@@ -19,7 +19,7 @@ const Logo = memo<{ src: string; alt: string }>(({ src, alt }) => (
   <img 
     src={src} 
     alt={alt} 
-    className="grayscale hover:grayscale-0 transition-all duration-300 h-5 sm:h-7 md:h-9 lg:h-11 hover:scale-110" 
+    className="grayscale hover:grayscale-0 transition-all duration-300 h-4 sm:h-5 md:h-7 lg:h-9 hover:scale-110 flex-shrink-0" 
     style={{ width: 'auto', objectFit: 'contain' }}
     loading="lazy"
     decoding="async"
@@ -41,7 +41,7 @@ const HeroSection = () => {
           section {
             min-height: 0 !important;
             height: fit-content !important;
-            padding-top: 10rem;
+            padding-top: 8rem;
             padding-bottom: 1rem;
           }
         }
@@ -102,9 +102,9 @@ const HeroSection = () => {
       </div>
       
       {/* Text Overlay */}
-      <div className="relative z-20 w-full max-w-6xl mx-auto text-center px-4 sm:px-6 md:px-8 lg:px-12 mt-12 sm:mt-16 md:mt-24">
-        <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl mb-4 sm:mb-5 md:mb-6 max-w-4xl mx-auto drop-shadow-lg font-bold leading-tight overflow-visible">
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-x-2 px-2 sm:px-4 md:pl-8 overflow-visible">
+      <div className="relative z-20 w-full max-w-6xl mx-auto text-center px-3 sm:px-4 md:px-6 lg:px-12 mt-8 sm:mt-12 md:mt-16">
+        <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl mb-3 sm:mb-4 md:mb-5 max-w-4xl mx-auto drop-shadow-lg font-bold leading-tight overflow-visible">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-x-2 px-2 sm:px-3 md:px-6 overflow-visible">
             <span className="whitespace-nowrap bg-gradient-to-b from-white via-gray-300 to-gray-500 bg-clip-text text-transparent">
               We build systems that build
             </span>
@@ -122,7 +122,7 @@ const HeroSection = () => {
                 <div className="overflow-visible w-full">
                   <ContainerTextFlip 
                     words={["Companies", "Possibilities", "Dominance"]} 
-                    className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl overflow-visible" 
+                    className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl overflow-visible" 
                   />
                 </div>
               </span>
@@ -130,19 +130,19 @@ const HeroSection = () => {
           </div>
         </div>
         
-        <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-gray-300 max-w-3xl mx-auto drop-shadow-lg leading-relaxed mb-6 sm:mb-8 md:mb-10 px-2">
+        <p className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl text-gray-300 max-w-3xl mx-auto drop-shadow-lg leading-relaxed mb-4 sm:mb-6 md:mb-8 px-2">
           <strong className="font-bold text-gray-200">Regalitica</strong> is a holding and venture-building entity focused on developing early-stage systems.
         </p>
 
-        <div className="mt-16 sm:mt-24 md:mt-32 mb-0 pb-0 flex items-center justify-center px-2 sm:px-4">
+        <div className="mt-8 sm:mt-12 md:mt-16 lg:mt-24 mb-0 pb-0 flex items-center justify-center px-2 sm:px-3">
           {/* Liquid Glass Container */}
-          <div className="relative group">
+          <div className="relative group w-full max-w-5xl">
             {/* Glass Effect - use will-change sparingly */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent rounded-3xl blur-xl"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent rounded-2xl sm:rounded-3xl blur-xl"></div>
             
             {/* Main Glass Container */}
             <div 
-              className="relative backdrop-blur-2xl bg-white/5 rounded-3xl border border-white/10 shadow-2xl overflow-hidden transition-all duration-700 hover:border-white/20 hover:bg-white/10 gpu-accelerated"
+              className="relative backdrop-blur-2xl bg-white/5 rounded-2xl sm:rounded-3xl border border-white/10 shadow-2xl overflow-hidden transition-all duration-700 hover:border-white/20 hover:bg-white/10 gpu-accelerated"
               style={{
                 boxShadow: '0 8px 32px 0 rgba(255, 255, 255, 0.05), inset 0 1px 0 0 rgba(255, 255, 255, 0.1)',
               }}
@@ -159,15 +159,15 @@ const HeroSection = () => {
 
               {/* Liquid Gradient Border Animation - limit will-change scope */}
               <div 
-                className="absolute inset-0 opacity-50 group-hover:opacity-75 transition-opacity duration-700 rounded-3xl animate-liquid pointer-events-none"
+                className="absolute inset-0 opacity-50 group-hover:opacity-75 transition-opacity duration-700 rounded-2xl sm:rounded-3xl animate-liquid pointer-events-none"
                 style={{
                   background: 'linear-gradient(45deg, rgba(139, 92, 246, 0.1), rgba(59, 130, 246, 0.1), rgba(236, 72, 153, 0.1), rgba(139, 92, 246, 0.1))',
                   backgroundSize: '400% 400%',
                 }}
               ></div>
 
-              {/* Logos Container */}
-              <div className="relative flex items-center justify-center gap-3 sm:gap-4 md:gap-6 lg:gap-8 px-6 sm:px-8 md:px-10 lg:px-12 py-4 sm:py-5 md:py-6 flex-wrap">
+              {/* Logos Container - Single Row Centered */}
+              <div className="relative flex items-center justify-center gap-2 sm:gap-3 md:gap-4 lg:gap-6 xl:gap-8 px-4 sm:px-6 md:px-8 lg:px-10 py-3 sm:py-4 md:py-5">
                 {LOGOS.map((logo) => (
                   <Logo key={logo.alt} src={logo.src} alt={logo.alt} />
                 ))}

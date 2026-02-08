@@ -1,0 +1,117 @@
+.gridButton {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.625rem 1rem;
+  background: transparent;
+  border-right: 1px dashed rgba(255, 255, 255, 0.2);
+  transition: all 0.3s;
+  contain: layout style paint;
+  cursor: pointer;
+  border-left: none;
+  white-space: nowrap;
+}
+
+@media (min-width: 768px) {
+  .gridButton {
+    flex: 1;
+    align-items: flex-end;
+    padding: 1rem;
+    white-space: normal;
+  }
+}
+
+@media (min-width: 1024px) {
+  .gridButton {
+    padding: 1.5rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .gridButton {
+    padding: 2rem;
+  }
+}
+
+.title {
+  font-size: 0.75rem;
+  font-weight: 400;
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.5);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (min-width: 768px) {
+  .title {
+    font-size: 1rem;
+    text-align: right;
+  }
+}
+
+@media (min-width: 1024px) {
+  .title {
+    font-size: 1.25rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .title {
+    font-size: 1.5rem;
+  }
+}
+
+.active .title {
+  transform: translateX(-4px);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: linear-gradient(135deg, #ffffff 0%, #d4d4d4 50%, #a3a3a3 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subtitle {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .subtitle {
+    display: block;
+    font-size: 0.75rem;
+    color: rgb(156, 163, 175);
+    position: relative;
+    z-index: 10;
+    text-align: right;
+    margin-top: 0.25rem;
+    opacity: 0.6;
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+.active .subtitle {
+  opacity: 0.9;
+}
+
+.hoverGradient {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  will-change: opacity;
+  background: radial-gradient(200px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(0, 255, 166, 0.8), rgba(255, 215, 0, 0.6), rgba(236, 72, 153, 0.6), rgba(147, 51, 234, 0.6), rgba(59, 130, 246, 0.5), transparent 70%);
+  padding: 1px;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+.gridButton:hover .hoverGradient {
+  opacity: 1;
+}

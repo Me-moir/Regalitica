@@ -1,0 +1,54 @@
+.learnMoreButton {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background-color: #101010;
+  box-shadow: inset 0px 1px 1px rgba(255, 255, 255, 0.2), 
+              inset 0px 2px 2px rgba(255, 255, 255, 0.15), 
+              inset 0px 4px 4px rgba(255, 255, 255, 0.1);
+  border: solid 1px rgba(255, 255, 255, 0.13);
+  border-radius: 8px;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.8);
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+@media (min-width: 640px) {
+  .learnMoreButton {
+    padding: 0.625rem 1.5rem;
+    font-size: 0.875rem;
+  }
+}
+
+.learnMoreButton::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 10px;
+  padding: 1px;
+  background: radial-gradient(
+    200px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(0, 255, 166, 0.8),
+    rgba(255, 215, 0, 0.6),
+    rgba(236, 72, 153, 0.6),
+    rgba(147, 51, 234, 0.6),
+    rgba(59, 130, 246, 0.5),
+    transparent 70%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.learnMoreButton:hover::before {
+  opacity: 1;
+}

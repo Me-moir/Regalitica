@@ -239,7 +239,7 @@ export const allProjects: Project[] = [
 
 // InsideOurWorld Content
 export const WORLD_GRID_ITEMS: WorldGridItem[] = [
-  { key: 'company', title: 'Company', subtitle: 'About Us, Our Story, Growth Timeline' },
+  { key: 'company', title: 'Company', subtitle: 'About, Our Story, Timeline' },
   { key: 'direction', title: 'Direction', subtitle: 'Vision, Mission, Focus' },
   { key: 'teams', title: 'Teams', subtitle: 'Core Executives, Venture Teams' },
   { key: 'governance', title: 'Governance', subtitle: 'Structure, Principles' },
@@ -254,7 +254,7 @@ export const WORLD_CONTENT_DATA: Record<'company' | 'direction' | 'teams' | 'gov
     subsections: [
       {
         key: 'about',
-        label: 'About Us',
+        label: 'About',
         description: [
           'Regalitica is a technology-focused collective dedicated to building intelligent systems, digital platforms, and future-oriented solutions.',
           'We operate at the intersection of design, data, and engineering — creating products that are not only functional, but meaningful, scalable, and sustainable.',
@@ -273,8 +273,8 @@ export const WORLD_CONTENT_DATA: Record<'company' | 'direction' | 'teams' | 'gov
         ]
       },
       {
-        key: 'growth-timeline',
-        label: 'Growth Timeline',
+        key: 'timeline',
+        label: 'Timeline',
         description: [
           'Our growth trajectory reflects our commitment to sustainable expansion and meaningful impact across multiple ventures and sectors.',
           'From initial concept validation to full-scale operations, each milestone represents strategic decisions, lessons learned, and capabilities developed through hands-on execution.',
@@ -373,6 +373,13 @@ export const WORLD_CONTENT_DATA: Record<'company' | 'direction' | 'teams' | 'gov
         initials: 'COO',
         name: '[Name]',
         department: 'Operations'
+      },
+      {
+        id: 'cbo',
+        position: 'Chief Brand Officer',
+        initials: 'CBO',
+        name: '[Name]',
+        department: 'Brand'
       }
     ]
   },

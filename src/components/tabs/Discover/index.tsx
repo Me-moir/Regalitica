@@ -5,6 +5,7 @@ import { lazy, Suspense } from 'react';
 import HeroSection from './HeroSection';
 import BufferSection from './BufferSection';
 import Overview from './Overview';
+import AboutHeader from './AboutHeader';
 import InsideOurWorld from './About';
 import FeatureSection from './FeatureSection';
 
@@ -35,6 +36,9 @@ const Discover = ({
       
       {/* Overview Section - 4x2 Grid */}
       <Overview />
+      
+      {/* About Header Section - "Building Enterprises with Purpose" */}
+      <AboutHeader />
       
       {/* Inside Our World Section */}
       <InsideOurWorld />
