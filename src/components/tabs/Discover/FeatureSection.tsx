@@ -191,7 +191,7 @@ const ProjectCard = memo(({
               </div>
               
               <div className="space-y-2">
-                {/* Timeline */}
+                {/* Timeline start here */}
                 <div className="relative">
                   <div 
                     className="timeline-grid-border absolute inset-0 rounded-lg pointer-events-none"

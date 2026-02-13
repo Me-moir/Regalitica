@@ -316,7 +316,7 @@ const LoadingScreen = ({ onLoadingComplete }: LoadingScreenProps) => {
           
           {/* Quote Text */}
           <p className="text-gray-300 text-sm sm:text-base md:text-lg mt-1 italic max-w-xs sm:max-w-md text-center px-8 mb-12">
-            "We are fools with nothing. We can become Anything."
+            "Loading contents..."
           </p>
           
           {/* Progress Percentage */}
