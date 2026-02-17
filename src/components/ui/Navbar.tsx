@@ -1,13 +1,22 @@
 "use client";
 import { useState, useEffect, useRef, useCallback, useMemo, memo } from 'react';
-import Sidebar from './Sidebar';
+import SearchModal from './SearchModal';
 import ThemeToggle from './ThemeToggle';
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   Interfaces
+   ═══════════════════════════════════════════════════════════════════════════ */
 interface NavbarProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
-  sidebarOpen: boolean;
-  setSidebarOpen: (open: boolean) => void;
+  activeSubtab?: string;
+  onSubtabClick?: (parentTabId: string, subtabId: string) => void;
+}
+
+interface SubtabItem {
+  id: string;
+  label: string;
+  sectionId?: string;
 }
 
 interface NavItem {
@@ -15,519 +24,615 @@ interface NavItem {
   label: string;
   icon: string;
   isSpecial?: boolean;
+  subtabs?: SubtabItem[];
 }
 
-const Navbar = ({ activeTab, setActiveTab, sidebarOpen, setSidebarOpen }: NavbarProps) => {
-  const [scrolled, setScrolled] = useState(false);
+/* ═══════════════════════════════════════════════════════════════════════════
+   Static nav data — lives outside component, never reallocated
+   ═══════════════════════════════════════════════════════════════════════════ */
+const NAV_ITEMS: NavItem[] = [
+  {
+    id: 'discover',
+    label: 'Discover',
+    icon: 'bi-rocket-takeoff',
+    subtabs: [
+      { id: 'discover-hero',     label: 'Home',     sectionId: 'section-hero' },
+      { id: 'discover-about',    label: 'About',    sectionId: 'section-about' },
+      { id: 'discover-features', label: 'Features', sectionId: 'section-features' },
+      { id: 'discover-team',     label: 'Team',     sectionId: 'section-team' },
+      { id: 'discover-contact',  label: 'Contact',  sectionId: 'section-contact' },
+    ],
+  },
+  {
+    id: 'information',
+    label: 'Information',
+    icon: 'bi-pin',
+    subtabs: [
+      { id: 'info-docs',      label: 'Docs' },
+      { id: 'info-faq',       label: 'FAQ' },
+      { id: 'info-blog',      label: 'Blog' },
+      { id: 'info-changelog', label: 'Changelog' },
+    ],
+  },
+  {
+    id: 'ventures',
+    label: 'Ventures',
+    icon: 'bi-crosshair',
+    isSpecial: true,
+    subtabs: [
+      { id: 'ventures-portfolio', label: 'Portfolio' },
+      { id: 'ventures-invest',    label: 'Invest' },
+      { id: 'ventures-pitch',     label: 'Pitch Us' },
+      { id: 'ventures-thesis',    label: 'Thesis' },
+    ],
+  },
+];
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CSS — extracted to a module-level constant so the browser never
+   re-parses it on React re-renders.  This alone removes the biggest
+   source of jank (CSSOM churn every time state changes).
+   ═══════════════════════════════════════════════════════════════════════════ */
+const NAVBAR_CSS = `
+/* ─── Animated active border ─── */
+.nav-button-active-border {
+  position: relative;
+  padding: 1px;
+  border-radius: 10px;
+}
+.nav-button-active-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  padding: 1px;
+  pointer-events: none;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(0,255,166,0.8) 15%,
+    rgba(255,215,0,0.6) 30%,
+    rgba(236,72,153,0.6) 45%,
+    rgba(147,51,234,0.6) 60%,
+    rgba(59,130,246,0.5) 75%,
+    transparent 90%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: orbitBorder 3s linear infinite;
+  background-size: 200% 100%;
+}
+@keyframes orbitBorder {
+  0%   { background-position: 0% 0%; }
+  100% { background-position: 200% 0%; }
+}
+
+/* ─── Glass navbar ─── */
+.glass-navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 50;
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow:
+    0 8px 32px var(--glass-shadow-1),
+    0 12px 48px var(--glass-shadow-2),
+    inset 0 1px 1px var(--glass-inset-top),
+    inset 0 -1px 1px var(--glass-inset-bottom);
+}
+.glass-navbar::before {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 0; right: 0; height: 1px;
+  background: radial-gradient(
+    600px circle at var(--mouse-x, 50%) 100%,
+    rgba(0,255,166,0.9), rgba(255,215,0,0.7),
+    rgba(236,72,153,0.7), rgba(147,51,234,0.6),
+    rgba(59,130,246,0.5), transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+.glass-navbar:hover::before { opacity: 1; }
+
+/* ─── Logo ─── */
+.logo-mark { display:flex; align-items:center; gap:12px; text-decoration:none; user-select:none; }
+.logo-icon {
+  width:38px; height:38px; border-radius:10px;
+  background: linear-gradient(135deg,#1a1a1a 0%,#0d0d0d 60%,#111 100%);
+  display:flex; align-items:center; justify-content:center;
+  box-shadow: 0 0 14px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.08);
+  flex-shrink:0;
+}
+.logo-icon svg { width:18px; height:18px; fill:rgba(255,255,255,0.92); }
+.logo-text { font-size:1.05rem; font-weight:800; letter-spacing:-0.03em; color:var(--content-primary); line-height:1; }
+
+/* ─── Divider ─── */
+.nav-divider {
+  width:1px;
+  background: linear-gradient(to bottom, transparent, var(--border-dashed), transparent);
+  margin: 0 12px; flex-shrink:0;
+}
+
+/* ─── CENTER wrapper ─── */
+.nav-center {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+/* ─── Tabs & subs rows ─── */
+.tabs-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  transition:
+    opacity 0.2s ease,
+    transform 0.22s ease;
+  pointer-events: auto;
+}
+.tabs-row.expanded {
+  opacity: 0;
+  transform: translateX(-16px);
+}
+.tabs-row.expanded .tab-label-btn { pointer-events: none; }
+
+.subs-row {
+  position: absolute;
+  left: 0; top: 50%;
+  transform: translateY(-50%) translateX(20px);
+  width: 100%;
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.22s ease,
+    transform 0.24s ease;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.subs-row.expanded {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+  pointer-events: auto;
+}
+
+/* ─── Tab item: [label│arrow] ─── */
+.tab-item {
+  display: inline-flex;
+  align-items: stretch;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18), inset 0 1px 0 var(--glass-inset-top);
+  transition: box-shadow 0.2s ease;
+  flex-shrink: 0;
+  background: transparent;
+}
+.tab-item:hover {
+  box-shadow: 0 4px 14px rgba(0,0,0,0.26), inset 0 1px 0 var(--glass-inset-top);
+}
+.tab-item.is-active { background: var(--hover-bg-strong); }
+
+.tab-label-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--content-faint);
+  padding: 10px 16px 10px 18px;
+  font-size: 0.88rem;
+  line-height: 1;
+  transition: color 0.15s ease;
+  user-select: none;
+}
+.tab-label-btn:hover,
+.tab-label-btn.is-active { color: var(--content-primary); }
+.tab-label-btn.is-active { font-weight: 600; }
+
+.tab-sep {
+  width: 1px;
+  margin: 6px 0;
+  background: var(--border-dashed);
+  opacity: 0.45;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.tab-arrow-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--content-faint);
+  transition: color 0.15s ease, background 0.15s ease;
+  flex-shrink: 0;
+  padding: 0;
+}
+.tab-arrow-btn:hover { color: var(--content-primary); background: rgba(0,255,166,0.07); }
+.tab-arrow-btn.active-arrow {
+  color: var(--content-primary);
+  background: rgba(0,255,166,0.10);
+}
+
+@media (max-width: 640px) {
+  .tab-sep, .tab-arrow-btn { display: none; }
+  .tab-label-btn { padding: 5px 10px; font-size: 0.75rem; }
+}
+
+/* ─── Subtab breadcrumb ─── */
+.sub-parent {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.87rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--content-primary);
+  padding: 8px 10px 8px 6px;
+  border: none;
+  background: transparent;
+  flex-shrink: 0;
+  user-select: none;
+}
+.sub-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--content-faint);
+  font-size: 0.6rem;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: color 0.15s ease, background 0.15s ease;
+  margin-left: -4px;
+}
+.sub-close:hover {
+  color: var(--content-primary);
+  background: var(--hover-bg-strong);
+}
+.sub-spacer { width: 12px; flex-shrink: 0; }
+.sub-sep {
+  display: inline-flex;
+  align-items: center;
+  color: var(--content-secondary);
+  font-size: 0.62rem;
+  margin: 0 1px;
+  flex-shrink: 0;
+  opacity: 0.55;
+  user-select: none;
+}
+.sub-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 12px;
+  font-size: 0.83rem;
+  font-weight: 500;
+  color: var(--content-faint);
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: color 0.12s ease, background 0.12s ease;
+}
+.sub-btn:hover {
+  color: var(--content-primary);
+  background: var(--hover-bg-strong);
+  transform: translateY(-1px);
+}
+.sub-btn.is-active {
+  color: var(--content-primary);
+  font-weight: 600;
+  background: var(--hover-bg-strong);
+  position: relative;
+}
+.sub-btn.is-active::after {
+  content: '';
+  position: absolute;
+  bottom: 3px; left: 12px; right: 12px;
+  height: 1.5px;
+  border-radius: 999px;
+  background: rgba(0,255,166,0.75);
+}
+
+/* Staggered entrance */
+.subs-row.expanded .sub-btn {
+  animation: subIn 0.24s cubic-bezier(0.34,1.18,0.64,1) both;
+  animation-delay: calc(var(--i, 0) * 0.04s);
+}
+@keyframes subIn {
+  from { opacity:0; transform:translateX(10px); }
+  to   { opacity:1; transform:translateX(0); }
+}
+
+/* ─── Search trigger ─── */
+.search-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: var(--content-faint);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 var(--glass-inset-top);
+  transition: color 0.15s ease, box-shadow 0.2s ease, transform 0.15s ease;
+  user-select: none;
+  flex-shrink: 0;
+}
+.search-trigger:hover {
+  color: var(--content-primary);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3), inset 0 1px 0 var(--glass-inset-top);
+  transform: translateY(-1px);
+}
+.search-trigger .search-shortcut {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px;
+  border-radius: 5px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--content-faint);
+  background: var(--hover-bg);
+  border: 1px solid var(--border-color);
+  opacity: 0.7;
+  letter-spacing: 0.03em;
+}
+`;
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Component
+   ═══════════════════════════════════════════════════════════════════════════ */
+const Navbar = ({
+  activeTab,
+  setActiveTab,
+  activeSubtab,
+  onSubtabClick,
+}: NavbarProps) => {
   const [isMobile, setIsMobile] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [expandedTab, setExpandedTab] = useState<string | null>(null);
   const navContainerRef = useRef<HTMLDivElement>(null);
-  const menuButtonRef = useRef<HTMLButtonElement>(null);
   const rafIdRef = useRef<number | null>(null);
+  const autoCloseRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Memoize nav items to prevent recreation on every render
-  const navItems: NavItem[] = useMemo(() => [
-    { id: 'discover', label: 'Discover', icon: 'bi-rocket-takeoff' },
-    { id: 'information', label: 'Information', icon: 'bi-pin' },
-    { id: 'ventures', label: 'Ventures', icon: 'bi-stars', isSpecial: true }
-  ], []);
-
-  // Check for mobile on mount and resize with debouncing
+  // ── Mobile check (debounced) ──────────────────────────────────────────
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
-    
-    const checkMobile = () => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        setIsMobile(window.innerWidth < 640);
-      }, 150); // Debounce resize events
-    };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile, { passive: true });
-    return () => {
-      clearTimeout(timeoutId);
-      window.removeEventListener('resize', checkMobile);
-    };
+    let t: ReturnType<typeof setTimeout>;
+    const check = () => { clearTimeout(t); t = setTimeout(() => setIsMobile(window.innerWidth < 640), 150); };
+    check();
+    window.addEventListener('resize', check, { passive: true });
+    return () => { clearTimeout(t); window.removeEventListener('resize', check); };
   }, []);
 
-  // Scroll detection with requestAnimationFrame throttling
+  // ── Mouse-tracking for gradient glow ──────────────────────────────────
   useEffect(() => {
-    let ticking = false;
-    
-    const handleScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          setScrolled(window.scrollY > 20);
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
+    const el = navContainerRef.current;
+    if (!el) return;
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Optimized mouse tracking for gradient effects with RAF throttling
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      // Cancel previous frame if still pending
+    const onMove = (e: MouseEvent) => {
       if (rafIdRef.current !== null) return;
-
       rafIdRef.current = requestAnimationFrame(() => {
-        // Update navbar container
-        if (navContainerRef.current) {
-          try {
-            const rect = navContainerRef.current.getBoundingClientRect();
-            if (rect && rect.width && rect.height) {
-              const x = ((e.clientX - rect.left) / rect.width) * 100;
-              const y = ((e.clientY - rect.top) / rect.height) * 100;
-              navContainerRef.current.style.setProperty('--mouse-x', `${x}%`);
-              navContainerRef.current.style.setProperty('--mouse-y', `${y}%`);
-            }
-          } catch (err) {
-            // Silently handle any errors during mouse tracking
-          }
-        }
-
-        // Update menu button
-        if (menuButtonRef.current) {
-          try {
-            const rect = menuButtonRef.current.getBoundingClientRect();
-            if (rect && rect.width && rect.height) {
-              const x = ((e.clientX - rect.left) / rect.width) * 100;
-              const y = ((e.clientY - rect.top) / rect.height) * 100;
-              menuButtonRef.current.style.setProperty('--mouse-x', `${x}%`);
-              menuButtonRef.current.style.setProperty('--mouse-y', `${y}%`);
-            }
-          } catch (err) {
-            // Silently handle any errors during mouse tracking
-          }
-        }
-
+        const r = el.getBoundingClientRect();
+        el.style.setProperty('--mouse-x', `${((e.clientX - r.left) / r.width) * 100}%`);
+        el.style.setProperty('--mouse-y', `${((e.clientY - r.top) / r.height) * 100}%`);
         rafIdRef.current = null;
       });
     };
 
-    document.addEventListener('mousemove', handleMouseMove, { passive: true });
-
+    document.addEventListener('mousemove', onMove, { passive: true });
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      if (rafIdRef.current !== null) {
-        cancelAnimationFrame(rafIdRef.current);
-      }
+      document.removeEventListener('mousemove', onMove);
+      if (rafIdRef.current !== null) cancelAnimationFrame(rafIdRef.current);
     };
   }, []);
 
-  // Memoize tab click handler
+  // ── Expansion helpers ─────────────────────────────────────────────────
+  const toggleExpand = useCallback((tabId: string) => {
+    setExpandedTab(prev => prev === tabId ? null : tabId);
+  }, []);
+
+  const closeExpand = useCallback(() => {
+    setExpandedTab(null);
+  }, []);
+
+  // Auto-close after 10 s
+  useEffect(() => {
+    if (autoCloseRef.current) clearTimeout(autoCloseRef.current);
+    if (expandedTab) {
+      autoCloseRef.current = setTimeout(() => setExpandedTab(null), 10_000);
+    }
+    return () => { if (autoCloseRef.current) clearTimeout(autoCloseRef.current); };
+  }, [expandedTab]);
+
+  // ── Navigation ────────────────────────────────────────────────────────
   const handleTabClick = useCallback((tabId: string) => {
     setActiveTab(tabId);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [setActiveTab]);
 
-  // Memoize sidebar toggle
-  const toggleSidebar = useCallback(() => {
-    setSidebarOpen(!sidebarOpen);
-  }, [sidebarOpen, setSidebarOpen]);
+  const handleSubtabClick = useCallback((parentTabId: string, sub: SubtabItem) => {
+    setActiveTab(parentTabId);
+    onSubtabClick?.(parentTabId, sub.id);
+    if (sub.sectionId) {
+      requestAnimationFrame(() => {
+        document.getElementById(sub.sectionId!)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [setActiveTab, onSubtabClick]);
 
-  const closeSidebar = useCallback(() => {
-    setSidebarOpen(false);
-  }, [setSidebarOpen]);
+  // ── Search ────────────────────────────────────────────────────────────
+  const openSearch  = useCallback(() => setSearchOpen(true), []);
+  const closeSearch = useCallback(() => setSearchOpen(false), []);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setSearchOpen(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
+  const handleSearchNavigate = useCallback((tabId: string, subtabId?: string) => {
+    setActiveTab(tabId);
+    if (subtabId) onSubtabClick?.(tabId, subtabId);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [setActiveTab, onSubtabClick]);
+
+  // ── Precompute active-tab set once per render ─────────────────────────
+  const activeSet = useMemo(() => {
+    const set = new Set<string>();
+    for (const item of NAV_ITEMS) {
+      if (activeTab === item.id) { set.add(item.id); continue; }
+      if (activeSubtab && item.subtabs?.some(s => s.id === activeSubtab)) set.add(item.id);
+    }
+    return set;
+  }, [activeTab, activeSubtab]);
+
+  const expandedItem = useMemo(
+    () => NAV_ITEMS.find(item => item.id === expandedTab) ?? null,
+    [expandedTab],
+  );
+  const isExpanded = expandedTab !== null;
+
+  // ── Inline style objects — stable references via useMemo ──────────────
+  const barStyle = useMemo(() => ({
+    height: isMobile ? '60px' : '72px',
+    paddingLeft:  isMobile ? '16px' : '36px',
+    paddingRight: isMobile ? '16px' : '36px',
+    gap: isMobile ? '10px' : '20px',
+  }), [isMobile]);
+
+  const labelFontStyle = useMemo(
+    () => ({ fontSize: isMobile ? '0.75rem' : '0.88rem' }),
+    [isMobile],
+  );
 
   return (
     <>
-      <style>{`
-        .nav-button-active-border {
-          position: relative;
-          padding: 1px;
-          background: transparent;
-          border-radius: 9999px;
-        }
+      <style>{NAVBAR_CSS}</style>
 
-        .nav-button-active-border::before {
-          content: '';
-          position: absolute;
-          inset: 0;
-          border-radius: 9999px;
-          padding: 1px;
-          background: linear-gradient(90deg, 
-            transparent 0%,
-            rgba(0, 255, 166, 0.8) 15%,
-            rgba(255, 215, 0, 0.6) 30%,
-            rgba(236, 72, 153, 0.6) 45%,
-            rgba(147, 51, 234, 0.6) 60%,
-            rgba(59, 130, 246, 0.5) 75%,
-            transparent 90%
-          );
-          -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-          -webkit-mask-composite: xor;
-          mask-composite: exclude;
-          animation: orbitBorder 3s linear infinite;
-          background-size: 200% 100%;
-          will-change: background-position;
-        }
+      <SearchModal isOpen={searchOpen} onClose={closeSearch} onNavigate={handleSearchNavigate} />
 
-        .sandbox-border {
-          position: relative;
-          padding: 0px;
-          background: transparent;
-          border-radius: 9999px;
-        }
+      <nav ref={navContainerRef} className="glass-navbar">
+        <div className="w-full flex items-center" style={barStyle}>
 
-        .sandbox-border::before {
-          display: none;
-        }
+          {/* Logo */}
+          <div className="logo-mark flex-shrink-0">
+            <div className="logo-icon">
+              <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 1L14 4.5V11.5L8 15L2 11.5V4.5L8 1Z"/>
+              </svg>
+            </div>
+            {!isMobile && <div className="logo-text">Your<span>Brand</span></div>}
+          </div>
 
-        @keyframes orbitBorder {
-          0% { background-position: 0% 0%; }
-          100% { background-position: 200% 0%; }
-        }
+          <div className="nav-divider" style={{ height: '28px', alignSelf: 'center' }} />
 
-        .sphere-loader-wrapper {
-          width: 16px;
-          height: 16px;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          margin-right: 6px;
-          position: relative;
-          flex-shrink: 0;
-        }
+          {/* CENTER */}
+          <div className="nav-center">
 
-        @media (max-width: 640px) {
-          .sphere-loader-wrapper {
-            width: 14px;
-            height: 14px;
-            margin-right: 4px;
-          }
-        }
+            {/* ── TABS ROW ── */}
+            <div className={`tabs-row${isExpanded ? ' expanded' : ''}`}>
+              {NAV_ITEMS.map((item) => {
+                const active = activeSet.has(item.id);
+                const thisExpanded = expandedTab === item.id;
 
-        .loader-container {
-          position: absolute;
-          width: 100%;
-          height: 100%;
-          perspective: 800px;
-          transform-style: preserve-3d;
-        }
-
-        .sphere-core {
-          position: absolute;
-          width: 60%;
-          height: 60%;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          background: radial-gradient(circle at 40% 40%, rgba(220, 220, 220, 0.8), rgba(180, 180, 180, 0.7));
-          border-radius: 50%;
-          box-shadow: 0 0 4px rgba(200, 200, 200, 0.5);
-          animation: pulse 2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-          will-change: transform, box-shadow;
-        }
-
-        .orbit-ring {
-          position: absolute;
-          width: 100%;
-          height: 100%;
-          border: 1px solid rgba(220, 220, 220, 0.6);
-          border-radius: 50%;
-          box-shadow: 0 0 3px rgba(200, 200, 200, 0.4);
-          transform-style: preserve-3d;
-        }
-
-        .orbit-ring-1 {
-          animation: rotateX 2.5s cubic-bezier(0.65, 0, 0.35, 1) infinite;
-        }
-
-        .orbit-ring-2 {
-          animation: rotateY 2s cubic-bezier(0.55, 0, 0.45, 1) infinite;
-          width: 80%;
-          height: 80%;
-          top: 10%;
-          left: 10%;
-          border-color: rgba(220, 220, 220, 0.5);
-        }
-
-        .orbit-ring-3 {
-          animation: rotateXY 3s cubic-bezier(0.7, 0, 0.3, 1) infinite;
-          width: 60%;
-          height: 60%;
-          top: 20%;
-          left: 20%;
-          border-color: rgba(220, 220, 220, 0.4);
-        }
-
-        @keyframes rotateX {
-          0% { transform: rotateX(0deg); }
-          50% { transform: rotateX(180deg); }
-          100% { transform: rotateX(360deg); }
-        }
-
-        @keyframes rotateY {
-          0% { transform: rotateY(0deg); }
-          50% { transform: rotateY(180deg); }
-          100% { transform: rotateY(360deg); }
-        }
-
-        @keyframes rotateXY {
-          0% { transform: rotateX(0deg) rotateY(0deg); }
-          50% { transform: rotateX(90deg) rotateY(180deg); }
-          100% { transform: rotateX(360deg) rotateY(360deg); }
-        }
-
-        @keyframes pulse {
-          0%, 100% {
-            transform: translate(-50%, -50%) scale(1);
-            box-shadow: 0 0 4px rgba(200, 200, 200, 0.5);
-          }
-          50% {
-            transform: translate(-50%, -50%) scale(1.1);
-            box-shadow: 0 0 6px rgba(200, 200, 200, 0.6);
-          }
-        }
-
-        .glass-nav {
-          position: relative;
-          background: var(--glass-bg);
-          backdrop-filter: blur(24px);
-          -webkit-backdrop-filter: blur(24px);
-          box-shadow: 
-            0 8px 32px var(--glass-shadow-1),
-            0 12px 48px var(--glass-shadow-2),
-            inset 0 1px 1px var(--glass-inset-top),
-            inset 0 -1px 1px var(--glass-inset-bottom);
-          transition: background 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        /* Active state for Ventures icon - Teal/Aurora */
-        .nav-button-active .sphere-core {
-          background: radial-gradient(circle at 40% 40%, #00ffcc, #00d9b8);
-          box-shadow: 0 0 8px rgba(0, 255, 204, 0.6);
-        }
-
-        .nav-button-active .orbit-ring {
-          border-color: rgba(0, 255, 204, 0.8);
-          box-shadow: 0 0 5px rgba(0, 255, 204, 0.4);
-        }
-
-        .nav-button-active .orbit-ring-2 {
-          border-color: rgba(0, 255, 204, 0.6);
-        }
-
-        .nav-button-active .orbit-ring-3 {
-          border-color: rgba(0, 255, 204, 0.4);
-        }
-
-        /* Navbar hover gradient effect */
-        .glass-nav::before {
-          content: '';
-          position: absolute;
-          inset: -1px;
-          border-radius: inherit;
-          padding: 0.5px;
-          background: radial-gradient(
-            150px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-            rgba(0, 255, 166, 0.8),
-            rgba(255, 215, 0, 0.6),
-            rgba(236, 72, 153, 0.6),
-            rgba(147, 51, 234, 0.6),
-            rgba(59, 130, 246, 0.5),
-            transparent 70%
-          );
-          -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-          -webkit-mask-composite: xor;
-          mask-composite: exclude;
-          opacity: 0;
-          transition: opacity 0.4s ease-in-out;
-          pointer-events: none;
-          z-index: -1;
-          will-change: opacity;
-        }
-
-        .glass-nav:hover::before {
-          opacity: 1;
-        }
-
-        /* Menu button hover gradient effect */
-        .hamburger-btn {
-          position: relative;
-        }
-
-        .hamburger-btn::before {
-          content: '';
-          position: absolute;
-          inset: -1px;
-          border-radius: inherit;
-          padding: 0.5px;
-          background: radial-gradient(
-            120px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-            rgba(0, 255, 166, 0.8),
-            rgba(255, 215, 0, 0.6),
-            rgba(236, 72, 153, 0.6),
-            rgba(147, 51, 234, 0.6),
-            rgba(59, 130, 246, 0.5),
-            transparent 70%
-          );
-          -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-          -webkit-mask-composite: xor;
-          mask-composite: exclude;
-          opacity: 0;
-          transition: opacity 0.4s ease-in-out;
-          pointer-events: none;
-          z-index: -1;
-          will-change: opacity;
-        }
-
-        .hamburger-btn:hover::before {
-          opacity: 1;
-        }
-
-        .nav-button {
-          box-shadow: 
-            0 2px 8px rgba(0, 0, 0, 0.2),
-            inset 0 1px 0 var(--glass-inset-top);
-          transition: all 0.3s ease;
-          will-change: transform, box-shadow;
-        }
-
-        .nav-button:hover {
-          box-shadow: 
-            0 4px 12px rgba(0, 0, 0, 0.3),
-            inset 0 1px 0 var(--glass-inset-top);
-          transform: translateY(-1px);
-        }
-
-        .nav-button-active {
-          background: var(--hover-bg-strong);
-          box-shadow: 
-            0 2px 8px rgba(0, 0, 0, 0.2),
-            inset 0 1px 0 var(--glass-inset-top),
-            inset 0 -1px 0 var(--glass-inset-bottom);
-          color: var(--content-primary);
-        }
-
-        .nav-button-inactive {
-          color: var(--content-faint);
-        }
-
-        .nav-button-active-text {
-          color: var(--content-primary);
-        }
-      `}</style>
-
-      {/* Sidebar Component */}
-      <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
-
-      {/* Main Navbar */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 flex justify-center transition-all duration-500 ${
-        scrolled ? 'pt-2' : 'pt-4'
-      }`} style={{ paddingLeft: '8px', paddingRight: '8px' }}>
-        <div className="w-full max-w-fit flex items-center gap-2">
-          {/* Glassmorphic Dock Container */}
-          <div ref={navContainerRef} className="glass-nav rounded-full" style={{ border: '1px solid var(--border-color)' }}>
-            <div 
-              className="flex items-center gap-1.5" 
-              style={{ 
-                padding: isMobile ? '4px 6px' : '7px 10px'
-              }}
-            >
-              {navItems.map((item) => {
-                const isActive = activeTab === item.id;
-                
-                if (item.isSpecial) {
-                  return (
-                    <div key={item.id} className={isActive ? 'nav-button-active-border' : ''}>
+                return (
+                  <div key={item.id} className={active ? 'nav-button-active-border' : ''}>
+                    <div className={`tab-item${active ? ' is-active' : ''}`}>
                       <button
-                        onClick={() => handleTabClick(item.id)}
-                        className={`
-                          nav-button relative rounded-full flex items-center
-                          font-semibold tracking-wide transition-all duration-300
-                          ${isActive 
-                            ? 'nav-button-active' 
-                            : ''
-                          }
-                        `}
-                        style={{ 
-                          padding: isMobile ? '4px 8px' : '7px 18px',
-                          fontSize: isMobile ? '0.7rem' : '0.875rem',
-                          color: isActive ? undefined : 'var(--content-faint)',
-                        }}
+                        className={`tab-label-btn${active ? ' is-active' : ''}`}
+                        onClick={() => { if (thisExpanded) closeExpand(); else handleTabClick(item.id); }}
+                        style={labelFontStyle}
                       >
-                        <div className="sphere-loader-wrapper">
-                          <div className="loader-container">
-                            <div className="sphere-core"></div>
-                            <div className="orbit-ring orbit-ring-1"></div>
-                            <div className="orbit-ring orbit-ring-2"></div>
-                            <div className="orbit-ring orbit-ring-3"></div>
-                          </div>
-                        </div>
-                        <span className={isActive ? 'nav-button-active-text' : ''}>{item.label}</span>
+                        <i className={`bi ${item.icon} text-xs`} />
+                        {item.label}
+                      </button>
+
+                      <span className="tab-sep" />
+                      <button
+                        className={`tab-arrow-btn${thisExpanded ? ' active-arrow' : ''}`}
+                        onClick={() => toggleExpand(item.id)}
+                        aria-label={thisExpanded ? `Close ${item.label} sections` : `Show ${item.label} sections`}
+                      >
+                        <i
+                          className={`bi ${thisExpanded ? 'bi-x-lg' : 'bi-chevron-down'}`}
+                          style={{ fontSize: thisExpanded ? '0.7rem' : '0.6rem', color: 'var(--content-secondary)' }}
+                        />
                       </button>
                     </div>
-                  );
-                }
-                
-                return (
-                  <div key={item.id} className={isActive ? 'nav-button-active-border' : ''}>
-                    <button
-                      onClick={() => handleTabClick(item.id)}
-                      className={`
-                        nav-button relative rounded-full
-                        font-medium tracking-wide transition-all duration-300
-                        ${isActive 
-                          ? 'nav-button-active' 
-                          : ''
-                        }
-                      `}
-                      style={{ 
-                        padding: isMobile ? '4px 8px' : '7px 16px',
-                        fontSize: isMobile ? '0.7rem' : '0.875rem',
-                        color: isActive ? undefined : 'var(--content-faint)',
-                      }}
-                    >
-                      <i className={`bi ${item.icon} ${isMobile ? 'text-[10px]' : 'text-sm'} mr-1`}></i>
-                      <span className={isActive ? 'nav-button-active-text' : ''}>{item.label}</span>
-                    </button>
                   </div>
                 );
               })}
+            </div>
 
-              {/* Vertical Divider */}
-              <div 
-                className="h-6 w-px"
-                style={{
-                  margin: isMobile ? '0 2px' : '0 4px',
-                  background: 'linear-gradient(to bottom, transparent, var(--border-dashed), transparent)',
-                }}
-              ></div>
-
-              {/* Theme Toggle */}
-              {!isMobile && <ThemeToggle />}
-
-              {/* More Button */}
-              <div className={sidebarOpen ? 'nav-button-active-border' : ''}>
-                <button
-                  ref={menuButtonRef}
-                  onClick={toggleSidebar}
-                  className={`
-                    nav-button hamburger-btn relative rounded-full
-                    font-medium tracking-wide transition-all duration-300
-                    ${sidebarOpen 
-                      ? 'nav-button-active' 
-                      : ''
-                    }
-                  `}
-                  style={{ 
-                    padding: isMobile ? '4px 8px' : '7px 16px',
-                    fontSize: isMobile ? '0.7rem' : '0.875rem',
-                    color: sidebarOpen ? undefined : 'var(--content-faint)',
-                  }}
-                >
-                  <i className={`bi ${sidebarOpen ? 'bi-dash-square' : 'bi-grid'} ${isMobile ? 'text-[10px]' : 'text-sm'} mr-1`}></i>
-                  <span className={sidebarOpen ? 'nav-button-active-text' : ''}>More</span>
-                </button>
-              </div>
+            {/* ── SUBTABS ROW ── */}
+            <div className={`subs-row${isExpanded ? ' expanded' : ''}`}>
+              {expandedItem && (
+                <>
+                  <button className="sub-parent" onClick={closeExpand} style={{ cursor: 'pointer' }}>
+                    <i className={`bi ${expandedItem.icon} text-xs`} />
+                    {expandedItem.label}
+                  </button>
+                  <button className="sub-close" onClick={closeExpand} aria-label="Close subtabs">
+                    <i className="bi bi-x-lg" />
+                  </button>
+                  <span className="sub-spacer" />
+                  {expandedItem.subtabs?.map((sub, idx) => (
+                    <span key={sub.id} style={{ display: 'contents' }}>
+                      {idx > 0 && <span className="sub-sep"><i className="bi bi-chevron-right" /></span>}
+                      <button
+                        className={`sub-btn${activeSubtab === sub.id ? ' is-active' : ''}`}
+                        style={{ '--i': idx } as React.CSSProperties}
+                        onClick={() => handleSubtabClick(expandedItem.id, sub)}
+                      >
+                        {sub.label}
+                      </button>
+                    </span>
+                  ))}
+                </>
+              )}
             </div>
           </div>
+
+          {/* RIGHT */}
+          <div className="flex items-center gap-3 flex-shrink-0">
+            <ThemeToggle />
+            <div className="nav-divider" style={{ height: '28px', alignSelf: 'center' }} />
+            <button className="search-trigger" onClick={openSearch}>
+              <i className="bi bi-search" style={{ fontSize: '0.8rem' }} />
+              {!isMobile && <span>Search</span>}
+              {!isMobile && <span className="search-shortcut">⌘K</span>}
+            </button>
+          </div>
+
         </div>
       </nav>
     </>

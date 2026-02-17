@@ -12,7 +12,6 @@ const VALID_TABS: TabType[] = ['discover', 'information', 'affiliations', 'ventu
 const ClientWrapper = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<TabType>('discover');
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const isValidTab = useCallback((tab: string): tab is TabType => {
     return VALID_TABS.includes(tab as TabType);
@@ -73,10 +72,6 @@ const ClientWrapper = () => {
     setIsLoading(false);
   }, []);
 
-  const handleSetSidebarOpen = useCallback((open: boolean | ((prev: boolean) => boolean)) => {
-    setSidebarOpen(open);
-  }, []);
-
   if (isLoading) {
     return <LoadingScreen onLoadingComplete={handleLoadingComplete} />;
   }
@@ -86,8 +81,6 @@ const ClientWrapper = () => {
       <Navbar 
         activeTab={activeTab} 
         setActiveTab={handleTabChange}
-        sidebarOpen={sidebarOpen}
-        setSidebarOpen={handleSetSidebarOpen}
       />
       
       <main>
