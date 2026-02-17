@@ -7,8 +7,8 @@ const BufferSection = memo(() => {
     <section 
       className="relative py-8 md:py-12"
       style={{
-        background: 'linear-gradient(to bottom, rgb(20, 20, 20) 0%, rgb(10, 10, 10) 50%, rgb(0, 0, 0) 100%)',
-        borderTop: '1px dashed rgba(255, 255, 255, 0.2)',
+        background: 'var(--gradient-section)',
+        borderTop: '1px dashed var(--border-dashed)',
       }}
     >
       <div className="px-4 sm:px-6 md:px-8 lg:px-12 xl:px-20">
@@ -20,7 +20,7 @@ const BufferSection = memo(() => {
                 className={styles.premiumBtnLetter}
                 style={{ 
                   animationDelay: `${i * 0.08}s`,
-                  background: 'linear-gradient(135deg, #ffffff 0%, #d4d4d4 50%, #a3a3a3 100%)',
+                  background: 'var(--text-gradient)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   backgroundClip: 'text',
@@ -38,7 +38,7 @@ const BufferSection = memo(() => {
                 className={styles.premiumBtnLetter}
                 style={{ 
                   animationDelay: `${(i + 20) * 0.08}s`,
-                  color: 'rgba(255, 255, 255, 0.6)',
+                  color: 'var(--content-faint)',
                   display: 'inline-block',
                 }}
               >

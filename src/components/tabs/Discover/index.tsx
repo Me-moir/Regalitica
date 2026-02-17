@@ -44,7 +44,7 @@ const Discover = ({
       <InsideOurWorld />
       
       {/* Feature Section - Interactive Cards */}
-      <Suspense fallback={<div className="h-screen bg-gradient-to-b from-[#141414] via-[#0a0a0a] to-black" />}>
+      <Suspense fallback={<div className="h-screen" style={{ background: 'var(--gradient-section)' }} />}>
         <FeatureSection
           activeCardIndex={activeCardIndex}
           setActiveCardIndex={setActiveCardIndex}
@@ -54,12 +54,12 @@ const Discover = ({
       </Suspense>
       
       {/* Our Team Section */}
-      <Suspense fallback={<div className="min-h-screen bg-black" />}>
+      <Suspense fallback={<div className="min-h-screen" style={{ background: 'var(--surface-primary)' }} />}>
         <Team />
       </Suspense>
       
       {/* Reach Out Section */}
-      <Suspense fallback={<div className="min-h-screen bg-black" />}>
+      <Suspense fallback={<div className="min-h-screen" style={{ background: 'var(--surface-primary)' }} />}>
         <Contact />
       </Suspense>
 

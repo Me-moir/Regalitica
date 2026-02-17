@@ -26,7 +26,7 @@ const ContentHeader = memo(({ icon, title }: ContentHeaderProps) => {
         <h2 
           className="text-2xl sm:text-3xl lg:text-5xl font-bold"
           style={{
-            background: 'linear-gradient(135deg, #ffffff 0%, #d4d4d4 50%, #a3a3a3 100%)',
+            background: 'var(--text-gradient)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
@@ -37,7 +37,7 @@ const ContentHeader = memo(({ icon, title }: ContentHeaderProps) => {
         </h2>
       </div>
       
-      <div className="w-full h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+      <div className="w-full h-px bg-gradient-to-r from-transparent via-[var(--border-dashed)] to-transparent" />
     </div>
   );
 });

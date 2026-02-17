@@ -219,15 +219,15 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
           bottom: 0;
           width: 360px;
           max-width: 85vw;
-          background: rgba(15, 15, 15, 0.75);
+          background: var(--glass-bg);
           backdrop-filter: blur(24px);
           -webkit-backdrop-filter: blur(24px);
-          border-left: 1px solid rgba(255, 255, 255, 0.1);
+          border-left: 1px solid var(--border-color);
           box-shadow: 
-            -8px 0 32px rgba(0, 0, 0, 0.6),
-            -12px 0 48px rgba(0, 0, 0, 0.4),
-            inset 1px 0 1px rgba(255, 255, 255, 0.1),
-            inset -1px 0 1px rgba(0, 0, 0, 0.5);
+            -8px 0 32px var(--glass-shadow-1),
+            -12px 0 48px var(--glass-shadow-2),
+            inset 1px 0 1px var(--glass-inset-top),
+            inset -1px 0 1px var(--glass-inset-bottom);
           z-index: 200;
           transform: translateX(100%);
           transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -252,27 +252,27 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
         }
         
         .sidebar-content::-webkit-scrollbar-track {
-          background: rgba(255, 255, 255, 0.05);
+          background: var(--scrollbar-track);
           border-radius: 3px;
         }
         
         .sidebar-content::-webkit-scrollbar-thumb {
-          background: rgba(229, 43, 80, 0.3);
+          background: var(--scrollbar-thumb);
           border-radius: 3px;
           transition: background 0.3s ease;
         }
         
         .sidebar-content::-webkit-scrollbar-thumb:hover {
-          background: rgba(229, 43, 80, 0.5);
+          background: var(--scrollbar-thumb-hover);
         }
 
         .sidebar-footer {
-          background: rgba(15, 15, 15, 0.75);
+          background: var(--glass-bg);
           backdrop-filter: blur(24px);
           -webkit-backdrop-filter: blur(24px);
           box-shadow: 
-            0 -4px 16px rgba(0, 0, 0, 0.4),
-            inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            0 -4px 16px var(--glass-shadow-2),
+            inset 0 1px 1px var(--glass-inset-top);
         }
 
         .sidebar-section-content {
@@ -307,7 +307,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
         }
 
         .sidebar-section-btn:hover {
-          background: rgba(255, 255, 255, 0.05);
+          background: var(--hover-bg);
         }
 
         .sidebar-section-btn svg {
@@ -434,7 +434,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       {/* Sidebar */}
       <div ref={sidebarRef} className={`sidebar ${isOpen ? 'open' : ''}`}>
         {/* Logo Section */}
-        <div className="p-6 border-b border-white/10">
+        <div className="p-6" style={{ borderBottom: '1px solid var(--border-color)' }}>
           <Image 
             src={logoImage} 
             alt="Regalitica" 
@@ -453,7 +453,8 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                 // Home - closes sidebar when clicked with inline "You are here" label
                 <button
                   onClick={onClose}
-                  className="sidebar-section-btn w-full text-left flex items-center py-3 px-4 rounded-lg font-semibold text-white hover:bg-white/5"
+                  className="sidebar-section-btn w-full text-left flex items-center py-3 px-4 rounded-lg font-semibold"
+                  style={{ color: 'var(--content-primary)' }}
                 >
                   <span>{section.title}</span>
                   <span className="home-label">You are here</span>
@@ -464,8 +465,9 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                   <button
                     onClick={() => toggleSection(section.title)}
                     className={`sidebar-section-btn w-full text-left flex items-center justify-between py-3 px-4 rounded-lg font-semibold ${
-                      expandedSections[section.title] ? 'active' : 'text-white'
+                      expandedSections[section.title] ? 'active' : ''
                     }`}
+                    style={{ color: expandedSections[section.title] ? undefined : 'var(--content-primary)' }}
                   >
                     <span>{section.title}</span>
                     <svg 
@@ -484,7 +486,8 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                         <a
                           key={itemIdx}
                           href="#"
-                          className="block py-2 px-4 text-gray-400 hover:text-red-500 hover:bg-white/5 rounded-lg transition-colors text-sm"
+                          className="block py-2 px-4 rounded-lg transition-colors text-sm"
+                          style={{ color: 'var(--content-muted)' }}
                         >
                           {item}
                         </a>
@@ -498,11 +501,11 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
         </div>
 
         {/* Fixed Footer Section */}
-        <div className="sidebar-footer sticky bottom-0 border-t border-white/0.5">
+        <div className="sidebar-footer sticky bottom-0" style={{ borderTop: '1px solid var(--border-subtle)' }}>
           {/* Sandbox Button */}
-          <div className="p-6 border-b border-white/5">
+          <div className="p-6" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
             <div className="sandbox-border">
-              <button className="w-full bg-white/5 hover:bg-white/10 text-white py-3 px-6 rounded-full font-semibold transition-all transform hover:scale-105 shadow-lg flex items-center justify-center gap-2">
+              <button className="w-full py-3 px-6 rounded-full font-semibold transition-all transform hover:scale-105 shadow-lg flex items-center justify-center gap-2" style={{ background: 'var(--hover-bg)', color: 'var(--content-primary)' }}>
                 <div className="sandbox-loader-wrapper">
                   <div className="sandbox-loader">
                     <svg width="100" height="100" viewBox="0 0 100 100">
@@ -525,7 +528,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
               </button>
             </div>
             {/* Alpha Version Text */}
-            <div className="mt-3 flex items-center justify-center gap-1.5 text-xs text-gray-500">
+            <div className="mt-3 flex items-center justify-center gap-1.5 text-xs" style={{ color: 'var(--content-tertiary)' }}>
               <svg 
                 className="w-3.5 h-3.5" 
                 fill="none" 
@@ -546,12 +549,14 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
           {/* Help Section */}
           <div className="flex">
             <button
-              className="flex-1 text-xs text-gray-500 hover:text-gray-400 hover:bg-white/5 transition-all py-3 px-6 text-left border-r border-white/5"
+              className="flex-1 text-xs transition-all py-3 px-6 text-left"
+              style={{ color: 'var(--content-tertiary)', borderRight: '1px solid var(--border-subtle)' }}
             >
               Need Help?
             </button>
             <button
-              className="flex-1 text-xs text-gray-500 hover:text-gray-400 hover:bg-white/5 transition-all py-3 px-6 text-left flex items-center justify-between"
+              className="flex-1 text-xs transition-all py-3 px-6 text-left flex items-center justify-between"
+              style={{ color: 'var(--content-tertiary)' }}
             >
               <span>FAQs</span>
               <svg 
@@ -566,8 +571,8 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
           </div>
 
           {/* Copyright Text */}
-          <div className="px-6 py-3 text-center border-t border-white/5">
-            <p className="text-xs text-gray-600">
+          <div className="px-6 py-3 text-center" style={{ borderTop: '1px solid var(--border-subtle)' }}>
+            <p className="text-xs" style={{ color: 'var(--content-tertiary)' }}>
               © 2026 The Fool Prime Group. All rights reserved.
             </p>
           </div>

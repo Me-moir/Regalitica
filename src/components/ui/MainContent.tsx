@@ -15,7 +15,7 @@ const TabLoadingFallback = () => (
   <div className="min-h-screen flex items-center justify-center">
     <div className="text-center">
       <div className="w-12 h-12 border-2 border-red-500/30 border-t-red-500 rounded-full animate-spin mx-auto mb-4" />
-      <p className="text-gray-400 text-sm">Loading...</p>
+      <p className="text-sm" style={{ color: 'var(--content-muted)' }}>Loading...</p>
     </div>
   </div>
 );

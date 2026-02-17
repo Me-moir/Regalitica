@@ -10,8 +10,9 @@ interface InformationGridProps {
 const InformationGrid = memo(({ onContentChange, activeContent }: InformationGridProps) => {
   return (
     <section 
-      className="relative overflow-hidden bg-[#0a0a0a]"
+      className="relative overflow-hidden"
       style={{
+        background: 'var(--surface-secondary)',
         paddingTop: 'env(safe-area-inset-top)'
       }}
     >
@@ -38,7 +39,7 @@ const InformationGrid = memo(({ onContentChange, activeContent }: InformationGri
           <h2 
             className="text-3xl sm:text-4xl lg:text-6xl font-bold mb-3 sm:mb-4"
             style={{
-              background: 'linear-gradient(135deg, #ffffff 0%, #d4d4d4 50%, #a3a3a3 100%)',
+              background: 'var(--text-gradient)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
@@ -47,14 +48,14 @@ const InformationGrid = memo(({ onContentChange, activeContent }: InformationGri
           >
             Information Hub
           </h2>
-          <div className="w-24 sm:w-32 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent mx-auto" />
+          <div className="w-24 sm:w-32 h-px mx-auto" style={{ background: `linear-gradient(to right, transparent, var(--border-dashed), transparent)` }} />
         </div>
 
         {/* Grid Container with Complete Border Frame */}
         <div 
           className="max-w-7xl mx-auto"
           style={{
-            border: '1px dashed rgba(255, 255, 255, 0.2)'
+            border: '1px dashed var(--border-dashed)'
           }}
         >
           {/* 4x2 Grid */}
@@ -68,9 +69,9 @@ const InformationGrid = memo(({ onContentChange, activeContent }: InformationGri
                 onClick={() => onContentChange(grid.id)}
                 className="relative backdrop-blur-sm p-3 sm:p-5 lg:p-8 transition-all group overflow-hidden text-left"
                 style={{
-                  background: 'linear-gradient(135deg, #0f0f0f 0%, #050505 100%)',
-                  borderBottom: index < 4 ? '1px dashed rgba(255, 255, 255, 0.2)' : 'none',
-                  borderRight: (index + 1) % 4 !== 0 ? '1px dashed rgba(255, 255, 255, 0.2)' : 'none'
+                  background: 'var(--gradient-card)',
+                  borderBottom: index < 4 ? '1px dashed var(--border-dashed)' : 'none',
+                  borderRight: (index + 1) % 4 !== 0 ? '1px dashed var(--border-dashed)' : 'none'
                 }}
                 onMouseMove={(e) => {
                   const rect = e.currentTarget.getBoundingClientRect();
@@ -117,7 +118,7 @@ const InformationGrid = memo(({ onContentChange, activeContent }: InformationGri
                 <div 
                   className="mb-2 sm:mb-4 lg:mb-6 text-base sm:text-xl lg:text-2xl transition-all duration-300 relative z-10"
                   style={{
-                    color: isActive ? 'rgba(0, 255, 166, 0.9)' : 'rgba(255, 255, 255, 0.8)',
+                    color: isActive ? 'rgba(0, 255, 166, 0.9)' : 'var(--content-secondary)',
                     transform: isActive ? 'translateY(-4px)' : 'translateY(0)'
                   }}
                 >
@@ -128,7 +129,7 @@ const InformationGrid = memo(({ onContentChange, activeContent }: InformationGri
                 <h3 
                   className="text-xs sm:text-sm lg:text-lg font-semibold mb-1 sm:mb-2 lg:mb-3 leading-tight transition-all duration-300 relative z-10"
                   style={{
-                    color: isActive ? 'rgba(255, 255, 255, 1)' : 'rgba(255, 255, 255, 0.9)',
+                    color: isActive ? 'var(--content-primary)' : 'var(--content-secondary)',
                     transform: isActive ? 'translateY(-4px)' : 'translateY(0)'
                   }}
                 >
@@ -139,7 +140,7 @@ const InformationGrid = memo(({ onContentChange, activeContent }: InformationGri
                 <p 
                   className="text-[10px] sm:text-xs lg:text-sm leading-relaxed transition-all duration-300 relative z-10"
                   style={{
-                    color: isActive ? 'rgba(200, 200, 200, 1)' : 'rgba(163, 163, 163, 1)',
+                    color: isActive ? 'var(--content-secondary)' : 'var(--content-muted)',
                     transform: isActive ? 'translateY(-4px)' : 'translateY(0)'
                   }}
                 >

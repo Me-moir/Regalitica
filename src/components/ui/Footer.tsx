@@ -70,8 +70,8 @@ const Footer = () => {
       ref={footerRef}
       className="relative overflow-hidden mt-20 z-70"
       style={{
-        background: 'linear-gradient(to bottom, rgb(10, 10, 10) 0%, rgb(5, 5, 5) 50%, rgb(0, 0, 0) 100%)',
-        borderTop: '1px dashed rgba(255, 255, 255, 0.2)'
+        background: 'var(--gradient-footer)',
+        borderTop: '1px dashed var(--border-dashed)'
       }}
     >
       {/* Grain overlay - optimized with will-change */}
@@ -92,7 +92,7 @@ const Footer = () => {
               <h4 
                 className="text-sm sm:text-base font-semibold"
                 style={{
-                  background: 'linear-gradient(135deg, #ffffff 0%, #d4d4d4 100%)',
+                  background: 'var(--text-gradient)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   backgroundClip: 'text'
@@ -106,11 +106,8 @@ const Footer = () => {
                     <a 
                       href="#" 
                       data-glow
-                      className="relative inline-block text-xs sm:text-sm text-gray-400 hover:text-white transition-colors duration-300 group"
-                      style={{
-                        '--mouse-x': '50%',
-                        '--mouse-y': '50%',
-                      } as React.CSSProperties}
+                      className="relative inline-block text-xs sm:text-sm transition-colors duration-300 group"
+                      style={{ color: 'var(--content-muted)', '--mouse-x': '50%', '--mouse-y': '50%' } as React.CSSProperties}
                     >
                       <span className="relative z-10">{link}</span>
                       <span 
@@ -131,7 +128,7 @@ const Footer = () => {
 
         {/* Divider with gradient */}
         <div className="mb-12 sm:mb-16">
-          <div className="w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+          <div className="w-full h-px" style={{ background: `linear-gradient(to right, transparent, var(--border-dashed), transparent)` }} />
         </div>
 
         {/* Logo and Tagline Section */}
@@ -170,13 +167,13 @@ const Footer = () => {
           </h3>
           
           {/* Tagline */}
-          <div className="text-gray-400 text-sm sm:text-base space-y-1">
-            <p className="transition-colors duration-300 hover:text-gray-300">Beyond perception.</p>
-            <p className="transition-colors duration-300 hover:text-gray-300">Beyond form.</p>
+          <div className="text-sm sm:text-base space-y-1" style={{ color: 'var(--content-muted)' }}>
+            <p className="transition-colors duration-300">Beyond perception.</p>
+            <p className="transition-colors duration-300">Beyond form.</p>
             <p 
               className="font-semibold transition-all duration-300 hover:scale-105"
               style={{
-                background: 'linear-gradient(135deg, #ffffff 0%, #d4d4d4 100%)',
+                background: 'var(--text-gradient)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text'
@@ -187,7 +184,7 @@ const Footer = () => {
           </div>
           
           {/* Divider Line with gradient */}
-          <div className="w-48 sm:w-64 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+          <div className="w-48 sm:w-64 h-px" style={{ background: `linear-gradient(to right, transparent, var(--border-dashed), transparent)` }} />
           
           {/* Social Media Icons */}
           <div className="flex items-center gap-4 sm:gap-6">
@@ -197,8 +194,8 @@ const Footer = () => {
                 href="#"
                 className="relative group w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
                 style={{
-                  background: 'linear-gradient(135deg, #0f0f0f 0%, #050505 100%)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)'
+                  background: 'var(--gradient-card)',
+                  border: '1px solid var(--border-color)'
                 }}
               >
                 <div 
@@ -212,13 +209,13 @@ const Footer = () => {
                     willChange: 'opacity'
                   }}
                 />
-                <i className={`bi ${icon} text-gray-400 group-hover:text-white transition-colors duration-300`}></i>
+                <i className={`bi ${icon} transition-colors duration-300`} style={{ color: 'var(--content-muted)' }}></i>
               </a>
             ))}
           </div>
           
           {/* Copyright */}
-          <p className="text-xs sm:text-sm text-gray-500 pt-4">
+          <p className="text-xs sm:text-sm pt-4" style={{ color: 'var(--content-tertiary)' }}>
             © 2026 The Fool Prime Group. All rights reserved.
           </p>
         </div>

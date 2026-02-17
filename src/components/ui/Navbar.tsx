@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useRef, useCallback, useMemo, memo } from 'react';
 import Sidebar from './Sidebar';
+import ThemeToggle from './ThemeToggle';
 
 interface NavbarProps {
   activeTab: string;
@@ -286,14 +287,15 @@ const Navbar = ({ activeTab, setActiveTab, sidebarOpen, setSidebarOpen }: Navbar
 
         .glass-nav {
           position: relative;
-          background: rgba(15, 15, 15, 0.75);
+          background: var(--glass-bg);
           backdrop-filter: blur(24px);
           -webkit-backdrop-filter: blur(24px);
           box-shadow: 
-            0 8px 32px rgba(0, 0, 0, 0.6),
-            0 12px 48px rgba(0, 0, 0, 0.4),
-            inset 0 1px 1px rgba(255, 255, 255, 0.1),
-            inset 0 -1px 1px rgba(0, 0, 0, 0.5);
+            0 8px 32px var(--glass-shadow-1),
+            0 12px 48px var(--glass-shadow-2),
+            inset 0 1px 1px var(--glass-inset-top),
+            inset 0 -1px 1px var(--glass-inset-bottom);
+          transition: background 0.3s ease, box-shadow 0.3s ease;
         }
 
         /* Active state for Ventures icon - Teal/Aurora */
@@ -382,7 +384,7 @@ const Navbar = ({ activeTab, setActiveTab, sidebarOpen, setSidebarOpen }: Navbar
         .nav-button {
           box-shadow: 
             0 2px 8px rgba(0, 0, 0, 0.2),
-            inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            inset 0 1px 0 var(--glass-inset-top);
           transition: all 0.3s ease;
           will-change: transform, box-shadow;
         }
@@ -390,25 +392,25 @@ const Navbar = ({ activeTab, setActiveTab, sidebarOpen, setSidebarOpen }: Navbar
         .nav-button:hover {
           box-shadow: 
             0 4px 12px rgba(0, 0, 0, 0.3),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            inset 0 1px 0 var(--glass-inset-top);
           transform: translateY(-1px);
         }
 
         .nav-button-active {
-          background: rgba(255, 255, 255, 0.08);
+          background: var(--hover-bg-strong);
           box-shadow: 
             0 2px 8px rgba(0, 0, 0, 0.2),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1),
-            inset 0 -1px 0 rgba(0, 0, 0, 0.2);
-          color: rgba(255, 255, 255, 0.85);
+            inset 0 1px 0 var(--glass-inset-top),
+            inset 0 -1px 0 var(--glass-inset-bottom);
+          color: var(--content-primary);
         }
 
         .nav-button-inactive {
-          color: rgba(255, 255, 255, 0.6);
+          color: var(--content-faint);
         }
 
         .nav-button-active-text {
-          color: rgba(255, 255, 255, 0.85);
+          color: var(--content-primary);
         }
       `}</style>
 
@@ -421,7 +423,7 @@ const Navbar = ({ activeTab, setActiveTab, sidebarOpen, setSidebarOpen }: Navbar
       }`} style={{ paddingLeft: '8px', paddingRight: '8px' }}>
         <div className="w-full max-w-fit flex items-center gap-2">
           {/* Glassmorphic Dock Container */}
-          <div ref={navContainerRef} className="glass-nav rounded-full border border-white/10">
+          <div ref={navContainerRef} className="glass-nav rounded-full" style={{ border: '1px solid var(--border-color)' }}>
             <div 
               className="flex items-center gap-1.5" 
               style={{ 
@@ -441,12 +443,13 @@ const Navbar = ({ activeTab, setActiveTab, sidebarOpen, setSidebarOpen }: Navbar
                           font-semibold tracking-wide transition-all duration-300
                           ${isActive 
                             ? 'nav-button-active' 
-                            : 'text-gray-400 hover:text-gray-200 hover:bg-white/10'
+                            : ''
                           }
                         `}
                         style={{ 
                           padding: isMobile ? '4px 8px' : '7px 18px',
-                          fontSize: isMobile ? '0.7rem' : '0.875rem'
+                          fontSize: isMobile ? '0.7rem' : '0.875rem',
+                          color: isActive ? undefined : 'var(--content-faint)',
                         }}
                       >
                         <div className="sphere-loader-wrapper">
@@ -472,12 +475,13 @@ const Navbar = ({ activeTab, setActiveTab, sidebarOpen, setSidebarOpen }: Navbar
                         font-medium tracking-wide transition-all duration-300
                         ${isActive 
                           ? 'nav-button-active' 
-                          : 'text-gray-400 hover:text-gray-200 hover:bg-white/10'
+                          : ''
                         }
                       `}
                       style={{ 
                         padding: isMobile ? '4px 8px' : '7px 16px',
-                        fontSize: isMobile ? '0.7rem' : '0.875rem'
+                        fontSize: isMobile ? '0.7rem' : '0.875rem',
+                        color: isActive ? undefined : 'var(--content-faint)',
                       }}
                     >
                       <i className={`bi ${item.icon} ${isMobile ? 'text-[10px]' : 'text-sm'} mr-1`}></i>
@@ -489,11 +493,15 @@ const Navbar = ({ activeTab, setActiveTab, sidebarOpen, setSidebarOpen }: Navbar
 
               {/* Vertical Divider */}
               <div 
-                className="h-6 w-px bg-gradient-to-b from-transparent via-white/20 to-transparent"
+                className="h-6 w-px"
                 style={{
-                  margin: isMobile ? '0 2px' : '0 4px'
+                  margin: isMobile ? '0 2px' : '0 4px',
+                  background: 'linear-gradient(to bottom, transparent, var(--border-dashed), transparent)',
                 }}
               ></div>
+
+              {/* Theme Toggle */}
+              {!isMobile && <ThemeToggle />}
 
               {/* More Button */}
               <div className={sidebarOpen ? 'nav-button-active-border' : ''}>
@@ -505,12 +513,13 @@ const Navbar = ({ activeTab, setActiveTab, sidebarOpen, setSidebarOpen }: Navbar
                     font-medium tracking-wide transition-all duration-300
                     ${sidebarOpen 
                       ? 'nav-button-active' 
-                      : 'text-gray-400 hover:text-gray-200 hover:bg-white/10'
+                      : ''
                     }
                   `}
                   style={{ 
                     padding: isMobile ? '4px 8px' : '7px 16px',
-                    fontSize: isMobile ? '0.7rem' : '0.875rem'
+                    fontSize: isMobile ? '0.7rem' : '0.875rem',
+                    color: sidebarOpen ? undefined : 'var(--content-faint)',
                   }}
                 >
                   <i className={`bi ${sidebarOpen ? 'bi-dash-square' : 'bi-grid'} ${isMobile ? 'text-[10px]' : 'text-sm'} mr-1`}></i>

@@ -150,20 +150,20 @@ const ProjectCard = memo(({
         >
           <div className={styles.cardInner} style={cardPadding}>
             <div className={`absolute rounded-lg bg-white/10 border border-white/20 flex items-center justify-center z-10 ${isMobile ? 'top-4 right-4 w-9 h-9' : 'top-6 right-6 w-12 h-12'}`}>
-              <span className={`text-white/40 font-medium ${isMobile ? 'text-[9px]' : 'text-xs'}`}>LOGO</span>
+              <span className={`font-medium ${isMobile ? 'text-[9px]' : 'text-xs'}`} style={{ color: 'var(--content-faint)' }}>LOGO</span>
             </div>
             
             <div className="flex-1 flex flex-col justify-between">
               <div className="space-y-2">
-                <h3 className={`font-bold text-white leading-tight ${isMobile ? 'text-base pr-12' : 'text-lg lg:text-xl pr-16'}`}>
+                <h3 className={`font-bold leading-tight ${isMobile ? 'text-base pr-12' : 'text-lg lg:text-xl pr-16'}`} style={{ color: 'var(--content-primary)' }}>
                   {project.title}
                 </h3>
                 
-                <div className={isMobile ? 'text-[10px] text-gray-500' : 'text-xs text-gray-500'}>
-                  <span className="font-semibold text-gray-400">{project.industryName}</span>
+                <div className={isMobile ? 'text-[10px]' : 'text-xs'} style={{ color: 'var(--content-tertiary)' }}>
+                  <span className="font-semibold" style={{ color: 'var(--content-muted)' }}>{project.industryName}</span>
                 </div>
                 
-                <p className={`text-gray-400 leading-relaxed ${isMobile ? 'text-[10px]' : 'text-xs'}`}>
+                <p className={`leading-relaxed ${isMobile ? 'text-[10px]' : 'text-xs'}`} style={{ color: 'var(--content-muted)' }}>
                   {project.description}
                 </p>
                 
@@ -171,19 +171,19 @@ const ProjectCard = memo(({
                 
                 <div className="flex flex-wrap gap-1.5">
                   {project.domains.map((domain: string, idx: number) => (
-                    <span key={idx} className={`${styles.domainTag} bg-white/5 rounded text-gray-300 border border-white/10 ${isMobile ? 'px-2 py-0.5 text-[9px]' : 'px-2.5 py-1 text-xs'}`}>
+                    <span key={idx} className={`${styles.domainTag} rounded ${isMobile ? 'px-2 py-0.5 text-[9px]' : 'px-2.5 py-1 text-xs'}`} style={{ background: 'var(--hover-bg)', color: 'var(--content-tertiary)', border: '1px solid var(--border-color)' }}>
                       {domain}
                     </span>
                   ))}
                 </div>
                 
                 <div>
-                  <p className={`text-gray-500 mb-1.5 font-medium ${isMobile ? 'text-[9px]' : 'text-xs'}`}>Features</p>
+                  <p className={`mb-1.5 font-medium ${isMobile ? 'text-[9px]' : 'text-xs'}`} style={{ color: 'var(--content-tertiary)' }}>Features</p>
                   <div className="grid grid-cols-2 gap-x-2 gap-y-0.5">
                     {project.features.map((feature: string, idx: number) => (
                       <div key={idx} className="flex items-start gap-1">
                         <span className={styles.prismBullet}>●</span>
-                        <span className={`text-gray-400 ${isMobile ? 'text-[9px]' : 'text-xs'}`}>{feature}</span>
+                        <span className={`${isMobile ? 'text-[9px]' : 'text-xs'}`} style={{ color: 'var(--content-muted)' }}>{feature}</span>
                       </div>
                     ))}
                   </div>
@@ -255,10 +255,10 @@ const ProjectCard = memo(({
                               </div>
                               {!isMobile && (
                                 <div className="absolute -top-10 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50 whitespace-nowrap">
-                                  <div className="bg-gray-900 text-white text-[9px] px-2 py-1 rounded shadow-xl border border-white/20">
+                                  <div className="text-[9px] px-2 py-1 rounded shadow-xl" style={{ background: 'var(--surface-card)', color: 'var(--content-primary)', border: '1px solid var(--border-color)' }}>
                                     <div className="font-semibold">{stage.stage}</div>
-                                    <div className="text-[8px] text-gray-400">{stage.date}</div>
-                                    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-1.5 h-1.5 bg-gray-900 border-r border-b border-white/20 rotate-45" />
+                                    <div className="text-[8px]" style={{ color: 'var(--content-muted)' }}>{stage.date}</div>
+                                    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-1.5 h-1.5 rotate-45" style={{ background: 'var(--surface-card)', borderRight: '1px solid var(--border-color)', borderBottom: '1px solid var(--border-color)' }} />
                                   </div>
                                 </div>
                               )}
@@ -271,7 +271,7 @@ const ProjectCard = memo(({
                 </div>
                 
                 {/* Support button */}
-                <div className={`border-t border-white/10 ${isMobile ? 'pt-2' : 'pt-3'}`}>
+                <div className={`${isMobile ? 'pt-2' : 'pt-3'}`} style={{ borderTop: '1px solid var(--border-color)' }}>
                   <div className="relative join-button-wrapper">
                     <button 
                       className={styles.premiumBtn}
@@ -527,9 +527,10 @@ const FeatureSection = memo(({
       <div className={styles.boxInner}>
         <div className="relative flex flex-col">
           <div className="flex items-center justify-between mb-4">
-            <h3 className={`text-white font-semibold ${isMobile ? 'text-lg sm:text-xl' : 'text-xl lg:text-2xl'}`}>Problem Statement</h3>
+            <h3 className={`font-semibold ${isMobile ? 'text-lg sm:text-xl' : 'text-xl lg:text-2xl'}`} style={{ color: 'var(--content-primary)' }}>Problem Statement</h3>
             <div 
-              className="relative box-icon-container w-fit rounded-lg border border-gray-600 p-3"
+              className="relative box-icon-container w-fit rounded-lg p-3"
+              style={{ border: '1px solid var(--border-color)' }}
               onMouseMove={!isMobile ? (e) => {
                 const gradient = e.currentTarget.querySelector(`.${styles.boxIconGradient}`) as HTMLElement;
                 if (gradient) {
@@ -552,7 +553,7 @@ const FeatureSection = memo(({
                 className={`absolute inset-0 rounded-lg opacity-0 ${styles.boxIconGradient}`}
                 style={{...GRADIENT_STYLES.iconGradient, transition: 'opacity 0.3s ease'}}
               />
-              <svg className={`${isMobile ? 'w-5 h-5' : 'w-6 h-6'} text-neutral-400 relative z-10`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className={`${isMobile ? 'w-5 h-5' : 'w-6 h-6'} relative z-10`} style={{ color: 'var(--content-muted)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
@@ -575,7 +576,7 @@ const FeatureSection = memo(({
               style={{ 
                 minHeight: isMobile ? '5rem' : '5.5rem',
                 lineHeight: '2rem',
-                color: 'rgb(156, 163, 175)' // gray-400
+                color: 'var(--content-muted)'
               }}
             >
               {activeProject.problem}
@@ -591,9 +592,10 @@ const FeatureSection = memo(({
       <div className={styles.boxInner}>
         <div className="relative flex flex-col">
           <div className="flex items-center justify-between mb-4">
-            <h3 className={`text-white font-semibold ${isMobile ? 'text-lg sm:text-xl' : 'text-xl lg:text-2xl'}`}>Value Proposition</h3>
+            <h3 className={`font-semibold ${isMobile ? 'text-lg sm:text-xl' : 'text-xl lg:text-2xl'}`} style={{ color: 'var(--content-primary)' }}>Value Proposition</h3>
             <div 
-              className="relative box-icon-container w-fit rounded-lg border border-gray-600 p-3"
+              className="relative box-icon-container w-fit rounded-lg p-3"
+              style={{ border: '1px solid var(--border-color)' }}
               onMouseMove={!isMobile ? (e) => {
                 const gradient = e.currentTarget.querySelector(`.${styles.boxIconGradient}`) as HTMLElement;
                 if (gradient) {
@@ -616,7 +618,7 @@ const FeatureSection = memo(({
                 className={`absolute inset-0 rounded-lg opacity-0 ${styles.boxIconGradient}`}
                 style={{...GRADIENT_STYLES.iconGradient, transition: 'opacity 0.3s ease'}}
               />
-              <svg className={`${isMobile ? 'w-5 h-5' : 'w-6 h-6'} text-neutral-400 relative z-10`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className={`${isMobile ? 'w-5 h-5' : 'w-6 h-6'} relative z-10`} style={{ color: 'var(--content-muted)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
             </div>
@@ -639,7 +641,7 @@ const FeatureSection = memo(({
               style={{ 
                 minHeight: isMobile ? '5rem' : '5.5rem',
                 lineHeight: '2rem',
-                color: 'rgb(156, 163, 175)' // gray-400
+                color: 'var(--content-muted)'
               }}
             >
               {activeProject.valueProposition}
@@ -652,7 +654,7 @@ const FeatureSection = memo(({
 
   const TeamSection = useMemo(() => (
     <div className={isMobile ? "absolute left-0 right-0 pt-8 border-t border-white/10 pb-4 px-4" : "absolute left-0 right-0 pt-10 border-t border-white/10"} style={{ bottom: isMobile ? '-100px' : '-160px' }}>
-      <p className={`${isMobile ? 'text-xs' : 'text-sm lg:text-base'} text-gray-500 uppercase tracking-wider mb-4`}>Project Team</p>
+      <p className={`${isMobile ? 'text-xs' : 'text-sm lg:text-base'} uppercase tracking-wider mb-4`} style={{ color: 'var(--content-tertiary)' }}>Project Team</p>
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center relative">
           {activeProject.team.map((member: any, idx: number) => (
@@ -664,57 +666,22 @@ const FeatureSection = memo(({
                 marginLeft: idx === 0 ? 0 : '-1.25rem'
               }}
             >
-              <div className={`${isMobile ? 'w-12 h-12' : 'w-14 h-14 lg:w-16 lg:h-16'} rounded-full ${member.color} border-2 border-white/20 flex items-center justify-center ${isMobile ? '' : 'cursor-pointer hover:scale-110'} transition-all duration-300 shadow-lg`}>
-                <span className={`text-white ${isMobile ? 'text-xs' : 'text-sm lg:text-base'} font-bold`}>
+              <div className={`${isMobile ? 'w-12 h-12' : 'w-14 h-14 lg:w-16 lg:h-16'} rounded-full ${member.color} flex items-center justify-center ${isMobile ? '' : 'cursor-pointer hover:scale-110'} transition-all duration-300 shadow-lg`} style={{ border: '2px solid var(--border-color)' }}>
+                <span className={`${isMobile ? 'text-xs' : 'text-sm lg:text-base'} font-bold`} style={{ color: 'var(--content-primary)' }}>
                   {idx === 0 ? 'TL' : `M${idx}`}
                 </span>
               </div>
               {!isMobile && (
                 <div className="absolute -top-20 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50 whitespace-nowrap">
-                  <div className="bg-gray-900 text-white px-4 py-2.5 rounded-lg shadow-2xl border border-white/20">
+                  <div className="px-4 py-2.5 rounded-lg shadow-2xl" style={{ background: 'var(--surface-card)', color: 'var(--content-primary)', border: '1px solid var(--border-color)' }}>
                     <p className="text-sm font-semibold">{member.name}</p>
-                    <p className="text-xs text-gray-400">{member.role}</p>
-                    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-2 h-2 bg-gray-900 border-r border-b border-white/20 rotate-45" />
+                    <p className="text-xs" style={{ color: 'var(--content-muted)' }}>{member.role}</p>
+                    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-2 h-2 rotate-45" style={{ background: 'var(--surface-card)', borderRight: '1px solid var(--border-color)', borderBottom: '1px solid var(--border-color)' }} />
                   </div>
                 </div>
               )}
             </div>
           ))}
-        </div>
-        
-        <div className="relative">
-          <button 
-            className={styles.premiumBtn}
-            onClick={goToNextCard}
-            onMouseMove={!isMobile ? (e) => {
-              const rect = e.currentTarget.getBoundingClientRect();
-              const x = e.clientX - rect.left;
-              const y = e.clientY - rect.top;
-              e.currentTarget.style.setProperty('--mouse-x', `${x}px`);
-              e.currentTarget.style.setProperty('--mouse-y', `${y}px`);
-            } : undefined}
-          >
-            <svg className={styles.premiumBtnSvg} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
-              />
-            </svg>
-            <div className="premium-txt-wrapper">
-              <div className="premium-txt-1">
-                {'Next Venture'.split('').map((letter, i) => (
-                  <span key={i} className={styles.premiumBtnLetter} style={{ animationDelay: `${i * 0.08}s` }}>
-                    {letter === ' ' ? '\u00A0' : letter}
-                  </span>
-                ))}
-              </div>
-            </div>
-            <div 
-              className={styles.premiumBtnBorder}
-              style={GRADIENT_STYLES.buttonBorder as React.CSSProperties}
-            />
-          </button>
         </div>
       </div>
     </div>
@@ -807,7 +774,7 @@ const FeatureSection = memo(({
           );
         })}
       </div>
-      <div className={`flex justify-between mt-2 ${isMobile ? 'text-xs' : 'text-sm'} text-gray-500`}>
+      <div className={`flex justify-between mt-2 ${isMobile ? 'text-xs' : 'text-sm'}`} style={{ color: 'var(--content-tertiary)' }}>
         <span>
           {activeCardIndex === 0 ? 'Start' : activeCardIndex > allProjects.length ? allProjects.length : activeCardIndex} / {allProjects.length}
         </span>
@@ -823,13 +790,13 @@ const FeatureSection = memo(({
         id="industries-carousel-section"
         className="relative overflow-hidden"
         style={{
-          background: 'linear-gradient(to bottom, rgb(20, 20, 20) 0%, rgb(10, 10, 10) 50%, rgb(0, 0, 0) 100%)',
+          background: 'var(--gradient-section)',
           height: '100vh',
           minHeight: '1000px',
           paddingTop: '8vh',
           paddingBottom: '12vh',
-          borderTop: '1px dashed rgba(255, 255, 255, 0.2)',
-          borderBottom: '1px dashed rgba(255, 255, 255, 0.2)'
+          borderTop: '1px dashed var(--border-dashed)',
+          borderBottom: '1px dashed var(--border-dashed)'
         }}
       >
         <div 
@@ -925,12 +892,13 @@ const FeatureSection = memo(({
           className="relative px-4 pb-4 overflow-visible"
           style={{ minHeight: '700px' }}
         >
-          <p className="text-sm text-gray-500 uppercase tracking-wider mb-3">Industry</p>
+          <p className="text-sm uppercase tracking-wider mb-3" style={{ color: 'var(--content-tertiary)' }}>Industry</p>
           
           <div className="vanish-crossfade-container mb-3">
             <h2 
               key={`industry-name-${textAnimationKey}`}
-              className="text-3xl font-bold text-white vanish-content leading-tight"
+              className="text-3xl font-bold vanish-content leading-tight"
+              style={{ color: 'var(--content-primary)' }}
               data-animating={isAnimating ? "true" : "false"}
               data-delay="0"
             >
@@ -971,13 +939,13 @@ const FeatureSection = memo(({
       id="industries-carousel-section"
       className="relative overflow-hidden"
       style={{
-        background: 'linear-gradient(to bottom, rgb(20, 20, 20) 0%, rgb(10, 10, 10) 50%, rgb(0, 0, 0) 100%)',
+        background: 'var(--gradient-section)',
         height: '100vh',
         minHeight: '1200px',
         paddingTop: '10vh',
         paddingBottom: '20vh',
-        borderTop: '1px dashed rgba(255, 255, 255, 0.2)',
-        borderBottom: '1px dashed rgba(255, 255, 255, 0.2)'
+        borderTop: '1px dashed var(--border-dashed)',
+        borderBottom: '1px dashed var(--border-dashed)'
       }}
     >
       <div 
@@ -992,7 +960,7 @@ const FeatureSection = memo(({
       <div 
         className="absolute left-[50%] top-0 bottom-0 w-px pointer-events-none z-30"
         style={{
-          borderLeft: '1px dashed rgba(255, 255, 255, 0.2)'
+          borderLeft: '1px dashed var(--border-dashed)'
         }}
       />
 
@@ -1006,12 +974,13 @@ const FeatureSection = memo(({
       >
         <div className="w-full flex flex-col h-full relative pb-52">
           <div className="flex-1 flex flex-col">
-            <p className="text-sm lg:text-base text-gray-500 uppercase tracking-wider mb-3">Industry</p>
+            <p className="text-sm lg:text-base uppercase tracking-wider mb-3" style={{ color: 'var(--content-tertiary)' }}>Industry</p>
             
             <div className="vanish-crossfade-container mb-4">
               <h2 
                 key={`industry-name-${textAnimationKey}`}
-                className="text-4xl lg:text-5xl xl:text-6xl font-bold text-white vanish-content leading-tight"
+                className="text-4xl lg:text-5xl xl:text-6xl font-bold vanish-content leading-tight"
+                style={{ color: 'var(--content-primary)' }}
                 data-animating={isAnimating ? "true" : "false"}
                 data-delay="0"
               >
@@ -1029,7 +998,7 @@ const FeatureSection = memo(({
                   minHeight: '6rem',
                   maxHeight: '6rem',
                   lineHeight: '2rem',
-                  color: 'rgb(156, 163, 175)' // gray-400
+                  color: 'var(--content-muted)'
                 }}
               >
                 {activeProject.industryDescription}

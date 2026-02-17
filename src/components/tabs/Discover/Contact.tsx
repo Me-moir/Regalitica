@@ -29,14 +29,14 @@ const Contact = () => {
       id="contact-section"
       className="relative overflow-hidden"
       style={{
-        background: 'linear-gradient(to bottom, rgb(20, 20, 20) 0%, rgb(10, 10, 10) 50%, rgb(0, 0, 0) 100%)',
+        background: 'var(--gradient-section)',
         minHeight: '100vh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         paddingTop: '10vh',
         paddingBottom: '10vh',
-        borderTop: '1px dashed rgba(255, 255, 255, 0.2)'
+        borderTop: '1px dashed var(--border-dashed)'
       }}
     >
       {/* Grain overlay */}
@@ -52,12 +52,12 @@ const Contact = () => {
       {/* Contact Content */}
       <div className="relative z-10 w-full max-w-3xl mx-auto px-4 sm:px-6 md:px-8 text-center">
         {/* Title */}
-        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-b from-white via-gray-300 to-gray-500 bg-clip-text text-transparent">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-clip-text text-transparent" style={{ backgroundImage: 'var(--text-gradient-hero)' }}>
           Get in Touch
         </h2>
         
         {/* Description */}
-        <p className="text-base sm:text-lg md:text-xl text-gray-400 mb-10 sm:mb-12 md:mb-16 max-w-2xl mx-auto leading-relaxed">
+        <p className="text-base sm:text-lg md:text-xl mb-10 sm:mb-12 md:mb-16 max-w-2xl mx-auto leading-relaxed" style={{ color: 'var(--content-muted)' }}>
           Have a question or want to work together? Drop us your email and we'll get back to you.
         </p>
 

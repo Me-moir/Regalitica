@@ -11,11 +11,11 @@ const BackgroundWrapper = memo(({ children, isTransitioning = false }: Backgroun
     <div 
       className="relative overflow-hidden mb-20"
       style={{
-        background: 'linear-gradient(to bottom, rgb(20, 20, 20) 0%, rgb(10, 10, 10) 50%, rgb(0, 0, 0) 100%)',
-        borderTop: '1px dashed rgba(255, 255, 255, 0.2)',
-        borderBottom: '1px dashed rgba(255, 255, 255, 0.2)',
-        borderLeft: '1px dashed rgba(255, 255, 255, 0.2)',
-        borderRight: '1px dashed rgba(255, 255, 255, 0.2)',
+        background: 'var(--gradient-section)',
+        borderTop: '1px dashed var(--border-dashed)',
+        borderBottom: '1px dashed var(--border-dashed)',
+        borderLeft: '1px dashed var(--border-dashed)',
+        borderRight: '1px dashed var(--border-dashed)',
       }}
     >
       {/* Grain overlay */}

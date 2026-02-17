@@ -35,7 +35,7 @@ const HeroSection = () => {
   }, []);
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-black">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden" style={{ background: 'var(--surface-primary)' }}>
       <style jsx>{`
         @media (max-width: 768px) {
           section {
@@ -105,7 +105,7 @@ const HeroSection = () => {
       <div className="relative z-20 w-full max-w-6xl mx-auto text-center px-3 sm:px-4 md:px-6 lg:px-12 mt-8 sm:mt-12 md:mt-16">
         <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl mb-3 sm:mb-4 md:mb-5 max-w-4xl mx-auto drop-shadow-lg font-bold leading-tight overflow-visible">
           <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-x-2 px-2 sm:px-3 md:px-6 overflow-visible">
-            <span className="whitespace-nowrap bg-gradient-to-b from-white via-gray-300 to-gray-500 bg-clip-text text-transparent">
+            <span className="whitespace-nowrap bg-clip-text text-transparent" style={{ backgroundImage: 'var(--text-gradient-hero)' }}>
               We build systems that build
             </span>
             {isMounted && (
@@ -130,8 +130,8 @@ const HeroSection = () => {
           </div>
         </div>
         
-        <p className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl text-gray-300 max-w-3xl mx-auto drop-shadow-lg leading-relaxed mb-4 sm:mb-6 md:mb-8 px-2">
-          <strong className="font-bold text-gray-200">Regalitica</strong> is a holding and venture-building entity focused on developing early-stage systems.
+        <p className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl max-w-3xl mx-auto drop-shadow-lg leading-relaxed mb-4 sm:mb-6 md:mb-8 px-2" style={{ color: 'var(--content-tertiary)' }}>
+          <strong className="font-bold" style={{ color: 'var(--content-secondary)' }}>Regalitica</strong> is a holding and venture-building entity focused on developing early-stage systems.
         </p>
 
         <div className="mt-8 sm:mt-12 md:mt-16 lg:mt-24 mb-0 pb-0 flex items-center justify-center px-2 sm:px-3">
@@ -142,8 +142,10 @@ const HeroSection = () => {
             
             {/* Main Glass Container */}
             <div 
-              className="relative backdrop-blur-2xl bg-white/5 rounded-2xl sm:rounded-3xl border border-white/10 shadow-2xl overflow-hidden transition-all duration-700 hover:border-white/20 hover:bg-white/10 gpu-accelerated"
+              className="relative backdrop-blur-2xl rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden transition-all duration-700 gpu-accelerated"
               style={{
+                background: 'var(--hover-bg)',
+                border: '1px solid var(--border-color)',
                 boxShadow: '0 8px 32px 0 rgba(255, 255, 255, 0.05), inset 0 1px 0 0 rgba(255, 255, 255, 0.1)',
               }}
             >

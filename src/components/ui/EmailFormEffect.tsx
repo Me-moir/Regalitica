@@ -70,7 +70,7 @@ export function EmailFormEffect({
 
     const fontSize = parseFloat(computedStyles.getPropertyValue("font-size"));
     ctx.font = `${fontSize * 2}px ${computedStyles.fontFamily}`;
-    ctx.fillStyle = "#FFF";
+    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--content-primary').trim() || '#FFF';
     ctx.fillText(inputRef.current.value, 16, 40);
 
     const imageData = ctx.getImageData(0, 0, 800, 800);
@@ -267,9 +267,9 @@ export function EmailFormEffect({
       <form
         className="w-full relative max-w-2xl mx-auto h-14 rounded-lg overflow-hidden transition duration-200 group"
         style={{
-          backgroundColor: '#101010',
-          boxShadow: 'inset 0px 1px 1px rgba(255, 255, 255, 0.25), inset 0px 2px 2px rgba(255, 255, 255, 0.2), inset 0px 4px 4px rgba(255, 255, 255, 0.15)',
-          border: 'solid 1px rgba(255, 255, 255, 0.13)'
+          backgroundColor: 'var(--button-bg)',
+          boxShadow: 'var(--button-shadow)',
+          border: 'solid 1px var(--button-border)'
         }}
         onSubmit={handleSubmit}
         onMouseMove={handleFormMouseMove}
@@ -298,9 +298,9 @@ export function EmailFormEffect({
           ref={inputRef}
           value={value}
           type="text"
-          className="w-full relative text-sm sm:text-base z-50 border-none bg-transparent h-full rounded-lg focus:outline-none focus:ring-0 pl-4 sm:pl-10 pr-20 text-white/70"
+          className="w-full relative text-sm sm:text-base z-50 border-none bg-transparent h-full rounded-lg focus:outline-none focus:ring-0 pl-4 sm:pl-10 pr-20"
           style={{
-            color: animating ? 'transparent' : 'rgba(255, 255, 255, 0.7)'
+            color: animating ? 'transparent' : 'var(--content-secondary)'
           }}
         />
 
@@ -309,7 +309,7 @@ export function EmailFormEffect({
             className="absolute pointer-events-none flex items-center top-1/2 -translate-y-1/2"
             style={{ left: `${pillboxLeft}px` }}
           >
-            <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-white/10 border border-white/20 text-xs text-gray-400 whitespace-nowrap">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs whitespace-nowrap" style={{ backgroundColor: 'var(--hover-bg-10)', border: '1px solid var(--border-color)', color: 'var(--content-muted)' }}>
               @gmail.com
             </span>
           </div>
@@ -325,7 +325,7 @@ export function EmailFormEffect({
                 exit={{ y: -15, opacity: 0 }}
                 transition={{ duration: 0.3, ease: "linear" }}
                 className="text-sm sm:text-base font-normal pl-4 sm:pl-12 text-left w-[calc(100%-2rem)] truncate"
-                style={{ color: 'rgba(255, 255, 255, 0.3)' }}
+                style={{ color: 'var(--content-faint)' }}
               >
                 {placeholders[currentPlaceholder]}
               </motion.p>
@@ -337,17 +337,17 @@ export function EmailFormEffect({
           type="submit"
           className="absolute right-2 top-1/2 z-50 -translate-y-1/2 h-10 px-6 rounded-lg cursor-pointer flex items-center justify-center group/btn overflow-hidden transition-all duration-200"
           style={{
-            backgroundColor: '#101010',
-            boxShadow: 'inset 0px 1px 1px rgba(255, 255, 255, 0.25), inset 0px 2px 2px rgba(255, 255, 255, 0.2), inset 0px 4px 4px rgba(255, 255, 255, 0.15)',
-            border: 'solid 1px rgba(255, 255, 255, 0.13)',
+            backgroundColor: 'var(--button-bg)',
+            boxShadow: 'var(--button-shadow)',
+            border: 'solid 1px var(--button-border)',
             opacity: 1
           }}
           onMouseMove={handleButtonMouseMove}
           onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = '#1a1a1a';
+            e.currentTarget.style.backgroundColor = 'var(--hover-bg-strong)';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = '#101010';
+            e.currentTarget.style.backgroundColor = 'var(--button-bg)';
           }}
         >
           <div 
@@ -360,7 +360,7 @@ export function EmailFormEffect({
               maskComposite: 'exclude'
             }}
           />
-          <span className="text-sm font-medium relative z-10 text-white/70">
+          <span className="text-sm font-medium relative z-10" style={{ color: 'var(--content-secondary)' }}>
             Join Initiative
           </span>
         </button>
@@ -376,15 +376,15 @@ export function EmailFormEffect({
             <div 
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg whitespace-nowrap"
               style={{
-                backgroundColor: '#101010',
-                boxShadow: 'inset 0px 1px 1px rgba(255, 255, 255, 0.25), inset 0px 2px 2px rgba(255, 255, 255, 0.2), inset 0px 4px 4px rgba(255, 255, 255, 0.15)',
-                border: 'solid 1px rgba(255, 255, 255, 0.2)'
+                backgroundColor: 'var(--button-bg)',
+                boxShadow: 'var(--button-shadow)',
+                border: 'solid 1px var(--border-dashed)'
               }}
             >
-              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4" style={{ color: 'var(--content-muted)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
-              <span className="text-sm font-medium text-gray-400">
+              <span className="text-sm font-medium" style={{ color: 'var(--content-muted)' }}>
                 {submittedEmail} successfully registered.
               </span>
             </div>
@@ -401,8 +401,8 @@ export function EmailFormEffect({
             <div 
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg whitespace-nowrap"
               style={{
-                backgroundColor: '#101010',
-                boxShadow: 'inset 0px 1px 1px rgba(255, 255, 255, 0.25), inset 0px 2px 2px rgba(255, 255, 255, 0.2), inset 0px 4px 4px rgba(255, 255, 255, 0.15)',
+                backgroundColor: 'var(--button-bg)',
+                boxShadow: 'var(--button-shadow)',
                 border: 'solid 1px rgba(220, 20, 60, 0.3)'
               }}
             >

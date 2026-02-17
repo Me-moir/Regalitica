@@ -55,10 +55,10 @@ export function ContainerTextFlip({
       transition={{ duration: animationDuration / 2000 }}
       className={cn(
         "relative inline-block rounded-lg pt-2 pb-3 px-4 font-bold origin-left",
-        "[background:linear-gradient(to_bottom,rgba(255,255,255,0.1),rgba(255,255,255,0.05))]",
-        "shadow-[inset_0_-1px_rgba(255,255,255,0.1),inset_0_0_0_1px_rgba(255,255,255,0.1),_0_4px_8px_rgba(0,0,0,0.2)]",
-        "dark:[background:linear-gradient(to_bottom,rgba(55,65,81,0.3),rgba(31,41,55,0.3))]",
-        "dark:shadow-[inset_0_-1px_#10171e,inset_0_0_0_1px_hsla(205,89%,46%,.24),_0_4px_8px_#00000052]",
+        "[background:linear-gradient(to_bottom,rgba(0,0,0,0.05),rgba(0,0,0,0.03))]",
+        "shadow-[inset_0_-1px_rgba(0,0,0,0.08),inset_0_0_0_1px_rgba(0,0,0,0.08),_0_4px_8px_rgba(0,0,0,0.1)]",
+        "dark:[background:linear-gradient(to_bottom,rgba(255,255,255,0.1),rgba(255,255,255,0.05))]",
+        "dark:shadow-[inset_0_-1px_rgba(255,255,255,0.1),inset_0_0_0_1px_rgba(255,255,255,0.1),_0_4px_8px_rgba(0,0,0,0.2)]",
         className
       )}
       style={{ textAlign: 'left' }}

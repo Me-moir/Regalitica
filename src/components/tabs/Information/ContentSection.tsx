@@ -23,7 +23,7 @@ const ContentSection = memo(({ content, isTransitioning = false }: ContentSectio
           {content.sections.map((section, index) => (
             <div key={index} className="space-y-3 sm:space-y-4">
               {section.heading && (
-                <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold text-white/90">
+                <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold" style={{ color: 'var(--content-primary)' }}>
                   {section.heading}
                 </h3>
               )}
@@ -32,7 +32,7 @@ const ContentSection = memo(({ content, isTransitioning = false }: ContentSectio
                 {section.content.map((paragraph, pIndex) => (
                   <p 
                     key={pIndex}
-                    className="text-sm sm:text-base text-gray-400 leading-relaxed"
+                    className="text-sm sm:text-base leading-relaxed" style={{ color: 'var(--content-muted)' }}
                   >
                     {paragraph}
                   </p>
@@ -41,15 +41,15 @@ const ContentSection = memo(({ content, isTransitioning = false }: ContentSectio
 
               {/* Divider between sections (except last) */}
               {index < content.sections.length - 1 && (
-                <div className="w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent mt-6 sm:mt-8" />
+                <div className="w-full h-px bg-gradient-to-r from-transparent via-[var(--border-color)] to-transparent mt-6 sm:mt-8" />
               )}
             </div>
           ))}
         </div>
 
         {/* Footer note */}
-        <div className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-white/10">
-          <p className="text-xs sm:text-sm text-gray-500 text-center">
+        <div className="mt-8 sm:mt-12 pt-6 sm:pt-8" style={{ borderTop: '1px solid var(--border-color)' }}>
+          <p className="text-xs sm:text-sm text-center" style={{ color: 'var(--content-muted)' }}>
             Last updated: January 2026 • For questions or concerns, please contact our legal team
           </p>
         </div>

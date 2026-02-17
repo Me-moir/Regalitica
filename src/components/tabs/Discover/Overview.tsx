@@ -8,9 +8,9 @@ const Overview = memo(() => {
     <section 
       className="relative overflow-hidden mb-8 md:mb-12"
       style={{
-        background: 'linear-gradient(to bottom, rgb(20, 20, 20) 0%, rgb(10, 10, 10) 50%, rgb(0, 0, 0) 100%)',
-        borderTop: '1px dashed rgba(255, 255, 255, 0.2)',
-        borderBottom: '1px dashed rgba(255, 255, 255, 0.2)',
+        background: 'var(--gradient-section)',
+        borderTop: '1px dashed var(--border-dashed)',
+        borderBottom: '1px dashed var(--border-dashed)',
       }}
     >
       <div 
@@ -31,7 +31,7 @@ const Overview = memo(() => {
               className="relative backdrop-blur-sm transition-all group overflow-hidden"
               style={{
                 borderRadius: '0.75rem',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
+                border: '1px solid var(--border-color)',
                 padding: '0.25rem',
               }}
               onMouseMove={(e) => {
@@ -65,19 +65,19 @@ const Overview = memo(() => {
                   gap: 0,
                   padding: '1rem',
                   borderRadius: '0.5rem',
-                  background: 'linear-gradient(135deg, #0f0f0f 0%, #050505 100%)',
-                  border: '0.75px solid rgba(255, 255, 255, 0.05)',
+                  background: 'var(--gradient-card)',
+                  border: '0.75px solid var(--border-subtle)',
                   minHeight: '140px',
                 }}
               >
-                <div className="mb-2 md:mb-4 lg:mb-5 text-lg md:text-2xl lg:text-3xl xl:text-4xl text-white/80 transition-transform duration-300 group-hover:-translate-y-1">
+                <div className="mb-2 md:mb-4 lg:mb-5 text-lg md:text-2xl lg:text-3xl xl:text-4xl transition-transform duration-300 group-hover:-translate-y-1" style={{ color: 'var(--content-faint)' }}>
                   <i className={`bi ${feature.icon}`}></i>
                 </div>
                 
                 <h3 
                   className="text-xs sm:text-sm md:text-lg lg:text-xl xl:text-2xl mb-2 md:mb-3 lg:mb-4 leading-tight transition-transform duration-300 group-hover:-translate-y-1"
                   style={{
-                    color: 'white',
+                    color: 'var(--content-primary)',
                     fontWeight: 600,
                     margin: 0,
                   }}
@@ -88,7 +88,7 @@ const Overview = memo(() => {
                 <p 
                   className="text-[10px] sm:text-xs md:text-base lg:text-lg transition-transform duration-300 group-hover:-translate-y-1 !leading-relaxed md:!leading-relaxed lg:!leading-relaxed"
                   style={{
-                    color: 'rgb(163, 163, 163)',
+                    color: 'var(--content-tertiary)',
                     lineHeight: '1.4',
                     margin: 0,
                   }}
@@ -104,7 +104,7 @@ const Overview = memo(() => {
             className="relative backdrop-blur-sm transition-all group overflow-hidden cursor-pointer"
             style={{
               borderRadius: '0.75rem',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
+              border: '1px solid var(--border-color)',
               padding: '0.25rem',
             }}
             onMouseMove={(e) => {
@@ -133,8 +133,8 @@ const Overview = memo(() => {
               className="relative z-10 h-full flex items-center justify-center md:min-h-[240px] lg:min-h-[280px]"
               style={{
                 borderRadius: '0.5rem',
-                background: '#000000',
-                border: '0.75px solid rgba(255, 255, 255, 0.05)',
+                background: 'var(--surface-primary)',
+                border: '0.75px solid var(--border-subtle)',
                 minHeight: '140px',
               }}
             >
@@ -142,7 +142,7 @@ const Overview = memo(() => {
                 <h3 
                   className="text-sm sm:text-base md:text-xl lg:text-2xl xl:text-3xl font-semibold transition-all duration-300 group-hover:scale-110"
                   style={{
-                    background: 'linear-gradient(135deg, #ffffff 0%, #d4d4d4 50%, #a3a3a3 100%)',
+                    background: 'var(--text-gradient)',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
                     backgroundClip: 'text',
@@ -153,7 +153,7 @@ const Overview = memo(() => {
                 <i 
                   className="bi bi-arrow-up-right-square text-sm sm:text-base md:text-xl lg:text-2xl xl:text-3xl transition-all duration-300 group-hover:scale-110"
                   style={{
-                    background: 'linear-gradient(135deg, #ffffff 0%, #d4d4d4 50%, #a3a3a3 100%)',
+                    background: 'var(--text-gradient)',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
                     backgroundClip: 'text',

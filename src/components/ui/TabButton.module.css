@@ -1,6 +1,6 @@
 .tabButton {
   --border-radius: 8px;
-  --button-color: #101010;
+  --button-color: var(--button-bg);
   position: relative;
   user-select: none;
   display: inline-flex;
@@ -10,14 +10,12 @@
   font-size: 0.75rem;
   font-weight: 500;
   background-color: var(--button-color);
-  box-shadow: inset 0px 1px 1px rgba(255, 255, 255, 0.2),
-    inset 0px 2px 2px rgba(255, 255, 255, 0.15),
-    inset 0px 4px 4px rgba(255, 255, 255, 0.1);
-  border: solid 1px #fff2;
+  box-shadow: var(--button-shadow);
+  border: solid 1px var(--button-border);
   border-radius: var(--border-radius);
   cursor: pointer;
   overflow: visible;
-  color: #fff5;
+  color: var(--button-text);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   isolation: isolate;
 }
@@ -62,8 +60,8 @@
 }
 
 .tabButton.active {
-  color: #fff;
-  background-color: rgba(255, 255, 255, 0.08);
+  color: var(--button-text-active);
+  background-color: var(--hover-bg-strong);
 }
 
 .tabButton.active::before {
@@ -71,7 +69,7 @@
 }
 
 .tabButton:hover {
-  color: #fff;
+  color: var(--button-text-active);
 }
 
 .tabButton:hover::before {

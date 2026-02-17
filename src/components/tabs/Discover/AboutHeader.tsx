@@ -23,13 +23,13 @@ const AboutHeader = memo(() => {
       <div 
         className="about-header-section px-4 sm:px-6 md:px-8 lg:px-12 xl:px-20 py-8 sm:py-10 md:py-12 lg:py-16" 
         style={{
-          borderBottom: '1px dashed rgba(255, 255, 255, 0.2)',
+          borderBottom: '1px dashed var(--border-dashed)',
         }}
       >
         <h2 
-          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-5 md:mb-6"
+          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-5 md:mb-6"
           style={{
-            background: 'linear-gradient(135deg, #ffffff 0%, #d4d4d4 50%, #a3a3a3 100%)',
+            background: 'var(--text-gradient)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
@@ -38,8 +38,8 @@ const AboutHeader = memo(() => {
           Building Enterprises with Purpose
         </h2>
         <p 
-          className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-400 max-w-4xl"
-          style={{ lineHeight: '1.6' }}
+          className="text-sm sm:text-base md:text-lg lg:text-xl max-w-4xl"
+          style={{ lineHeight: '1.6', color: 'var(--content-muted)' }}
         >
           We are a strategic holding company focused on developing high-impact ventures. Guided by clear direction, strong governance, and a culture of excellence, we invest in ideas that shape the future.
         </p>

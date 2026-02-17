@@ -2,7 +2,7 @@
 
 const VenturesTab = () => {
   return (
-    <section className="min-h-screen bg-gradient-to-b from-black via-[#0a0a0a] to-[#141414] flex items-center justify-center">
+    <section className="min-h-screen flex items-center justify-center" style={{ background: 'var(--gradient-section)' }}>
       <div className="max-w-4xl mx-auto px-6 text-center">
         {/* Icon or Logo */}
         <div className="mb-8">
@@ -24,23 +24,23 @@ const VenturesTab = () => {
         </div>
 
         {/* Title */}
-        <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">
+        <h1 className="text-5xl md:text-7xl font-bold mb-6" style={{ color: 'var(--content-primary)' }}>
           Ventures
         </h1>
 
         {/* Description */}
-        <p className="text-xl md:text-2xl text-gray-400 mb-8">
+        <p className="text-xl md:text-2xl mb-8" style={{ color: 'var(--content-muted)' }}>
           Exploring new frontiers and building the future
         </p>
 
         {/* Coming Soon Badge */}
-        <div className="inline-flex items-center gap-2 px-6 py-3 bg-white/5 border border-white/10 rounded-full">
+        <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full" style={{ background: 'var(--hover-bg)', border: '1px solid var(--border-color)' }}>
           <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-          <span className="text-sm text-gray-300 font-medium">Coming Soon</span>
+          <span className="text-sm font-medium" style={{ color: 'var(--content-tertiary)' }}>Coming Soon</span>
         </div>
 
         {/* Additional Info */}
-        <p className="mt-12 text-sm text-gray-500 max-w-2xl mx-auto">
+        <p className="mt-12 text-sm max-w-2xl mx-auto" style={{ color: 'var(--content-tertiary)' }}>
           We're currently building something amazing. Check back soon to discover our ventures and initiatives.
         </p>
       </div>

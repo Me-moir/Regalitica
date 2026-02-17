@@ -6,14 +6,12 @@
   padding: 0.5rem 1rem;
   font-size: 0.75rem;
   font-weight: 500;
-  background-color: #101010;
-  box-shadow: inset 0px 1px 1px rgba(255, 255, 255, 0.2), 
-              inset 0px 2px 2px rgba(255, 255, 255, 0.15), 
-              inset 0px 4px 4px rgba(255, 255, 255, 0.1);
-  border: solid 1px rgba(255, 255, 255, 0.13);
+  background-color: var(--button-bg);
+  box-shadow: var(--button-shadow);
+  border: solid 1px var(--button-border);
   border-radius: 8px;
   cursor: pointer;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--content-secondary);
   transition: all 0.3s ease;
   text-decoration: none;
 }

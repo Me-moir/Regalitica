@@ -17,7 +17,7 @@ const GridNavButton = memo<GridNavButtonProps>(({ item, index, isActive, onClick
   }, [onClick, item.key]);
 
   const buttonStyle = useMemo(() => ({
-    borderTop: index === 0 ? 'none' : '1px dashed rgba(255, 255, 255, 0.2)',
+    borderTop: index === 0 ? 'none' : '1px dashed var(--border-dashed)',
   }), [index]);
 
   return (

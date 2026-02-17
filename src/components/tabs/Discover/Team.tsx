@@ -6,11 +6,11 @@ const Team = () => {
       id="team-section"
       className="relative overflow-hidden"
       style={{
-        background: 'linear-gradient(to bottom, rgb(0, 0, 0) 0%, rgb(10, 10, 10) 50%, rgb(20, 20, 20) 100%)',
+        background: 'var(--gradient-section-reverse)',
         minHeight: '100vh',
         paddingTop: '10vh',
         paddingBottom: '10vh',
-        borderTop: '1px dashed rgba(255, 255, 255, 0.2)'
+        borderTop: '1px dashed var(--border-dashed)'
       }}
     >
       {/* Grain overlay */}
@@ -26,11 +26,11 @@ const Team = () => {
       {/* Section Title */}
       <div className="relative z-10 w-full">
         {/* Top dashed border - full width */}
-        <div className="w-full h-px border-t border-dashed border-white/30" />
+        <div className="w-full h-px border-t border-dashed" style={{ borderColor: 'var(--border-dashed)' }} />
         
         {/* Title without side lines */}
         <div className="text-center py-8">
-          <h2 className="text-sm lg:text-base text-gray-300 uppercase tracking-[0.25em] font-bold">
+          <h2 className="text-sm lg:text-base uppercase tracking-[0.25em] font-bold" style={{ color: 'var(--content-tertiary)' }}>
             Our Team
           </h2>
         </div>
@@ -39,7 +39,7 @@ const Team = () => {
       {/* Team Content */}
       <div className="relative z-10 container mx-auto px-8 lg:px-20">
         <div className="text-center mb-12">
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+          <p className="text-lg max-w-2xl mx-auto" style={{ color: 'var(--content-muted)' }}>
             Meet the talented individuals driving our mission forward
           </p>
         </div>
