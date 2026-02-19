@@ -1,17 +1,18 @@
 "use client";
 import { useState, useEffect, useRef, Suspense, lazy } from 'react';
+import type { InfoContentType } from '@/data/information-data';
 
-// Lazy load tab components for code splitting
-const LandingTab = lazy(() => import('@/components/tabs/Landing'));
-const DiscoverTab = lazy(() => import('@/components/tabs/Discover'));
-const VenturesTab = lazy(() => import('@/components/tabs/Ventures'));
-const InformationTab = lazy(() => import('@/components/tabs/Information'));
+const LandingTab     = lazy(() => import('@/components/tabs/Landing'));
+const DiscoverTab    = lazy(() => import('@/components/tabs/Discover'));
+const VenturesTab    = lazy(() => import('@/components/tabs/Ventures'));
+const InformationTab = lazy(() => import('@/components/tabs/Information/Information'));
 
 interface MainContentProps {
   activeTab: string;
+  activeInfoContent: InfoContentType;
+  onInfoContentChange: (content: InfoContentType) => void;
 }
 
-// Loading fallback component
 const TabLoadingFallback = () => (
   <div className="min-h-screen flex items-center justify-center">
     <div className="text-center">
@@ -21,11 +22,10 @@ const TabLoadingFallback = () => (
   </div>
 );
 
-const MainContent = ({ activeTab }: MainContentProps) => {
+const MainContent = ({ activeTab, activeInfoContent, onInfoContentChange }: MainContentProps) => {
   const [displayedTab, setDisplayedTab] = useState(activeTab);
   const mainContentRef = useRef<HTMLDivElement>(null);
 
-  // Handle tab transitions with smooth animation
   useEffect(() => {
     if (activeTab !== displayedTab) {
       const timer = setTimeout(() => {
@@ -44,7 +44,12 @@ const MainContent = ({ activeTab }: MainContentProps) => {
       case 'ventures':
         return <VenturesTab />;
       case 'information':
-        return <InformationTab />;
+        return (
+          <InformationTab
+            activeContent={activeInfoContent}
+            onContentChange={onInfoContentChange}
+          />
+        );
       default:
         return null;
     }
@@ -53,7 +58,7 @@ const MainContent = ({ activeTab }: MainContentProps) => {
   const isTransitioning = activeTab !== displayedTab;
 
   return (
-    <div 
+    <div
       ref={mainContentRef}
       className={`relative z-10 transition-all duration-300 ${isTransitioning ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'}`}
     >
