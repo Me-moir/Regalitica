@@ -179,7 +179,7 @@ const Statements = memo(({ isTransitioning = false }: StatementsProps) => {
     <div className="px-4 sm:px-8 lg:px-20 py-8 sm:py-12 lg:py-16">
       <div className="max-w-7xl mx-auto">
         <ContentHeader
-          icon="bi-megaphone"
+          icon="bi-bell"
           title="Statements & Notices"
           isTransitioning={false}
         />

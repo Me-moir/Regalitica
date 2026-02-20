@@ -11,88 +11,54 @@ interface Partner {
   purpose: string;
 }
 
+const ASSET_BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
+
 const partners: Partner[] = [
   {
     logo: (
-      <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
-      </svg>
+      <img src={`${ASSET_BASE}/assets/aceternity.png`} alt="Aceternity logo" loading="lazy" style={{ width: 40, height: 40, objectFit: 'contain' }} />
     ),
-    name: 'Acme Corp',
-    purpose: 'Cloud Infrastructure',
+    name: 'Aceternity',
+    purpose: 'Library',
   },
   {
     logo: (
-      <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
-      </svg>
+      <img src={`${ASSET_BASE}/assets/framer-motion.png`} alt="Framer Motion logo" loading="lazy" style={{ width: 40, height: 40, objectFit: 'contain' }} />
     ),
-    name: 'Bright Labs',
-    purpose: 'Research Partner',
+    name: 'Framer Motion',
+    purpose: 'Library',
   },
   {
     logo: (
-      <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-      </svg>
+      <img src={`${ASSET_BASE}/assets/gsap.png`} alt="GreenSock Animation Platform logo" loading="lazy" style={{ width: 40, height: 40, objectFit: 'contain' }} />
     ),
-    name: 'CoreStack',
-    purpose: 'Data Analytics',
+    name: 'GreenSock Animation Platform',
+    purpose: 'Library',
   },
   {
     logo: (
-      <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-      </svg>
+      <img src={`${ASSET_BASE}/assets/react-bits.png`} alt="React Bits logo" loading="lazy" style={{ width: 40, height: 40, objectFit: 'contain' }} />
     ),
-    name: 'Deft Systems',
-    purpose: 'Security Framework',
+    name: 'React Bits',
+    purpose: 'Library',
   },
   {
     logo: (
-      <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
-      </svg>
+      <img src={`${ASSET_BASE}/assets/shadcn-io.png`} alt="shadcn.io logo" loading="lazy" style={{ width: 40, height: 40, objectFit: 'contain' }} />
     ),
-    name: 'Elevate AI',
-    purpose: 'AI / ML Platform',
-  },
-  {
-    logo: (
-      <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1" fill="rgba(255,255,255,0.85)" stroke="none"/>
-      </svg>
-    ),
-    name: 'Flux Networks',
-    purpose: 'Network Provider',
-  },
-  {
-    logo: (
-      <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 22V12M12 12C12 12 7 9 7 5a5 5 0 0 1 10 0c0 4-5 7-5 7z"/>
-      </svg>
-    ),
-    name: 'GreenPath',
-    purpose: 'Sustainability Tools',
-  },
-  {
-    logo: (
-      <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
-      </svg>
-    ),
-    name: 'Helios Studio',
-    purpose: 'Design Systems',
+    name: 'Shadcn.io',
+    purpose: 'Library',
   },
 ];
 
 const PartnerCard = ({ partner }: { partner: Partner }) => (
-  <CardSpotlight>
+  <>
+    <CardSpotlight>
     {/* Icon pill — centered, bigger */}
-    <div style={{
+    <div className="partner-logo" style={{
       width: 64, height: 64,
-      borderRadius: '50%',
-      background: 'rgba(255,255,255,0.08)',
+      borderRadius: '12px',
+      background: '#000000',
       border: '1px solid rgba(255,255,255,0.14)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       flexShrink: 0,
@@ -112,7 +78,20 @@ const PartnerCard = ({ partner }: { partner: Partner }) => (
         {partner.purpose}
       </p>
     </div>
-  </CardSpotlight>
+    </CardSpotlight>
+    <style>{`
+      /* Stronger override: target both the card and inner wrapper so specificity beats CardSpotlight */
+      html.light .uiverse-card .uiverse-card-inner > .partner-logo {
+        background: #000000 !important;
+        border: 1px solid rgba(255,255,255,0.14) !important;
+      }
+      /* Fallback even more specific */
+      html.light div.uiverse-card div.uiverse-card-inner > div.partner-logo {
+        background: #000000 !important;
+        border: 1px solid rgba(255,255,255,0.14) !important;
+      }
+    `}</style>
+  </>
 );
 
 interface AttributionsProps {

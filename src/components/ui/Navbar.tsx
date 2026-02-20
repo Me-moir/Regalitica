@@ -202,10 +202,17 @@ const NAVBAR_CSS = `
   color: var(--content-faint); transition: color 0.15s ease, background 0.15s ease;
   flex-shrink: 0; padding: 0;
 }
-.tab-arrow-btn:hover { color: var(--content-primary); background: rgba(0,255,166,0.07); }
-.tab-arrow-btn.active-arrow { color: var(--content-primary); background: rgba(0,255,166,0.10); }
-.tab-arrow-btn.info-expand-hint { color: rgba(0,255,166,0.65); }
-.tab-arrow-btn.info-expand-hint:hover { color: rgba(0,255,166,1); background: rgba(0,255,166,0.10); }
+.tab-arrow-btn { border-radius: 0 8px 8px 0; transition: color 0.15s ease, background 0.15s ease; }
+.tab-arrow-btn:hover {
+  color: var(--content-primary);
+  background: rgba(255,255,255,0.12);
+}
+.tab-arrow-btn.active-arrow {
+  color: var(--content-primary);
+  background: rgba(255,255,255,0.16);
+}
+.tab-arrow-btn.info-expand-hint { color: rgba(0,0,0,0.7); }
+.tab-arrow-btn.info-expand-hint:hover { color: rgba(0,0,0,0.95); background: rgba(255,255,255,0.12); box-shadow: 0 8px 20px rgba(0,0,0,0.12); }
 
 /* ─── Subtab breadcrumb ─── */
 .sub-parent {
@@ -352,8 +359,8 @@ const NAVBAR_CSS = `
 .info-hub-expanded.state-visible { max-height: 300px; opacity: 1; pointer-events: auto; }
 
 .info-hub-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  display: flex;
+  justify-content: center;
 }
 
 /* ── Card ── */
@@ -394,7 +401,7 @@ const NAVBAR_CSS = `
   transition: color 0.18s ease, transform 0.26s cubic-bezier(0.34,1.56,0.64,1);
 }
 .info-hub-card.card-active .info-hub-card-icon {
-  color: #ffffff;
+  color: var(--content-primary);
   transform: translateY(-3px);
 }
 
@@ -404,7 +411,7 @@ const NAVBAR_CSS = `
   transition: color 0.18s ease, transform 0.26s cubic-bezier(0.34,1.56,0.64,1);
 }
 .info-hub-card.card-active .info-hub-card-title {
-  color: #ffffff;
+  color: var(--content-primary);
   transform: translateY(-3px);
 }
 
@@ -414,7 +421,7 @@ const NAVBAR_CSS = `
   transition: color 0.18s ease, transform 0.26s cubic-bezier(0.34,1.56,0.64,1);
 }
 .info-hub-card.card-active .info-hub-card-desc {
-  color: #ffffff;
+  color: var(--content-primary);
   transform: translateY(-3px);
 }
 
@@ -434,7 +441,6 @@ const NAVBAR_CSS = `
 
 .info-hub-slim-inner {
   display: flex; align-items: stretch; overflow-x: auto; scrollbar-width: none; height: 48px;
-  border-top: 1px solid var(--border-color);
   border-right: 1px solid var(--border-color);
 }
 .info-hub-slim-inner::-webkit-scrollbar { display: none; }
@@ -453,15 +459,16 @@ const NAVBAR_CSS = `
 }
 
 .info-slim-tab {
-  position: relative; display: inline-flex; align-items: center; gap: 7px;
+  position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 7px;
   padding: 0 18px; border: none; background: transparent;
   color: var(--content-muted); font-size: 0.8rem; font-weight: 500;
   cursor: pointer; flex-shrink: 0; white-space: nowrap;
   transition: color 0.14s ease, background 0.14s ease;
+  min-width: 140px;
   border-right: 1px solid var(--border-color); letter-spacing: 0.01em;
 }
 .info-slim-tab:hover { color: var(--content-primary); background: rgba(255,255,255,0.04); }
-.info-slim-tab.slim-active { color: #ffffff; background: rgba(255,255,255,0.03); }
+.info-slim-tab.slim-active { color: var(--content-primary); background: rgba(255,255,255,0.03); font-weight: 700; }
 .info-slim-tab.slim-active::after {
   content: ''; position: absolute; bottom: 0; left: 14px; right: 14px;
   height: 2px; border-radius: 999px;
@@ -469,6 +476,20 @@ const NAVBAR_CSS = `
   background: linear-gradient(90deg, transparent 0%, rgba(0,255,166,0.8) 15%, rgba(255,215,0,0.6) 30%, rgba(236,72,153,0.6) 45%, rgba(147,51,234,0.6) 60%, rgba(59,130,246,0.5) 75%, transparent 90%);
   background-size: 200% 100%; animation: orbitBorder 2.5s linear infinite;
 }
+
+  /* Theme override: in light mode, active info-hub elements should use a dark/black background */
+  /* Strong dark active background for light theme with white text for contrast */
+  :root.light .info-hub-card.card-active,
+  :root.light .info-slim-tab.slim-active {
+    background: #000000;
+    color: #ffffff;
+  }
+
+  :root.light .info-hub-card.card-active .info-hub-card-icon,
+  :root.light .info-hub-card.card-active .info-hub-card-title,
+  :root.light .info-hub-card.card-active .info-hub-card-desc {
+    color: #ffffff;
+  }
 
 /* ── Slim expand arrow button ── */
 .info-slim-expand {

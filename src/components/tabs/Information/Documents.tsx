@@ -1,5 +1,6 @@
 "use client";
 import { memo, useState } from "react";
+import ContentHeader from './ContentHeader';
 
 interface LegalDocument {
   title: string;
@@ -44,17 +45,7 @@ const Documents = memo(({ isTransitioning = false }: DocumentsProps) => {
     <div className="px-4 sm:px-6 md:px-8 lg:px-12 xl:px-20 py-10 md:py-16 lg:py-20">
       {/* Header */}
       <div className="mb-8 md:mb-12">
-        <h2
-          className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3"
-          style={{
-            background: "var(--text-gradient)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
-          }}
-        >
-          Documents
-        </h2>
+        <ContentHeader icon="bi-folder" title="Documents" />
         <p
           className="text-base md:text-lg max-w-2xl"
           style={{ color: "var(--content-muted)", lineHeight: 1.6 }}

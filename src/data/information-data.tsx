@@ -38,13 +38,13 @@ export interface InformationGrid {
 export const informationGrids: InformationGrid[] = [
   {
     id: 'statements',
-    icon: 'bi-megaphone',
+    icon: 'bi-bell',
     title: 'Releases',
     description: 'Statements, announcements, and important notices'
   },
   {
     id: 'news',
-    icon: 'bi-newspaper',
+    icon: 'bi-images',
     title: 'Media',
     description: 'Latest news and media coverage'
   },
@@ -56,13 +56,13 @@ export const informationGrids: InformationGrid[] = [
   },
   {
     id: 'licenses',
-    icon: 'bi-file-earmark-text',
+    icon: 'bi-patch-check',
     title: 'Licenses',
     description: 'Software and content licensing information'
   },
   {
     id: 'terms',
-    icon: 'bi-file-earmark-ruled',
+    icon: 'bi-unlock2',
     title: 'Terms',
     description: 'Terms of service and usage agreements'
   },
@@ -74,7 +74,7 @@ export const informationGrids: InformationGrid[] = [
   },
   {
     id: 'documents',
-    icon: 'bi-folder2-open',
+    icon: 'bi-folder',
     title: 'Documents',
     description: 'Official legal documents and filings'
   },
@@ -159,7 +159,7 @@ export const statements: Statement[] = [
 export const contentData: Record<string, ContentData> = {
   'statements': {
     title: 'Statements & Notices',
-    icon: 'bi-megaphone',
+    icon: 'bi-bell',
     sections: [
       {
         heading: 'Official Announcements',
@@ -179,7 +179,7 @@ export const contentData: Record<string, ContentData> = {
   },
   'news': {
     title: 'News & Media',
-    icon: 'bi-newspaper',
+    icon: 'bi-images',
     sections: [
       {
         heading: 'Latest News',
@@ -211,7 +211,7 @@ export const contentData: Record<string, ContentData> = {
   },
   'licenses': {
     title: 'Licenses',
-    icon: 'bi-file-earmark-text',
+    icon: 'bi-patch-check',
     sections: [
       {
         heading: 'Software Licenses',
@@ -231,7 +231,7 @@ export const contentData: Record<string, ContentData> = {
   },
   'terms': {
     title: 'Terms & Conditions',
-    icon: 'bi-file-earmark-ruled',
+    icon: 'bi-unlock2',
     sections: [
       {
         heading: 'General Terms',

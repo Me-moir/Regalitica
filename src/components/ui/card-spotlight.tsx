@@ -33,7 +33,7 @@ export function CardSpotlight({ children, className }: CardSpotlightProps) {
   return (
     <>
       <style>{`
-        .uiverse-card { position: relative; }
+        .uiverse-card { position: relative; box-sizing: border-box; }
         .uiverse-card-border::before {
           content: '';
           position: absolute; inset: 0; padding: 1px; border-radius: 1rem;
@@ -74,18 +74,16 @@ export function CardSpotlight({ children, className }: CardSpotlightProps) {
         html.light .uiverse-card-inner p {
           color: var(--content-primary) !important;
         }
-        /* secondary paragraph (purpose) */
+        /* secondary paragraph (purpose) — only adjust color in light mode, keep size/margins consistent */
         html.light .uiverse-card-inner p + p {
           color: var(--content-muted) !important;
-          font-size: 0.9rem !important;
-          margin-top: 0.35rem !important;
         }
         html.light .uiverse-card-inner hr {
           background: #d1d5db !important;
           height: 1px !important;
           border: none !important;
           width: 75% !important;
-          margin: 0.6rem auto !important;
+          margin: 0 !important;
         }
         /* Recolor inline SVG logos to match light text color */
         html.light .uiverse-card-inner svg {

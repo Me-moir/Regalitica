@@ -30,8 +30,9 @@ const SUGGESTED: SectionItem[] = [
   { label: 'Governance',    tabId: 'discover',    subtabId: 'discover-governance',    icon: 'bi-bank' },
   { label: 'Affiliations',  tabId: 'discover',    subtabId: 'discover-affiliations',  icon: 'bi-diagram-3' },
   { label: 'Ventures',      tabId: 'ventures',                                        icon: 'bi-crosshair' },
-  { label: 'Releases',      tabId: 'information', subtabId: 'info-releases',           icon: 'bi-megaphone' },
+  { label: 'Releases',      tabId: 'information', subtabId: 'info-releases',           icon: 'bi-bell' },
 ];
+
 
 /* ═══════════════════════════════════════════════════════════════════════════
    CSS — module-level constant, never re-parsed on React renders
