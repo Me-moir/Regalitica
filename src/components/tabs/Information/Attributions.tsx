@@ -90,6 +90,61 @@ const PartnerCard = ({ partner }: { partner: Partner }) => (
         background: #000000 !important;
         border: 1px solid rgba(255,255,255,0.14) !important;
       }
+
+      /* Gradient hover overlay on the partner logo — matches CardSpotlight hover effect */
+      .uiverse-card .uiverse-card-inner > .partner-logo {
+        position: relative;
+        overflow: visible;
+      }
+
+      /* Gradient animated frame border (masked) */
+      .uiverse-card .uiverse-card-inner > .partner-logo::before {
+        content: '';
+        position: absolute;
+        inset: -1px;
+        border-radius: 12px;
+        padding: 1px;
+        background: radial-gradient(
+          160px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+          rgba(0, 255, 166, 0.9),
+          rgba(255, 215, 0, 0.7),
+          rgba(236, 72, 153, 0.6),
+          rgba(147, 51, 234, 0.55),
+          rgba(59, 130, 246, 0.5),
+          transparent 72%
+        );
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        opacity: 0;
+        transition: opacity 0.35s ease, transform 0.35s ease;
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      /* Keep an inner sheen separate (optional) */
+      .uiverse-card .uiverse-card-inner > .partner-logo::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 12px;
+        background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255,255,255,0.03), transparent 40%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .uiverse-card:hover .uiverse-card-inner > .partner-logo::before,
+      .uiverse-card:hover .uiverse-card-inner > .partner-logo::after {
+        opacity: 1;
+      }
+
+      /* Ensure the logo image sits above the overlay */
+      .uiverse-card .uiverse-card-inner > .partner-logo img {
+        position: relative;
+        z-index: 2;
+      }
     `}</style>
   </>
 );

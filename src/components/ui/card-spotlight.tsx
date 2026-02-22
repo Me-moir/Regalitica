@@ -21,6 +21,17 @@ export function CardSpotlight({ children, className }: CardSpotlightProps) {
     const y = e.clientY - rect.top;
     el.style.setProperty('--mouse-x', `${x}px`);
     el.style.setProperty('--mouse-y', `${y}px`);
+
+    // Also set local mouse vars on any partner-logo element under the pointer
+    const target = e.target as HTMLElement | null;
+    const logoEl = target?.closest?.('.partner-logo') as HTMLElement | null;
+    if (logoEl) {
+      const lrect = logoEl.getBoundingClientRect();
+      const lx = e.clientX - lrect.left;
+      const ly = e.clientY - lrect.top;
+      logoEl.style.setProperty('--mouse-x', `${lx}px`);
+      logoEl.style.setProperty('--mouse-y', `${ly}px`);
+    }
   }, []);
 
   const handleLeave = useCallback(() => {
@@ -28,6 +39,11 @@ export function CardSpotlight({ children, className }: CardSpotlightProps) {
     if (!el) return;
     el.style.setProperty('--mouse-x', `50%`);
     el.style.setProperty('--mouse-y', `50%`);
+    // Clear any partner-logo mouse vars when leaving
+    el.querySelectorAll?.('.partner-logo').forEach((node) => {
+      (node as HTMLElement).style.setProperty('--mouse-x', `50%`);
+      (node as HTMLElement).style.setProperty('--mouse-y', `50%`);
+    });
   }, []);
 
   return (
@@ -110,9 +126,9 @@ export function CardSpotlight({ children, className }: CardSpotlightProps) {
           alignItems: "center",
           justifyContent: "center",
           gap: "1.5rem",
-          padding: "3rem 2rem",
+          padding: "2.25rem 1.5rem",
           width: "100%",
-          height: "460px",
+          height: "340px",
           backgroundColor: "hsla(240, 15%, 5%, 1)",
           backgroundImage: `
             radial-gradient(at 88% 40%, hsla(240, 15%, 5%, 1) 0px, transparent 85%),
@@ -144,4 +160,4 @@ export function CardSpotlight({ children, className }: CardSpotlightProps) {
       </div>
     </>
   );
-}
+} 
