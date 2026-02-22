@@ -148,18 +148,18 @@ const HeroSection = () => {
           animation: scrollBounce 1.8s ease-in-out infinite;
         }
 
-        /* --- FUTURISTIC HUD PILLBOX (GOLD) --- */
+        /* --- FUTURISTIC HUD PILLBOX (TEAL) --- */
         .hud-pill {
           position: relative;
           overflow: hidden;
           padding: 6px 18px 6px 14px;
           border-radius: 999px;
-          border: 1px solid rgba(234, 179, 8, 0.3);
-          background: linear-gradient(90deg, rgba(234, 179, 8, 0.1) 0%, rgba(234, 179, 8, 0.02) 100%);
+          border: 1px solid rgba(14,165,164,0.28);
+          background: linear-gradient(90deg, rgba(14,165,164,0.08) 0%, rgba(14,165,164,0.02) 100%);
           backdrop-filter: blur(12px);
           -webkit-backdrop-filter: blur(12px);
-          border-left: 3px solid #eab308;
-          box-shadow: 0 0 20px rgba(234, 179, 8, 0.08) inset;
+          border-left: 3px solid #0ea5a4;
+          box-shadow: 0 0 20px rgba(14,165,164,0.06) inset;
         }
 
         .hud-pill::after {
@@ -169,7 +169,7 @@ const HeroSection = () => {
           left: -100%;
           width: 50%;
           height: 100%;
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
           transform: skewX(-20deg);
           animation: hudGlare 4s infinite linear;
         }
@@ -192,9 +192,9 @@ const HeroSection = () => {
         .hud-dot-core {
           width: 4px;
           height: 4px;
-          background-color: #eab308;
+          background-color: #0ea5a4;
           border-radius: 50%;
-          box-shadow: 0 0 8px #eab308, 0 0 12px #eab308;
+          box-shadow: 0 0 8px #14b8a6, 0 0 12px #14b8a6;
           z-index: 2;
         }
 
@@ -202,7 +202,7 @@ const HeroSection = () => {
           position: absolute;
           width: 100%;
           height: 100%;
-          border: 1px solid rgba(234, 179, 8, 0.6);
+          border: 1px solid rgba(14,165,164,0.6);
           border-radius: 50%;
           animation: radarPulse 2s infinite cubic-bezier(0.45, 0, 0.55, 1);
           z-index: 1;
@@ -215,8 +215,8 @@ const HeroSection = () => {
 
         .hud-text {
           font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-          color: #facc15;
-          text-shadow: 0 0 8px rgba(234, 179, 8, 0.35);
+          color: #14b8a6;
+          text-shadow: 0 0 8px rgba(20,184,166,0.35);
           letter-spacing: 0.08em;
         }
 
@@ -241,18 +241,18 @@ const HeroSection = () => {
         /* Light mode variant: dark background but retain gold border accents */
         :global(.light) .hud-pill {
           background: rgba(0,0,0,0.9) !important;
-          border: 1px solid rgba(234,179,8,0.22) !important;
-          border-left: 3px solid #eab308 !important;
-          box-shadow: 0 0 18px rgba(234,179,8,0.06) inset !important;
+          border: 1px solid rgba(14,165,164,0.22) !important;
+          border-left: 3px solid #0ea5a4 !important;
+          box-shadow: 0 0 18px rgba(14,165,164,0.06) inset !important;
         }
 
         :global(.light) .hud-pill::after {
-          background: linear-gradient(90deg, transparent, rgba(234,179,8,0.08), transparent) !important;
+          background: linear-gradient(90deg, transparent, rgba(14,165,164,0.08), transparent) !important;
         }
 
         :global(.light) .hud-text {
-          color: #fff9e6 !important;
-          text-shadow: 0 0 6px rgba(234,179,8,0.08) !important;
+          color: #e6fffb !important;
+          text-shadow: 0 0 6px rgba(14,165,164,0.08) !important;
         }
 
         :global(.light) .hud-prefix {
@@ -261,12 +261,12 @@ const HeroSection = () => {
         }
 
         :global(.light) .hud-dot-core {
-          background-color: #eab308 !important;
-          box-shadow: 0 0 8px #eab308, 0 0 12px #eab308 !important;
+          background-color: #0ea5a4 !important;
+          box-shadow: 0 0 8px #14b8a6, 0 0 12px #14b8a6 !important;
         }
 
         :global(.light) .hud-dot-ring {
-          border-color: rgba(234,179,8,0.6) !important;
+          border-color: rgba(14,165,164,0.6) !important;
         }
 
       `}</style>
@@ -384,7 +384,7 @@ const HeroSection = () => {
               <div className="hud-dot-ring" />
             </div>
             <span className="text-xs lg:text-sm font-mono tracking-widest uppercase hud-text">
-              <span className="hud-prefix">[SYS]</span> ALL THREADS FUNCTIONAL
+              <span className="hud-prefix">[THE MANY]</span> return to One.
             </span>
           </div>
 
@@ -439,7 +439,7 @@ const HeroSection = () => {
               <div className="hud-dot-ring" />
             </div>
             <span className="text-[0.65rem] hud-text">
-              <span className="hud-prefix">[SYS]</span> ALL THREADS FUNCTIONAL
+              <span className="hud-prefix">[THE MANY]</span> RETURN TO ONE.
             </span>
           </div>
 

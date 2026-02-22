@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 
-const logoImage = '/assets/Logo.png';
+const logoImage = '/assets/Notosphere-logo.svg';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -440,7 +440,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
             alt="Notosphere" 
             width={200} 
             height={56} 
-            className="h-14 w-auto mx-auto" 
+            className="h-14 w-auto mx-auto rounded-md" 
             priority 
           />
         </div>

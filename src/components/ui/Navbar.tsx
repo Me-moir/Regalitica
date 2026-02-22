@@ -1,4 +1,5 @@
 "use client";
+import Image from 'next/image';
 import { useState, useEffect, useRef, useCallback, useMemo, memo } from 'react';
 import SearchModal from './SearchModal';
 import ThemeToggle from './ThemeToggle';
@@ -141,6 +142,7 @@ const NAVBAR_CSS = `
   background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 60%, #111 100%);
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
   box-shadow: 0 0 14px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.08);
+  overflow: hidden;
 }
 .logo-icon svg { width: 18px; height: 18px; fill: rgba(255,255,255,0.92); }
 .logo-text { font-size: 1.05rem; font-weight: 800; letter-spacing: -0.03em; color: var(--content-primary); line-height: 1; }
@@ -784,12 +786,18 @@ const Navbar = ({
             aria-label="Go to home page"
           >
             <div className="logo-icon">
-              <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-                <path d="M8 1L14 4.5V11.5L8 15L2 11.5V4.5L8 1Z"/>
-              </svg>
+              <Image src="/assets/Notosphere-logo.svg" alt="Notosphere" width={38} height={38} priority />
             </div>
-            <div className="logo-text" style={{ fontSize: isMobile ? '0.85rem' : undefined }}>
-              Noto<span>sphere</span>
+            <div
+              className="logo-text"
+              style={{
+                fontSize: isMobile ? '0.85rem' : undefined,
+                letterSpacing: 'normal',
+                textTransform: 'none',
+                margin: 0,
+              }}
+            >
+              Notosphere <span className="text-slate-500 font-light">Group</span>
             </div>
           </button>
 
