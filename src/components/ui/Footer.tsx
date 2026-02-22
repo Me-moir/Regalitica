@@ -6,7 +6,7 @@ const logoImage = '/assets/Notosphere-logo.svg';
 
 const Footer = () => {
   const footerRef = useRef<HTMLElement>(null);
-  const logoBadgeRef = useRef<HTMLDivElement>(null);
+  const logoBadgeRef = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
     const footer = footerRef.current;
@@ -260,7 +260,7 @@ const Footer = () => {
           {/* LEFT: Brand & Identity */}
           <div className="flex flex-col items-center lg:items-start lg:w-1/3 space-y-8">
 
-            <div ref={logoBadgeRef} className="logo-badge-wrapper group">
+            <a href="/#hero" aria-label="Go to top" ref={logoBadgeRef} className="logo-badge-wrapper group inline-flex">
               <div className="logo-badge">
                 <Image
                   src={logoImage}
@@ -271,7 +271,7 @@ const Footer = () => {
                   priority={false}
                 />
               </div>
-            </div>
+            </a>
 
             <div className="space-y-4 footer-brand">
               <h3 className="text-2xl font-bold text-white footer-brand-title">
