@@ -1,5 +1,4 @@
 import { memo } from 'react';
-import styles from './TabButton.module.css';
 
 interface TabButtonProps {
   label: string;
@@ -10,13 +9,15 @@ interface TabButtonProps {
 
 const TabButton = memo<TabButtonProps>(({ label, isActive, onClick, onMouseMove }) => {
   return (
-    <button
-      onClick={onClick}
-      onMouseMove={onMouseMove}
-      className={`${styles.tabButton} ${isActive ? styles.active : ''}`}
-    >
-      {label}
-    </button>
+    <div className={`tab-item ${isActive ? 'is-active' : ''}`}>
+      <button
+        onClick={onClick}
+        onMouseMove={onMouseMove}
+        className={`tab-label-btn ${isActive ? 'is-active' : ''}`}
+      >
+        {label}
+      </button>
+    </div>
   );
 });
 

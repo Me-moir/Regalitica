@@ -1,5 +1,4 @@
 import { memo } from 'react';
-import styles from './LearnMoreButton.module.css';
 
 interface LearnMoreButtonProps {
   href: string;
@@ -8,14 +7,16 @@ interface LearnMoreButtonProps {
 
 const LearnMoreButton = memo<LearnMoreButtonProps>(({ href, onMouseMove }) => {
   return (
-    <a
-      href={href}
-      className={styles.learnMoreButton}
-      onMouseMove={onMouseMove}
-    >
-      <span>Learn More</span>
-      <i className="bi bi-arrow-up-right-square"></i>
-    </a>
+    <div className="tab-item">
+      <a
+        href={href}
+        className="tab-label-btn"
+        onMouseMove={onMouseMove}
+      >
+        <span>Learn More</span>
+        <i className="bi bi-arrow-up-right-square"></i>
+      </a>
+    </div>
   );
 });
 

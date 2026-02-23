@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 
-type WorldContentType = "company" | "direction" | "teams" | "governance" | "affiliations" | "reachout";
+type WorldContentType = "company" | "philosophy" | "ecosystem" | "direction" | "governance" | "ethics";
 
 interface UseAboutNavigationReturn {
   activeContent: WorldContentType;
@@ -15,12 +15,12 @@ interface UseAboutNavigationReturn {
 }
 
 const INITIAL_SUBSECTIONS: Record<WorldContentType, string> = {
-  company: 'about',
-  direction: 'vision',
-  teams: 'core-executives',
-  governance: 'structure',
-  affiliations: 'investors',
-  reachout: 'inquiry'
+  company: 'about-us',
+  philosophy: 'core-beliefs',
+  ecosystem: 'subsidiaries',
+  direction: 'mission',
+  governance: 'org-structure',
+  ethics: 'ethical-framework'
 };
 
 export const useAboutNavigation = (gridItems: any[]): UseAboutNavigationReturn => {

@@ -97,18 +97,6 @@ const NAVBAR_CSS = `
 .nav-button-active-border {
   position: relative; padding: 1px; border-radius: 10px;
 }
-.nav-button-active-border::before {
-  content: ''; position: absolute; inset: 0; border-radius: 10px; padding: 1px;
-  pointer-events: none;
-  background: linear-gradient(90deg,
-    transparent 0%, rgba(0,255,166,0.8) 15%, rgba(255,215,0,0.6) 30%,
-    rgba(236,72,153,0.6) 45%, rgba(147,51,234,0.6) 60%,
-    rgba(59,130,246,0.5) 75%, transparent 90%
-  );
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor; mask-composite: exclude;
-  animation: orbitBorder 3s linear infinite; background-size: 200% 100%;
-}
 
 /* ─── Glass navbar ─── */
 .glass-navbar {
@@ -183,6 +171,40 @@ const NAVBAR_CSS = `
 }
 .tab-item:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.26), inset 0 1px 0 var(--glass-inset-top); }
 .tab-item.is-active { background: var(--hover-bg-strong); }
+
+/* Animated gradient border for tab items (active/hover) */
+.tab-item { position: relative; overflow: visible; isolation: isolate; }
+.tab-item::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 10px;
+  padding: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%, rgba(0,255,166,0.8) 15%, rgba(255,215,0,0.6) 30%,
+    rgba(236,72,153,0.6) 45%, rgba(147,51,234,0.6) 60%, rgba(59,130,246,0.5) 75%,
+    transparent 90%
+  );
+  background-size: 200% 100%;
+  animation: orbitBorder 3s linear infinite;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  z-index: -1;
+}
+.tab-item.is-active::before,
+.tab-item:hover::before {
+  opacity: 1;
+}
+
+/* In dark mode, make inactive navbar tab buttons subtly outlined */
+.dark .tab-item:not(.is-active) {
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06), 0 2px 8px rgba(0,0,0,0.18), inset 0 1px 0 var(--glass-inset-top);
+  transition: box-shadow 0.25s ease;
+}
 
 .tab-label-btn {
   display: inline-flex; align-items: center; gap: 6px; border: none; background: transparent;

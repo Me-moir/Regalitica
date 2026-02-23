@@ -1,6 +1,6 @@
 "use client";
 import { memo } from 'react';
-import { FeatureSections } from '@/data/Discover-data';
+import { OverviewContent } from '@/data/Discover-data';
 import styles from '@/styles/ui.module.css';
 
 const Overview = memo(() => {
@@ -62,7 +62,7 @@ const Overview = memo(() => {
 
         {/* 2 columns on mobile, 3 columns on desktop */}
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-5">
-          {FeatureSections.map((feature, index) => (
+          {OverviewContent.map((overviewSection, index) => (
             <div 
               key={index}
               className="relative backdrop-blur-sm transition-all group overflow-hidden"
@@ -108,7 +108,7 @@ const Overview = memo(() => {
                 }}
               >
                 <div className="mb-2 md:mb-4 lg:mb-5 text-lg md:text-2xl lg:text-3xl xl:text-4xl transition-transform duration-300 group-hover:-translate-y-1" style={{ color: 'var(--content-faint)' }}>
-                  <i className={`bi ${feature.icon}`}></i>
+                  <i className={`bi ${overviewSection.icon}`}></i>
                 </div>
                 
                 <h3 
@@ -120,7 +120,7 @@ const Overview = memo(() => {
                     marginBottom: '0.5rem',
                   }}
                 >
-                  {feature.title}
+                  {overviewSection.title}
                 </h3>
                 
                 <p 
@@ -131,7 +131,7 @@ const Overview = memo(() => {
                     margin: 0,
                   }}
                 >
-                  {feature.description}
+                  {overviewSection.description}
                 </p>
               </div>
             </div>

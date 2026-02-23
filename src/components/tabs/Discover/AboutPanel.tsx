@@ -1,17 +1,16 @@
 "use client";
 import { memo, useMemo, useCallback } from "react";
 import Head from 'next/head';
-import { WORLD_GRID_ITEMS, WORLD_CONTENT_DATA } from "@/data/Discover-data";
+import { ABOUT_PANEL_ITEMS, ABOUT_PANEL_CONTENT } from "@/data/Discover-data";
 import { useAboutNavigation } from "@/hooks/useAboutNavigation";
 import { useAboutMouseTracking } from "@/hooks/useAboutMouseTracking";
 import GridNavButton from "@/components/ui/GridNavButton";
 import TabButton from "@/components/ui/TabButton";
-import ExecutiveCard from "@/components/ui/ExecutiveCard";
-import AffiliationRow from "@/components/ui/AffiliationRow";
+// AffiliationRow removed — entries are paragraph-only now
 import LearnMoreButton from "@/components/ui/LearnMoreButton";
 import styles from "@/styles/About.module.css";
 
-type WorldContentType = "company" | "direction" | "teams" | "governance" | "affiliations" | "reachout";
+type WorldContentType = "company" | "philosophy" | "ecosystem" | "direction" | "governance" | "ethics";
 
 type CornerPosition = {
   top?: number;
@@ -43,27 +42,27 @@ const WorldPanel = memo(() => {
     isTabTransitioning,
     handleContentChange,
     handleSubsectionChange,
-  } = useAboutNavigation(WORLD_GRID_ITEMS);
+  } = useAboutNavigation(ABOUT_PANEL_ITEMS);
 
   const { handleMouseMove } = useAboutMouseTracking();
 
-  const activeContentData = WORLD_CONTENT_DATA[activeContent];
+  const activeContentData = ABOUT_PANEL_CONTENT[activeContent];
   const currentSubsectionKey = displaySubsection[activeContent];
   const currentSubsection = activeContentData.subsections.find(s => s.key === currentSubsectionKey) || activeContentData.subsections[0];
 
   const selectorStyles = useMemo(() => ({
-    top: `${selectorPosition * (100 / WORLD_GRID_ITEMS.length)}%`,
-    height: `${100 / WORLD_GRID_ITEMS.length}%`,
+    top: `${selectorPosition * (100 / ABOUT_PANEL_ITEMS.length)}%`,
+    height: `${100 / ABOUT_PANEL_ITEMS.length}%`,
   }), [selectorPosition]);
 
   const getLearnMoreLink = useCallback(() => {
     const links: Record<WorldContentType, string> = {
       company: '/company',
+      philosophy: '/philosophy',
+      ecosystem: '/ecosystem',
       direction: '/direction',
-      teams: '/teams',
       governance: '/governance',
-      affiliations: '/affiliations',
-      reachout: '/contact',
+      ethics: '/ethics',
     };
     return links[activeContent];
   }, [activeContent]);
@@ -104,7 +103,7 @@ const WorldPanel = memo(() => {
                 ))}
               </div>
 
-              {WORLD_GRID_ITEMS.map((item, index) => (
+                      {ABOUT_PANEL_ITEMS.map((item, index) => (
                 <GridNavButton
                   key={item.key}
                   item={item}
@@ -138,25 +137,7 @@ const WorldPanel = memo(() => {
                 <div className={`${styles.tabContent} ${isTabTransitioning ? styles.transitioning : ''}`}>
                   <h3 className={styles.sectionTitle}>{currentSubsection.label}</h3>
 
-                  {activeContent === 'teams' && currentSubsectionKey === 'core-executives' && (
-                    <>
-                      <div className={styles.descriptionContainer}>
-                        {currentSubsection.description.map((paragraph, index) => (
-                          <p key={index} className={styles.descriptionText}>{paragraph}</p>
-                        ))}
-                      </div>
-
-                      {activeContentData.executives && (
-                        <div className={styles.executivesGrid} aria-hidden="true" data-nosnippet="true">
-                          {activeContentData.executives.map((exec) => (
-                            <ExecutiveCard key={exec.id} {...exec} onMouseMove={handleMouseMove} />
-                          ))}
-                        </div>
-                      )}
-                    </>
-                  )}
-
-                  {!(activeContent === 'teams' && currentSubsectionKey === 'core-executives') && (
+                  {currentSubsection.description && (
                     <div className={styles.descriptionContainer}>
                       {currentSubsection.description.map((paragraph, index) => (
                         <p key={index} className={styles.descriptionText}>{paragraph}</p>
@@ -164,13 +145,6 @@ const WorldPanel = memo(() => {
                     </div>
                   )}
 
-                  {activeContent === 'affiliations' && currentSubsection.entries && currentSubsection.entries.length > 0 && (
-                    <div className={styles.affiliationTable}>
-                      {currentSubsection.entries.map((entry) => (
-                        <AffiliationRow key={entry.id} {...entry} onMouseMove={handleMouseMove} />
-                      ))}
-                    </div>
-                  )}
                 </div>
 
                 <div className={styles.learnMoreSection}>

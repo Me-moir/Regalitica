@@ -75,3 +75,10 @@
 .tabButton:hover::before {
   opacity: 1;
 }
+
+/* In dark mode, make inactive tab buttons subtly outlined */
+.dark .tabButton:not(.active) {
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06), var(--button-shadow);
+  transition: box-shadow 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+}

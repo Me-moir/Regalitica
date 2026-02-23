@@ -1,13 +1,12 @@
 import { memo, useCallback, useMemo } from 'react';
 import styles from './GridNavButton.module.css';
-
-type WorldContentType = "company" | "direction" | "teams" | "governance" | "affiliations" | "reachout";
+import type { AboutGridItem } from '@/data/Discover-data';
 
 interface GridNavButtonProps {
-  item: { key: WorldContentType; title: string; subtitle: string };
+  item: AboutGridItem;
   index: number;
   isActive: boolean;
-  onClick: (key: WorldContentType) => void;
+  onClick: (key: AboutGridItem['key']) => void;
   onMouseMove: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
