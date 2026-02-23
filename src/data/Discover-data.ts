@@ -81,9 +81,9 @@ export interface AboutGridItem {
     { key: 'company', title: 'Company', subtitle: 'About Us, Our Story, Timeline' },
     { key: 'philosophy', title: 'Philosophy', subtitle: 'Core Beliefs, Operating Doctrine, Systems Principles' },
     { key: 'ecosystem', title: 'Ecosystem', subtitle: 'Subsidiaries, Venture Model, Platform Architecture' },
-    { key: 'direction', title: 'Direction', subtitle: 'Mission, Vision, Strategic Focus Areas' },
+    { key: 'direction', title: 'Direction', subtitle: 'Mission, Vision, Focus Areas, Ambitions' },
     { key: 'governance', title: 'Governance', subtitle: 'Organizational Structure, Leadership Model' },
-    { key: 'ethics', title: 'Ethics & Responsibility', subtitle: 'Ethical Framework, Data Governance, Compliance' }
+    { key: 'ethics', title: 'Ethics & Responsibility', subtitle: 'Ethical Framework, Risk & Compliance' }
   ];
 
   export const ABOUT_PANEL_CONTENT: Record<'company' | 'philosophy' | 'ecosystem' | 'direction' | 'governance' | 'ethics', AboutContent> = {
@@ -198,8 +198,8 @@ export interface AboutGridItem {
           ]
         },
         {
-          key: 'long-term-ambition',
-          label: 'Long-Term Ambition',
+          key: 'ambition',
+          label: 'Ambition',
           description: [
             'Outcomes and compounding effects we aim to achieve over multiple decades of sustained work.'
           ]

@@ -5,9 +5,6 @@ import SearchModal from './SearchModal';
 import ThemeToggle from './ThemeToggle';
 import { informationGrids, type InfoContentType } from '@/data/information-data';
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   Interfaces
-   ═══════════════════════════════════════════════════════════════════════════ */
 interface NavbarProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
@@ -31,9 +28,6 @@ interface NavItem {
   subtabs?: SubtabItem[];
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   Nav data
-   ═══════════════════════════════════════════════════════════════════════════ */
 const NAV_ITEMS: NavItem[] = [
   {
     id: 'discover',
@@ -76,9 +70,36 @@ const NAV_ITEMS: NavItem[] = [
   },
 ];
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   CSS
-   ═══════════════════════════════════════════════════════════════════════════ */
+const ThemeToggleIconOnly = () => {
+  const [dark, setDark] = useState(false);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    setDark(root.classList.contains('dark'));
+    const obs = new MutationObserver(() => setDark(root.classList.contains('dark')));
+    obs.observe(root, { attributes: true, attributeFilter: ['class'] });
+    return () => obs.disconnect();
+  }, []);
+
+  const toggle = useCallback(() => {
+    const root = document.documentElement;
+    root.classList.toggle('dark');
+    root.classList.toggle('light');
+    setDark(prev => !prev);
+  }, []);
+
+  return (
+    <button
+      onClick={toggle}
+      className="nav-icon-btn"
+      aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
+      data-tip={dark ? 'Light mode' : 'Dark mode'}
+    >
+      <i className={`bi ${dark ? 'bi-sun' : 'bi-moon'}`} style={{ fontSize: '1rem' }} />
+    </button>
+  );
+};
+
 const NAVBAR_CSS = `
 @keyframes orbitBorder {
   0%   { background-position: 0% 0%; }
@@ -93,12 +114,6 @@ const NAVBAR_CSS = `
   to   { opacity:1; transform:translateY(0); }
 }
 
-/* ─── Animated active border on nav tab pills ─── */
-.nav-button-active-border {
-  position: relative; padding: 1px; border-radius: 10px;
-}
-
-/* ─── Glass navbar ─── */
 .glass-navbar {
   position: fixed; top: 0; left: 0; right: 0; z-index: 60;
   background: var(--glass-bg);
@@ -107,6 +122,13 @@ const NAVBAR_CSS = `
   box-shadow:
     0 8px 32px var(--glass-shadow-1), 0 12px 48px var(--glass-shadow-2),
     inset 0 1px 1px var(--glass-inset-top), inset 0 -1px 1px var(--glass-inset-bottom);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease;
+  will-change: transform, opacity;
+}
+.glass-navbar.nav-collapsed {
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
 }
 .glass-navbar::before {
   content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 1px;
@@ -117,7 +139,6 @@ const NAVBAR_CSS = `
 }
 .glass-navbar:hover::before { opacity: 1; }
 
-/* ─── Logo ─── */
 .logo-mark {
   display: flex; align-items: center; gap: 12px; user-select: none;
   border: none; background: transparent; padding: 0; cursor: pointer;
@@ -126,26 +147,93 @@ const NAVBAR_CSS = `
 .logo-mark:hover { transform: scale(1.08); }
 .logo-mark:active { transform: scale(1.02); }
 .logo-icon {
-  width: 38px; height: 38px; border-radius: 10px;
+  width: 42px; height: 42px; border-radius: 10px;
   background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 60%, #111 100%);
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
   box-shadow: 0 0 14px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.08);
   overflow: hidden;
 }
-.logo-icon svg { width: 18px; height: 18px; fill: rgba(255,255,255,0.92); }
-.logo-text { font-size: 1.05rem; font-weight: 800; letter-spacing: -0.03em; color: var(--content-primary); line-height: 1; }
+.logo-icon svg { width: 20px; height: 20px; fill: rgba(255,255,255,0.92); }
+.logo-text { font-size: 1.18rem; font-weight: 800; letter-spacing: -0.03em; color: var(--content-primary); line-height: 1; }
 
-/* ─── Divider ─── */
+.nav-icon-btn {
+  position: relative;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border-radius: 9px;
+  border: 1px solid var(--border-color);
+  background: var(--hover-bg, rgba(255,255,255,0.08));
+  color: var(--content-primary);
+  font-size: 1rem; cursor: pointer; flex-shrink: 0;
+  transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease, transform 0.18s ease, box-shadow 0.18s ease;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.18), inset 0 1px 0 var(--glass-inset-top, rgba(255,255,255,0.06));
+}
+.nav-icon-btn:hover {
+  background: var(--hover-bg-strong, rgba(255,255,255,0.16));
+  border-color: var(--content-faint, rgba(255,255,255,0.25));
+  box-shadow: 0 3px 10px rgba(0,0,0,0.22), inset 0 1px 0 var(--glass-inset-top, rgba(255,255,255,0.06));
+  transform: translateY(-1px);
+}
+.nav-icon-btn:active { transform: translateY(0); }
+.nav-icon-btn::after {
+  content: attr(data-tip);
+  position: absolute;
+  top: calc(100% + 9px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+  background: var(--surface-secondary, #1a1a1a);
+  color: var(--content-primary);
+  font-size: 0.7rem; font-weight: 500;
+  white-space: nowrap; padding: 4px 9px; border-radius: 6px;
+  border: 1px solid var(--border-color);
+  pointer-events: none; opacity: 0;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  z-index: 999;
+}
+.nav-icon-btn:hover::after { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+.nav-reveal-tab {
+  position: fixed; top: 16px; right: 0; z-index: 59;
+  display: flex; align-items: center; gap: 7px;
+  padding: 9px 14px 9px 12px;
+  border-radius: 10px 0 0 10px;
+  background: var(--glass-bg, rgba(15,15,15,0.85));
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border-color); border-right: none;
+  color: var(--content-faint); font-size: 0.8rem; font-weight: 600;
+  letter-spacing: 0.02em; cursor: pointer;
+  box-shadow: -4px 4px 24px rgba(0,0,0,0.25);
+  opacity: 0; pointer-events: none; transform: translateX(100%);
+  transition:
+    opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.38s cubic-bezier(0.34, 1.18, 0.64, 1),
+    color 0.15s ease, box-shadow 0.2s ease;
+}
+.nav-reveal-tab.tab-visible { opacity: 1; pointer-events: auto; transform: translateX(0); }
+.nav-reveal-tab:hover { color: var(--content-primary); box-shadow: -6px 4px 28px rgba(0,0,0,0.35); }
+.nav-reveal-tab:hover .reveal-tab-icon { transform: translateX(-2px); }
+.reveal-tab-icon { font-size: 0.82rem; transition: transform 0.2s cubic-bezier(0.34,1.18,0.64,1); }
+.nav-reveal-tab::before {
+  content: ''; position: absolute; left: 0; top: 4px; bottom: 4px; width: 2px;
+  border-radius: 999px;
+  background: linear-gradient(180deg,
+    rgba(0,255,166,0.9) 0%, rgba(255,215,0,0.7) 33%,
+    rgba(236,72,153,0.7) 66%, rgba(147,51,234,0.6) 100%);
+  opacity: 0.75;
+}
+
 .nav-divider {
   width: 1px;
   background: linear-gradient(to bottom, transparent, var(--border-color), transparent);
-  margin: 0 12px; flex-shrink: 0;
+  margin: 0 4px; flex-shrink: 0;
 }
 
-/* ─── CENTER wrapper ─── */
-.nav-center { position: relative; flex: 1; min-width: 0; display: flex; align-items: center; }
+.nav-center {
+  position: relative; flex: 1; min-width: 0;
+  display: flex; align-items: center;
+  /* FIX: was overflow:hidden which clipped the ::before gradient border bleed */
+  overflow: visible;
+}
 
-/* ─── Tabs & subs rows ─── */
 .tabs-row {
   display: flex; align-items: center; gap: 12px; width: 100%;
   transition: opacity 0.2s ease, transform 0.22s ease; pointer-events: auto;
@@ -153,112 +241,149 @@ const NAVBAR_CSS = `
 .tabs-row.expanded { opacity: 0; transform: translateX(-16px); }
 .tabs-row.expanded .tab-label-btn { pointer-events: none; }
 
+/* ─── Subs row ─── */
 .subs-row {
   position: absolute; left: 0; top: 50%;
   transform: translateY(-50%) translateX(20px);
-  width: 100%; display: flex; align-items: center;
+  width: 100%;
+  display: flex; align-items: center;
   opacity: 0; pointer-events: none;
   transition: opacity 0.22s ease, transform 0.24s ease;
-  white-space: nowrap; overflow: hidden;
+  white-space: nowrap;
+  /* FIX: was overflow:hidden which also clipped gradient borders */
+  overflow: visible;
+  z-index: 10;
 }
 .subs-row.expanded { opacity: 1; transform: translateY(-50%) translateX(0); pointer-events: auto; }
 
-/* ─── Tab item ─── */
-.tab-item {
-  display: inline-flex; align-items: stretch; border-radius: 10px; overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.18), inset 0 1px 0 var(--glass-inset-top);
-  transition: box-shadow 0.2s ease; flex-shrink: 0; background: transparent;
+/* ─── Right controls: fade out entirely when subs-row is open ─── */
+.nav-right-controls {
+  display: flex; align-items: center; gap: 8px;
+  flex-shrink: 0; margin-left: auto;
+  position: relative; z-index: 20;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
 }
-.tab-item:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.26), inset 0 1px 0 var(--glass-inset-top); }
-.tab-item.is-active { background: var(--hover-bg-strong); }
+.nav-right-controls.controls-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
 
-/* Animated gradient border for tab items (active/hover) */
-.tab-item { position: relative; overflow: visible; isolation: isolate; }
-.tab-item::before {
-  content: '';
-  position: absolute;
-  inset: -2px;
-  border-radius: 10px;
+/* ─────────────────────────────────────────────────────────────────
+   GRADIENT BORDER — ::before pseudo on wrapper, masked to border only.
+   The ::before is a full-bleed animated gradient clamped to a 2px ring
+   using outline-based clip: we set border-radius + overflow:hidden on
+   the wrapper so ::before fills it, then the inner .tab-item covers
+   everything except the border gap with its own opaque background.
+   Key: .tab-item uses a NON-transparent background (forced solid color
+   via a CSS variable you must define), so the gradient shows ONLY in
+   the 2px gap between wrapper edge and inner element edge.
+───────────────────────────────────────────────────────────────── */
+
+.tab-item-border {
+  display: inline-flex; flex-shrink: 0;
+  border-radius: 10.5px;
   padding: 1px;
+  position: relative;
+  /* Default: transparent so no border shows */
+  background: transparent;
+}
+
+/* The animated gradient sits on ::before, filling the wrapper */
+.tab-item-border::before {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: 10.5px;
   background: linear-gradient(90deg,
-    transparent 0%, rgba(0,255,166,0.8) 15%, rgba(255,215,0,0.6) 30%,
-    rgba(236,72,153,0.6) 45%, rgba(147,51,234,0.6) 60%, rgba(59,130,246,0.5) 75%,
-    transparent 90%
-  );
+    rgba(0,255,166,0.0)  0%,
+    rgba(0,255,166,0.9) 15%,
+    rgba(255,215,0,0.7) 30%,
+    rgba(236,72,153,0.7) 45%,
+    rgba(147,51,234,0.7) 60%,
+    rgba(59,130,246,0.6) 75%,
+    rgba(0,255,166,0.0) 90%);
   background-size: 200% 100%;
   animation: orbitBorder 3s linear infinite;
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
   opacity: 0;
-  transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 0.3s ease;
   pointer-events: none;
-  z-index: -1;
 }
-.tab-item.is-active::before,
-.tab-item:hover::before {
+
+.tab-item-border:hover::before,
+.tab-item-border.is-active::before {
   opacity: 1;
 }
 
-/* In dark mode, make inactive navbar tab buttons subtly outlined */
+.tab-item {
+  display: inline-flex; align-items: stretch; border-radius: 9.5px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18), inset 0 1px 0 var(--glass-inset-top);
+  transition: box-shadow 0.2s ease; flex-shrink: 0;
+  /* CRITICAL: must be a solid/opaque color — this covers the ::before gradient
+     inside the button, leaving only the 2px ring around the edge visible.
+     Uses --navbar-bg which you should set to your navbar's actual background color. */
+  background: var(--navbar-bg, #0f0f0f);
+  position: relative;
+  width: 100%;
+  z-index: 1;
+}
+.tab-item-border:hover .tab-item {
+  box-shadow: 0 4px 14px rgba(0,0,0,0.26), inset 0 1px 0 var(--glass-inset-top);
+}
+.tab-item.is-active {
+  background: var(--navbar-bg-active, #1a1a1a);
+}
+
 .dark .tab-item:not(.is-active) {
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06), 0 2px 8px rgba(0,0,0,0.18), inset 0 1px 0 var(--glass-inset-top);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06), 0 2px 8px rgba(0,0,0,0.18), inset 0 1px 0 var(--glass-inset-top);
   transition: box-shadow 0.25s ease;
 }
 
 .tab-label-btn {
-  display: inline-flex; align-items: center; gap: 6px; border: none; background: transparent;
+  display: inline-flex; align-items: center; gap: 7px; border: none; background: transparent;
   cursor: pointer; font-weight: 500; letter-spacing: 0.01em; color: var(--content-faint);
-  padding: 10px 16px 10px 18px; font-size: 0.88rem; line-height: 1;
+  padding: 11px 18px 11px 20px; font-size: 0.97rem; line-height: 1;
   transition: color 0.15s ease; user-select: none;
 }
 .tab-label-btn:hover, .tab-label-btn.is-active { color: var(--content-primary); }
 .tab-label-btn.is-active { font-weight: 600; }
 
 .tab-sep {
-  width: 1px; margin: 6px 0; background: var(--border-color);
-  opacity: 0.45; flex-shrink: 0; pointer-events: none;
+  width: 1px; margin: 6px 0; background: var(--border-color); opacity: 0.45;
+  flex-shrink: 0; pointer-events: none;
 }
 
 .tab-arrow-btn {
   display: inline-flex; align-items: center; justify-content: center;
-  width: 32px; border: none; background: transparent; cursor: pointer;
+  width: 36px; border: none; background: transparent; cursor: pointer;
   color: var(--content-faint); transition: color 0.15s ease, background 0.15s ease;
-  flex-shrink: 0; padding: 0;
+  flex-shrink: 0; padding: 0; border-radius: 0 8px 8px 0;
 }
-.tab-arrow-btn { border-radius: 0 8px 8px 0; transition: color 0.15s ease, background 0.15s ease; }
-.tab-arrow-btn:hover {
-  color: var(--content-primary);
-  background: rgba(255,255,255,0.12);
-}
-.tab-arrow-btn.active-arrow {
-  color: var(--content-primary);
-  background: rgba(255,255,255,0.16);
-}
+.tab-arrow-btn:hover { color: var(--content-primary); background: rgba(255,255,255,0.12); }
+.tab-arrow-btn.active-arrow { color: var(--content-primary); background: rgba(255,255,255,0.16); }
 .tab-arrow-btn.info-expand-hint { color: rgba(0,0,0,0.7); }
 .tab-arrow-btn.info-expand-hint:hover { color: rgba(0,0,0,0.95); background: rgba(255,255,255,0.12); box-shadow: 0 8px 20px rgba(0,0,0,0.12); }
 
-/* ─── Subtab breadcrumb ─── */
 .sub-parent {
-  display: inline-flex; align-items: center; gap: 6px; font-size: 0.87rem;
+  display: inline-flex; align-items: center; gap: 6px; font-size: 0.96rem;
   font-weight: 700; letter-spacing: -0.01em; color: var(--content-primary);
   padding: 8px 10px 8px 6px; border: none; background: transparent;
   flex-shrink: 0; user-select: none; cursor: pointer;
 }
 .sub-close {
   display: inline-flex; align-items: center; justify-content: center;
-  width: 22px; height: 22px; border-radius: 6px; border: none; background: transparent;
-  color: var(--content-faint); font-size: 0.6rem; cursor: pointer;
+  width: 24px; height: 24px; border-radius: 6px; border: none; background: transparent;
+  color: var(--content-faint); font-size: 0.65rem; cursor: pointer;
   flex-shrink: 0; transition: color 0.15s ease, background 0.15s ease; margin-left: -4px;
 }
 .sub-close:hover { color: var(--content-primary); background: var(--hover-bg-strong); }
 .sub-spacer { width: 12px; flex-shrink: 0; }
 .sub-sep {
   display: inline-flex; align-items: center; color: var(--content-secondary);
-  font-size: 0.62rem; margin: 0 1px; flex-shrink: 0; opacity: 0.55; user-select: none;
+  font-size: 0.66rem; margin: 0 1px; flex-shrink: 0; opacity: 0.55; user-select: none;
 }
 .sub-btn {
-  display: inline-flex; align-items: center; padding: 7px 12px; font-size: 0.83rem;
+  display: inline-flex; align-items: center; padding: 8px 13px; font-size: 0.92rem;
   font-weight: 500; color: var(--content-faint); border-radius: 8px; border: none;
   background: transparent; cursor: pointer; flex-shrink: 0;
   transition: color 0.12s ease, background 0.12s ease;
@@ -274,12 +399,11 @@ const NAVBAR_CSS = `
   animation-delay: calc(var(--i, 0) * 0.04s);
 }
 
-/* ─── Search trigger ─── */
 .search-trigger {
   display: inline-flex; align-items: center; gap: 8px;
-  padding: 9px 28px; min-width: 160px; border-radius: 10px;
+  padding: 10px 24px; min-width: 160px; border-radius: 10px;
   border: none; background: transparent; color: var(--content-faint);
-  font-size: 0.85rem; font-weight: 500; cursor: pointer;
+  font-size: 0.94rem; font-weight: 500; cursor: pointer;
   box-shadow: 0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 var(--glass-inset-top);
   transition: color 0.15s ease, box-shadow 0.2s ease, transform 0.15s ease;
   user-select: none; flex-shrink: 0;
@@ -291,22 +415,25 @@ const NAVBAR_CSS = `
 }
 .search-trigger .search-shortcut {
   display: inline-flex; align-items: center; padding: 2px 6px; border-radius: 5px;
-  font-size: 0.65rem; font-weight: 600; color: var(--content-faint);
+  font-size: 0.72rem; font-weight: 600; color: var(--content-faint);
   background: var(--hover-bg); border: 1px solid var(--border-color);
   opacity: 0.7; letter-spacing: 0.03em;
 }
 
-/* ─── Mobile ─── */
 @media (max-width: 640px) {
   .nav-center, .nav-divider.desktop-only, .search-trigger { display: none; }
   .tab-sep, .tab-arrow-btn { display: none; }
-  .tab-label-btn { padding: 5px 10px; font-size: 0.75rem; }
+  .tab-label-btn { padding: 6px 11px; font-size: 0.84rem; }
+  .nav-icon-btn.collapse-btn-desktop { display: none; }
+  .nav-divider.collapse-btn-desktop { display: none; }
+  .nav-reveal-tab { top: 12px; padding: 7px 11px 7px 10px; font-size: 0.74rem; }
 }
+
 .mobile-burger {
   display: none; align-items: center; justify-content: center;
-  width: 40px; height: 40px; border-radius: 10px;
+  width: 42px; height: 42px; border-radius: 10px;
   border: none; background: transparent; color: var(--content-faint);
-  font-size: 1.1rem; cursor: pointer;
+  font-size: 1.2rem; cursor: pointer;
   transition: color 0.15s ease, background 0.15s ease;
   flex-shrink: 0; margin-left: auto;
 }
@@ -327,26 +454,26 @@ const NAVBAR_CSS = `
   overflow-y: auto; -webkit-overflow-scrolling: touch;
 }
 .mob-sidebar.open { transform: translateX(0); }
-.mob-header { display: flex; align-items: center; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
-.mob-header-title { font-size: 0.9rem; font-weight: 700; color: var(--content-primary); letter-spacing: -0.01em; }
-.mob-close { margin-left: auto; display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; border: none; background: transparent; color: var(--content-faint); font-size: 0.85rem; cursor: pointer; transition: color 0.12s ease, background 0.12s ease; }
+.mob-header { display: flex; align-items: center; gap: 12px; padding: 18px 20px; border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
+.mob-header-title { font-size: 1rem; font-weight: 700; color: var(--content-primary); letter-spacing: -0.01em; }
+.mob-close { margin-left: auto; display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 8px; border: none; background: transparent; color: var(--content-faint); font-size: 0.9rem; cursor: pointer; transition: color 0.12s ease, background 0.12s ease; }
 .mob-close:hover { color: var(--content-primary); background: var(--hover-bg-strong); }
-.mob-search { display: flex; align-items: center; gap: 10px; margin: 12px 16px; padding: 10px 14px; border-radius: 10px; background: var(--hover-bg); border: 1px solid var(--border-color); cursor: pointer; transition: background 0.12s ease; flex-shrink: 0; }
+.mob-search { display: flex; align-items: center; gap: 10px; margin: 12px 16px; padding: 11px 14px; border-radius: 10px; background: var(--hover-bg); border: 1px solid var(--border-color); cursor: pointer; transition: background 0.12s ease; flex-shrink: 0; }
 .mob-search:hover { background: var(--hover-bg-strong); }
-.mob-search i { color: var(--content-faint); font-size: 0.85rem; }
-.mob-search span { color: var(--content-faint); font-size: 0.85rem; font-weight: 500; }
+.mob-search i { color: var(--content-faint); font-size: 0.93rem; }
+.mob-search span { color: var(--content-faint); font-size: 0.93rem; font-weight: 500; }
 .mob-nav-list { display: flex; flex-direction: column; padding: 8px 0; flex: 1; }
-.mob-tab-btn { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 14px 20px; border: none; background: transparent; color: var(--content-faint); font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: color 0.12s ease, background 0.12s ease; user-select: none; }
+.mob-tab-btn { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 15px 20px; border: none; background: transparent; color: var(--content-faint); font-size: 1rem; font-weight: 500; cursor: pointer; transition: color 0.12s ease, background 0.12s ease; user-select: none; }
 .mob-tab-btn:hover { color: var(--content-primary); background: var(--hover-bg); }
 .mob-tab-btn.is-active { color: var(--content-primary); font-weight: 600; background: var(--hover-bg-strong); }
 .mob-tab-left { display: flex; align-items: center; gap: 10px; }
-.mob-tab-left i { font-size: 0.85rem; width: 20px; text-align: center; }
-.mob-tab-chevron { font-size: 0.6rem; transition: transform 0.2s ease; color: var(--content-faint); }
+.mob-tab-left i { font-size: 0.92rem; width: 20px; text-align: center; }
+.mob-tab-chevron { font-size: 0.65rem; transition: transform 0.2s ease; color: var(--content-faint); }
 .mob-tab-chevron.open { transform: rotate(90deg); }
 .mob-subtabs { overflow: hidden; transition: max-height 0.25s ease, opacity 0.2s ease; }
 .mob-subtabs.collapsed { max-height: 0; opacity: 0; }
 .mob-subtabs.expanded { max-height: 300px; opacity: 1; }
-.mob-subtab-btn { display: flex; align-items: center; gap: 8px; width: 100%; padding: 11px 20px 11px 50px; border: none; background: transparent; color: var(--content-faint); font-size: 0.84rem; font-weight: 400; cursor: pointer; transition: color 0.12s ease, background 0.12s ease; user-select: none; }
+.mob-subtab-btn { display: flex; align-items: center; gap: 8px; width: 100%; padding: 12px 20px 12px 50px; border: none; background: transparent; color: var(--content-faint); font-size: 0.93rem; font-weight: 400; cursor: pointer; transition: color 0.12s ease, background 0.12s ease; user-select: none; }
 .mob-subtab-btn:hover { color: var(--content-primary); background: var(--hover-bg); }
 .mob-subtab-btn.is-active { color: var(--content-primary); font-weight: 600; position: relative; }
 .mob-subtab-btn.is-active::before { content: ''; position: absolute; left: 36px; top: 50%; transform: translateY(-50%); width: 4px; height: 4px; border-radius: 50%; background: rgba(255,255,255,0.8); }
@@ -354,202 +481,103 @@ const NAVBAR_CSS = `
 /* ══════════════════════════════════════════════════════════════════════════
    INFO HUB EXTENSION
    ══════════════════════════════════════════════════════════════════════════ */
-
 .info-hub-outer {
-  display: grid;
-  grid-template-rows: 0fr;
-  opacity: 0;
-  pointer-events: none;
+  display: grid; grid-template-rows: 0fr; opacity: 0; pointer-events: none;
   border-top: 1px solid transparent;
-  transition:
-    grid-template-rows 0.42s cubic-bezier(0.4, 0, 0.2, 1),
-    opacity 0.3s ease,
-    border-top-color 0.35s ease;
+  transition: grid-template-rows 0.42s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, border-top-color 0.35s ease;
 }
-.info-hub-outer.hub-visible {
-  grid-template-rows: 1fr;
-  opacity: 1;
-  border-top-color: var(--border-color);
-  pointer-events: auto;
-}
+.info-hub-outer.hub-visible { grid-template-rows: 1fr; opacity: 1; border-top-color: var(--border-color); pointer-events: auto; }
 .info-hub-clip { overflow: hidden; min-height: 0; }
 
-/* ── BIG CARD GRID ── */
-.info-hub-expanded {
-  overflow: hidden;
-  transition: max-height 0.44s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
-}
+.info-hub-expanded { overflow: hidden; transition: max-height 0.44s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease; }
 .info-hub-expanded.state-hidden { max-height: 0; opacity: 0; pointer-events: none; }
-.info-hub-expanded.state-visible { max-height: 300px; opacity: 1; pointer-events: auto; }
+.info-hub-expanded.state-visible { max-height: 320px; opacity: 1; pointer-events: auto; }
 
-.info-hub-grid {
-  display: flex;
-  justify-content: center;
-}
+.info-hub-grid { display: flex; justify-content: center; }
 
-/* ── Card ── */
 .info-hub-card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  padding: 22px 20px 24px;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  text-align: left;
-  overflow: hidden;
-  border-right: 1px solid var(--border-color);
-  transition: background 0.18s ease;
+  position: relative; display: flex; flex-direction: column;
+  padding: 24px 22px 26px; border: none; background: transparent;
+  cursor: pointer; text-align: left; overflow: hidden;
+  border-right: 1px solid var(--border-color); transition: background 0.18s ease;
 }
 .info-hub-card:last-child { border-right: none; }
 .info-hub-card:hover:not(.card-active) { background: rgba(255,255,255,0.025); }
-  /* Active card: subtle neutral/lightened background (no purple grid) */
-  .info-hub-card.card-active { background: rgba(255,255,255,0.03); }
+.info-hub-card.card-active { background: rgba(255,255,255,0.03); }
 
-/* Radial spotlight on hover (non-active) */
 .card-hover-spot {
   position: absolute; inset: 0; pointer-events: none;
-  /* hover spotlight uses a neutral subtle highlight instead of purple */
   background: radial-gradient(180px circle at var(--cx,50%) var(--cy,50%), rgba(255,255,255,0.04), transparent 70%);
   opacity: 0; transition: opacity 0.18s ease; z-index: 1;
 }
 .info-hub-card:not(.card-active):hover .card-hover-spot { opacity: 1; }
-
-/* Card content */
 .card-content { position: relative; z-index: 2; display: flex; flex-direction: column; gap: 5px; }
 
-.info-hub-card-icon {
-  font-size: 1.45rem;
-  margin-bottom: 4px;
-  color: var(--content-secondary);
-  transition: color 0.18s ease, transform 0.26s cubic-bezier(0.34,1.56,0.64,1);
-}
-.info-hub-card.card-active .info-hub-card-icon {
-  color: var(--content-primary);
-  transform: translateY(-3px);
-}
-
-.info-hub-card-title {
-  font-size: 0.84rem; font-weight: 700; letter-spacing: 0.01em; line-height: 1.2;
-  color: var(--content-secondary);
-  transition: color 0.18s ease, transform 0.26s cubic-bezier(0.34,1.56,0.64,1);
-}
-.info-hub-card.card-active .info-hub-card-title {
-  color: var(--content-primary);
-  transform: translateY(-3px);
-}
-
-.info-hub-card-desc {
-  font-size: 0.71rem; line-height: 1.5;
-  color: var(--content-muted);
-  transition: color 0.18s ease, transform 0.26s cubic-bezier(0.34,1.56,0.64,1);
-}
-.info-hub-card.card-active .info-hub-card-desc {
-  color: var(--content-primary);
-  transform: translateY(-3px);
-}
-
-/* Staggered entrance */
+.info-hub-card-icon { font-size: 1.6rem; margin-bottom: 5px; color: var(--content-secondary); transition: color 0.18s ease, transform 0.26s cubic-bezier(0.34,1.56,0.64,1); }
+.info-hub-card.card-active .info-hub-card-icon { color: var(--content-primary); transform: translateY(-3px); }
+.info-hub-card-title { font-size: 0.93rem; font-weight: 700; letter-spacing: 0.01em; line-height: 1.2; color: var(--content-secondary); transition: color 0.18s ease, transform 0.26s cubic-bezier(0.34,1.56,0.64,1); }
+.info-hub-card.card-active .info-hub-card-title { color: var(--content-primary); transform: translateY(-3px); }
+.info-hub-card-desc { font-size: 0.79rem; line-height: 1.5; color: var(--content-muted); transition: color 0.18s ease, transform 0.26s cubic-bezier(0.34,1.56,0.64,1); }
+.info-hub-card.card-active .info-hub-card-desc { color: var(--content-primary); transform: translateY(-3px); }
 .info-hub-expanded.state-visible .info-hub-card {
   animation: cardFadeUp 0.32s cubic-bezier(0.34,1.18,0.64,1) both;
   animation-delay: calc(var(--ci, 0) * 0.045s + 0.06s);
 }
 
-/* ── SLIM TAB ROW ── */
-.info-hub-slim {
-  overflow: hidden;
-  transition: max-height 0.38s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease;
-}
+.info-hub-slim { overflow: hidden; transition: max-height 0.38s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease; }
 .info-hub-slim.state-hidden { max-height: 0; opacity: 0; pointer-events: none; }
-.info-hub-slim.state-visible { max-height: 52px; opacity: 1; pointer-events: auto; }
-
-.info-hub-slim-inner {
-  display: flex; align-items: stretch; overflow-x: auto; scrollbar-width: none; height: 48px;
-  border-right: 1px solid var(--border-color);
-}
+.info-hub-slim.state-visible { max-height: 58px; opacity: 1; pointer-events: auto; }
+.info-hub-slim-inner { display: flex; align-items: stretch; overflow-x: auto; scrollbar-width: none; height: 54px; border-right: 1px solid var(--border-color); }
 .info-hub-slim-inner::-webkit-scrollbar { display: none; }
 
-/* ── Info Hub label — wider to distinguish as non-active ── */
-.info-slim-label {
-  display: flex; align-items: center; gap: 7px;
-  padding: 0 40px 0 40px; flex-shrink: 0;
-  border-right: 1px solid var(--border-color);
-  min-width: 210px;
-}
-  
-.info-slim-label span {
-  font-size: 0.67rem; font-weight: 700; letter-spacing: 0.15em;
-  text-transform: uppercase; color: var(--content-muted); white-space: nowrap;
-}
+.info-slim-label { display: flex; align-items: center; gap: 7px; padding: 0 40px; flex-shrink: 0; border-right: 1px solid var(--border-color); min-width: 210px; }
+.info-slim-label span { font-size: 0.74rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--content-muted); white-space: nowrap; }
 
 .info-slim-tab {
   position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 7px;
-  padding: 0 18px; border: none; background: transparent;
-  color: var(--content-muted); font-size: 0.8rem; font-weight: 500;
+  padding: 0 20px; border: none; background: transparent;
+  color: var(--content-muted); font-size: 0.89rem; font-weight: 500;
   cursor: pointer; flex-shrink: 0; white-space: nowrap;
   transition: color 0.14s ease, background 0.14s ease;
-  min-width: 140px;
-  border-right: 1px solid var(--border-color); letter-spacing: 0.01em;
+  min-width: 148px; border-right: 1px solid var(--border-color); letter-spacing: 0.01em;
 }
 .info-slim-tab:hover { color: var(--content-primary); background: rgba(255,255,255,0.04); }
 .info-slim-tab.slim-active { color: var(--content-primary); background: rgba(255,255,255,0.03); font-weight: 700; }
 .info-slim-tab.slim-active::after {
-  content: ''; position: absolute; bottom: 0; left: 14px; right: 14px;
-  height: 2px; border-radius: 999px;
-  /* Use the full site gradient colors for the underline */
+  content: ''; position: absolute; bottom: 0; left: 14px; right: 14px; height: 2px; border-radius: 999px;
   background: linear-gradient(90deg, transparent 0%, rgba(0,255,166,0.8) 15%, rgba(255,215,0,0.6) 30%, rgba(236,72,153,0.6) 45%, rgba(147,51,234,0.6) 60%, rgba(59,130,246,0.5) 75%, transparent 90%);
   background-size: 200% 100%; animation: orbitBorder 2.5s linear infinite;
 }
 
-  /* Theme override: in light mode, active info-hub elements should use a dark/black background */
-  /* Strong dark active background for light theme with white text for contrast */
-  :root.light .info-hub-card.card-active,
-  :root.light .info-slim-tab.slim-active {
-    background: #000000;
-    color: #ffffff;
-  }
+:root.light .info-hub-card.card-active,
+:root.light .info-slim-tab.slim-active { background: #000000; color: #ffffff; }
+:root.light .info-hub-card.card-active .info-hub-card-icon,
+:root.light .info-hub-card.card-active .info-hub-card-title,
+:root.light .info-hub-card.card-active .info-hub-card-desc { color: #ffffff; }
 
-  :root.light .info-hub-card.card-active .info-hub-card-icon,
-  :root.light .info-hub-card.card-active .info-hub-card-title,
-  :root.light .info-hub-card.card-active .info-hub-card-desc {
-    color: #ffffff;
-  }
-
-/* ── Slim expand arrow button ── */
 .info-slim-expand {
   display: inline-flex; align-items: center; justify-content: center;
-  padding: 0 18px; border: none; background: transparent;
+  padding: 0 20px; border: none; background: transparent;
   color: var(--content-muted); cursor: pointer; flex-shrink: 0;
-  transition: color 0.14s ease, background 0.14s ease, transform 0.2s ease;
-  border-left: 1px solid var(--border-color);
-  margin-left: auto;
+  transition: color 0.14s ease, background 0.14s ease;
+  border-left: 1px solid var(--border-color); margin-left: auto;
 }
-.info-slim-expand:hover {
-  color: var(--content-primary);
-  background: rgba(255,255,255,0.03);
-}
-.info-slim-expand i {
-  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.info-slim-expand:hover i {
-  transform: translateY(-2px);
-}
+.info-slim-expand:hover { color: var(--content-primary); background: rgba(255,255,255,0.03); }
+.info-slim-expand i { transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+.info-slim-expand:hover i { transform: translateY(-2px); }
 
 @media (max-width: 640px) {
   .info-hub-grid { grid-template-columns: repeat(2, 1fr); }
-  .info-hub-card { padding: 16px 14px 18px; }
-  .info-hub-card-icon { font-size: 1.2rem; }
+  .info-hub-card { padding: 18px 15px 20px; }
+  .info-hub-card-icon { font-size: 1.3rem; }
   .info-hub-card-desc { display: none; }
-  .info-hub-expanded.state-visible { max-height: 380px; }
-  .info-slim-label { padding: 0 14px 0 14px; min-width: auto; }
-  .info-slim-tab { padding: 0 13px; font-size: 0.74rem; }
-  .info-slim-expand { padding: 0 14px; }
+  .info-hub-expanded.state-visible { max-height: 400px; }
+  .info-slim-label { padding: 0 14px; min-width: auto; }
+  .info-slim-tab { padding: 0 14px; font-size: 0.82rem; }
+  .info-slim-expand { padding: 0 15px; }
 }
 `;
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   Component
-   ═══════════════════════════════════════════════════════════════════════════ */
 const Navbar = ({
   activeTab,
   setActiveTab,
@@ -564,6 +592,7 @@ const Navbar = ({
   const [mobileOpen, setMobileOpen]               = useState(false);
   const [mobileExpandedTab, setMobileExpandedTab] = useState<string | null>(null);
   const [hubExpanded, setHubExpanded]             = useState(true);
+  const [navCollapsed, setNavCollapsed]           = useState(false);
 
   const navContainerRef  = useRef<HTMLDivElement>(null);
   const rafIdRef         = useRef<number | null>(null);
@@ -574,18 +603,49 @@ const Navbar = ({
   const touchRef         = useRef<{ startX: number; startY: number } | null>(null);
   const lastScrollYRef   = useRef(0);
   const scrollRafRef     = useRef<number | null>(null);
+  const navCollapsedRef  = useRef(false);
 
   const isInfoActive = activeTab === 'information';
+  const isExpanded   = expandedTab !== null;
+
+  const handleCollapseNav = useCallback(() => {
+    setNavCollapsed(true);
+    navCollapsedRef.current = true;
+    setExpandedTab(null);
+
+    // Always attach the restore listener — even if already at top,
+    // user may scroll down then back up and expect navbar to return.
+    let hasScrolledAway = window.scrollY > 10;
+
+    const restore = () => {
+      if (!hasScrolledAway) {
+        // Track when they first scroll meaningfully away from top
+        if (window.scrollY > 10) hasScrolledAway = true;
+        return;
+      }
+      // Once they've scrolled away, restore when they return near top
+      if (window.scrollY <= 10) {
+        setNavCollapsed(false);
+        navCollapsedRef.current = false;
+        window.removeEventListener('scroll', restore);
+      }
+    };
+
+    window.addEventListener('scroll', restore, { passive: true });
+  }, []);
+
+  const handleShowNav = useCallback(() => {
+    setNavCollapsed(false);
+    navCollapsedRef.current = false;
+  }, []);
 
   useEffect(() => {
     if (isInfoActive) setHubExpanded(true);
   }, [isInfoActive]);
 
-  // Collapse card grid when scrolling down
   useEffect(() => {
     if (!isInfoActive) return;
     lastScrollYRef.current = window.scrollY;
-
     const onScroll = () => {
       if (scrollRafRef.current !== null) return;
       scrollRafRef.current = requestAnimationFrame(() => {
@@ -595,7 +655,6 @@ const Navbar = ({
         lastScrollYRef.current = y;
       });
     };
-
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => {
       window.removeEventListener('scroll', onScroll);
@@ -603,16 +662,11 @@ const Navbar = ({
     };
   }, [isInfoActive]);
 
-  // Click outside collapses the expanded card grid
   useEffect(() => {
     if (!isInfoActive || !hubExpanded) return;
     const onClickOutside = (e: MouseEvent) => {
-      if (
-        navContainerRef.current &&
-        !navContainerRef.current.contains(e.target as Node)
-      ) {
+      if (navContainerRef.current && !navContainerRef.current.contains(e.target as Node))
         setHubExpanded(false);
-      }
     };
     document.addEventListener('mousedown', onClickOutside);
     return () => document.removeEventListener('mousedown', onClickOutside);
@@ -658,9 +712,8 @@ const Navbar = ({
 
   useEffect(() => {
     if (autoCloseRef.current) clearTimeout(autoCloseRef.current);
-    if (expandedTab && !autoExpandedRef.current) {
+    if (expandedTab && !autoExpandedRef.current)
       autoCloseRef.current = setTimeout(() => setExpandedTab(null), 10_000);
-    }
     if (!expandedTab) autoExpandedRef.current = false;
     return () => { if (autoCloseRef.current) clearTimeout(autoCloseRef.current); };
   }, [expandedTab]);
@@ -674,7 +727,6 @@ const Navbar = ({
     const isNewTab = tabId !== activeTab;
     setActiveTab(tabId);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-
     if (isNewTab) {
       if (tabClickOpenRef.current)  { clearTimeout(tabClickOpenRef.current);  tabClickOpenRef.current  = null; }
       if (tabClickCloseRef.current) { clearTimeout(tabClickCloseRef.current); tabClickCloseRef.current = null; }
@@ -728,6 +780,7 @@ const Navbar = ({
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, []);
+
   const handleSearchNavigate = useCallback((tabId: string, subtabId?: string) => {
     setActiveTab(tabId);
     if (subtabId) onSubtabClick?.(tabId, subtabId);
@@ -781,23 +834,32 @@ const Navbar = ({
   }, [activeTab, activeSubtab]);
 
   const expandedItem = useMemo(() => NAV_ITEMS.find(i => i.id === expandedTab) ?? null, [expandedTab]);
-  const isExpanded   = expandedTab !== null;
 
   const barStyle = useMemo(() => ({
-    height: isMobile ? '60px' : '72px',
+    height: isMobile ? '68px' : '84px',
     paddingLeft:  isMobile ? '16px' : '36px',
     paddingRight: isMobile ? '16px' : '36px',
-    gap: isMobile ? '10px' : '20px',
+    gap: isMobile ? '10px' : '16px',
   }), [isMobile]);
 
-  const labelFontStyle = useMemo(() => ({ fontSize: isMobile ? '0.75rem' : '0.88rem' }), [isMobile]);
+  const labelFontStyle = useMemo(() => ({ fontSize: isMobile ? '0.84rem' : '0.97rem' }), [isMobile]);
 
   return (
     <>
       <style>{NAVBAR_CSS}</style>
       <SearchModal isOpen={searchOpen} onClose={closeSearch} onNavigate={handleSearchNavigate} />
 
-      <nav ref={navContainerRef} className="glass-navbar">
+      {/* ══ STICKY REVEAL TAB ══ */}
+      <button
+        className={`nav-reveal-tab${navCollapsed ? ' tab-visible' : ''}`}
+        onClick={handleShowNav}
+        aria-label="Show navigation bar"
+      >
+        <i className="bi bi-eye reveal-tab-icon" style={{ fontSize: '0.9rem' }} />
+        {!isMobile && <span>Show Nav</span>}
+      </button>
+
+      <nav ref={navContainerRef} className={`glass-navbar${navCollapsed ? ' nav-collapsed' : ''}`}>
 
         {/* ══ MAIN BAR ROW ══ */}
         <div className="w-full flex items-center" style={barStyle}>
@@ -808,22 +870,17 @@ const Navbar = ({
             aria-label="Go to home page"
           >
             <div className="logo-icon">
-              <Image src="/assets/Notosphere-logo.svg" alt="Notosphere" width={38} height={38} priority />
+              <Image src="/assets/Notosphere-logo.svg" alt="Notosphere" width={42} height={42} priority />
             </div>
             <div
               className="logo-text"
-              style={{
-                fontSize: isMobile ? '0.85rem' : undefined,
-                letterSpacing: 'normal',
-                textTransform: 'none',
-                margin: 0,
-              }}
+              style={{ fontSize: isMobile ? '0.95rem' : undefined, letterSpacing: 'normal', textTransform: 'none', margin: 0 }}
             >
               Notosphere <span className="text-slate-500 font-light">Group</span>
             </div>
           </button>
 
-          <div className="nav-divider desktop-only" style={{ height: '28px', alignSelf: 'center' }} />
+          <div className="nav-divider desktop-only" style={{ height: '32px', alignSelf: 'center' }} />
 
           <div className="nav-center">
             <div className={`tabs-row${isExpanded ? ' expanded' : ''}`}>
@@ -831,16 +888,12 @@ const Navbar = ({
                 const active       = activeSet.has(item.id);
                 const thisExpanded = expandedTab === item.id;
                 const isInfoItem   = item.id === 'information';
-
                 return (
-                  <div key={item.id} className={active ? 'nav-button-active-border' : ''}>
+                  <div key={item.id} className={`tab-item-border${active ? ' is-active' : ''}`}>
                     <div className={`tab-item${active ? ' is-active' : ''}`}>
                       <button
                         className={`tab-label-btn${active ? ' is-active' : ''}`}
-                        onClick={() => {
-                          if (thisExpanded && !isInfoItem) closeExpand();
-                          else handleTabClick(item.id);
-                        }}
+                        onClick={() => { if (thisExpanded && !isInfoItem) closeExpand(); else handleTabClick(item.id); }}
                         style={labelFontStyle}
                       >
                         <i className={`bi ${item.icon} text-xs`} />
@@ -863,7 +916,7 @@ const Navbar = ({
                         <i
                           className={`bi ${thisExpanded && !isInfoItem ? 'bi-x-lg' : 'bi-chevron-right'}`}
                           style={{
-                            fontSize: '0.62rem',
+                            fontSize: '0.65rem',
                             color: isInfoItem && isInfoActive && !hubExpanded
                               ? 'rgba(255,255,255,0.75)'
                               : 'var(--content-secondary)',
@@ -905,14 +958,23 @@ const Navbar = ({
             </div>
           </div>
 
-          {/* RIGHT */}
-          <div className="flex items-center gap-3 flex-shrink-0 ml-auto">
-            <ThemeToggle />
+          {/* ── RIGHT CONTROLS — hidden when subs-row is expanded ── */}
+          <div className={`nav-right-controls${isExpanded ? ' controls-hidden' : ''}`}>
+            <ThemeToggleIconOnly />
             <div className="nav-divider" style={{ height: '28px', alignSelf: 'center' }} />
             <button className="search-trigger" onClick={openSearch}>
-              <i className="bi bi-search" style={{ fontSize: '0.8rem' }} />
+              <i className="bi bi-search" style={{ fontSize: '0.87rem' }} />
               {!isMobile && <span>Search</span>}
               {!isMobile && <span className="search-shortcut">⌘K</span>}
+            </button>
+            <div className="nav-divider collapse-btn-desktop" style={{ height: '28px', alignSelf: 'center' }} />
+            <button
+              className="nav-icon-btn collapse-btn-desktop"
+              onClick={handleCollapseNav}
+              data-tip="Hide navbar"
+              aria-label="Hide navigation bar"
+            >
+              <i className="bi bi-eye-slash" style={{ fontSize: '1.05rem' }} />
             </button>
             <button className="mobile-burger" onClick={openMobile} aria-label="Open menu">
               <i className="bi bi-list" />
@@ -923,8 +985,6 @@ const Navbar = ({
         {/* ══ INFORMATION HUB EXTENSION ══ */}
         <div className={`info-hub-outer${isInfoActive ? ' hub-visible' : ''}`}>
           <div className="info-hub-clip">
-
-            {/* BIG CARD GRID */}
             <div className={`info-hub-expanded${hubExpanded ? ' state-visible' : ' state-hidden'}`}>
               <div className="info-hub-grid">
                 {informationGrids.map((grid, idx) => {
@@ -953,17 +1013,12 @@ const Navbar = ({
               </div>
             </div>
 
-            {/* SLIM TAB ROW */}
             <div className={`info-hub-slim${!hubExpanded ? ' state-visible' : ' state-hidden'}`}>
               <div className="info-hub-slim-inner">
-
-                {/* Wider label box to distinguish it as non-interactive */}
                 <div className="info-slim-label" style={{ color: 'var(--content-muted)' }}>
-                  <i className="bi bi-pin" style={{ fontSize: '0.7rem', color: 'currentColor' }} />
+                  <i className="bi bi-pin" style={{ fontSize: '0.76rem', color: 'currentColor' }} />
                   <span>Info Hub</span>
                 </div>
-
-                {/* Tab buttons */}
                 {informationGrids.map((grid) => {
                   const isActive = activeInfoContent === grid.id;
                   return (
@@ -972,25 +1027,21 @@ const Navbar = ({
                       className={`info-slim-tab${isActive ? ' slim-active' : ''}`}
                       onClick={() => handleInfoCardClick(grid.id)}
                     >
-                      <i className={`bi ${grid.icon}`} style={{ fontSize: '0.74rem' }} />
+                      <i className={`bi ${grid.icon}`} style={{ fontSize: '0.81rem' }} />
                       {grid.title}
                     </button>
                   );
                 })}
-
-                {/* Expand arrow — rightmost, expands the card grid */}
                 <button
                   className="info-slim-expand"
                   onClick={() => setHubExpanded(true)}
                   aria-label="Expand Info Hub"
                   title="Expand Info Hub"
                 >
-                  <i className="bi bi-chevron-down" style={{ fontSize: '0.68rem' }} />
+                  <i className="bi bi-chevron-down" style={{ fontSize: '0.74rem' }} />
                 </button>
-
               </div>
             </div>
-
           </div>
         </div>
 

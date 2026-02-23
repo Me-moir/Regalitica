@@ -1,9 +1,8 @@
-/* Mobile-specific section height */
 .aboutSection {
   min-height: auto;
   margin-top: 0;
   margin-bottom: 2rem;
-  background: var(--gradient-section);
+  background: transparent;
   position: relative;
 }
 
@@ -33,6 +32,7 @@
   flex-direction: column;
   border-top: 1px dashed var(--border-dashed);
   border-bottom: 1px dashed var(--border-dashed);
+  background: var(--gradient-section);
 }
 
 @media (min-width: 768px) {
@@ -40,6 +40,7 @@
     display: grid;
     grid-template-columns: 25% 75%;
     height: 100%;
+    background: var(--gradient-section);
   }
 }
 
@@ -354,4 +355,59 @@
   .learnMoreSection {
     padding-top: 2rem;
   }
+}
+
+/* ── About Us Header ── */
+.aboutHeader {
+  padding: 3rem 2rem 0;
+  max-width: 640px;
+}
+
+@media (min-width: 640px) {
+  .aboutHeader {
+    padding: 3.5rem 2.5rem 0;
+  }
+}
+
+@media (min-width: 1024px) {
+  .aboutHeader {
+    padding: 4rem 3rem 0;
+  }
+}
+
+.aboutHeaderTitle {
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  background: var(--text-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.75rem;
+}
+
+.aboutHeaderDesc {
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: var(--content-muted);
+  max-width: 480px;
+  margin-bottom: 2rem;
+}
+
+@media (min-width: 640px) {
+  .aboutHeaderDesc {
+    font-size: 1rem;
+  }
+}
+
+.aboutHeaderDivider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    var(--border-dashed, rgba(255,255,255,0.12)),
+    transparent
+  );
+  margin-bottom: 0;
 }
