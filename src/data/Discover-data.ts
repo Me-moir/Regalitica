@@ -39,6 +39,81 @@ export interface AboutGridItem {
   subtitle: string;
 }
 
+// ─── Teams ────────────────────────────────────────────────────────────────────
+
+export interface Founder {
+  id: string;
+  codename: string;
+  name: string;
+  title: string;
+  role: string;
+  src: string | null;
+  bio: string;
+  since: string;
+  linkedin: string;
+}
+
+export interface DynastyStat {
+  value: string;
+  accent: boolean;
+  label: string;
+}
+
+export const FOUNDERS: Founder[] = [
+  {
+    id: 'F-001',
+    codename: 'Alpha',
+    name: 'Founder Name',
+    title: 'Chief Executive Officer',
+    role: 'Vision & Strategy',
+    src: '/assets/Founder-1.jpg',
+    bio: "Leading the Notus Dynasty with an unwavering focus on long-term vision and strategic direction. Responsible for shaping the organizational culture and ensuring every unit operates in alignment with the dynasty's core mission.",
+    since: '2021',
+    linkedin: '#',
+  },
+  {
+    id: 'F-002',
+    codename: 'Beta',
+    name: 'Founder Name',
+    title: 'Chief Operating Officer',
+    role: 'Operations & Structure',
+    src: '/assets/Founder-2.jpg',
+    bio: 'Architect of the operational backbone that keeps six active units running with precision. Converts high-level strategy into executable systems, ensuring efficiency and accountability across all levels of the organization.',
+    since: '2021',
+    linkedin: '#',
+  },
+  {
+    id: 'F-003',
+    codename: 'Delta',
+    name: 'Founder Name',
+    title: 'Chief Technology Officer',
+    role: 'Systems & Infrastructure',
+    src: '/assets/Founder-3.jpg',
+    bio: "Drives the technological foundation of the dynasty — from internal infrastructure to external-facing systems. Ensures every tool, platform, and pipeline is built to scale alongside the organization's ambitions.",
+    since: '2021',
+    linkedin: '#',
+  },
+  {
+    id: 'F-004',
+    codename: 'Epsilon',
+    name: 'Founder Name',
+    title: 'Chief Creative Officer',
+    role: 'Design & Perception',
+    src: '/assets/Founder-4.jpg',
+    bio: 'Defines the visual language and creative identity of the Notus Dynasty. Responsible for every touchpoint of brand perception — from aesthetics and communications to the emotional resonance the organization creates.',
+    since: '2021',
+    linkedin: '#',
+  },
+];
+
+export const DYNASTY_STATS: DynastyStat[] = [
+  { value: '4',  accent: true,  label: 'Founders'      },
+  { value: '6',  accent: false, label: 'Active Units'  },
+  { value: '44', accent: false, label: 'Total Members' },
+];
+
+// ─── Overview ─────────────────────────────────────────────────────────────────
+
 export const OverviewContent: OverviewContent[] = [
   {
     icon: 'bi-collection',
@@ -77,7 +152,8 @@ export const OverviewContent: OverviewContent[] = [
   }
 ];
 
-// ABOUT PANEL Content
+// ─── About Panel ──────────────────────────────────────────────────────────────
+
 export const ABOUT_PANEL_ITEMS: AboutGridItem[] = [
   { key: 'company',    title: 'Company',                subtitle: 'About Us, Our Story, Timeline' },
   { key: 'philosophy', title: 'Philosophy',              subtitle: 'Core Beliefs, Operating Doctrine, Systems Principles' },

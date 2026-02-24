@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ThemeProvider } from "@/context/ThemeContext";
 import "./globals.css";
+import "@/styles/About.module.css";
 
 export const metadata: Metadata = {
   title: "Notus Regalia",

@@ -1,3 +1,4 @@
+"use client";
 import { memo, useCallback, useMemo } from 'react';
 import styles from './GridNavButton.module.css';
 import type { AboutGridItem } from '@/data/Discover-data';
@@ -29,7 +30,7 @@ const GridNavButton = memo<GridNavButtonProps>(({ item, index, isActive, onClick
       <span className={styles.title}>
         {item.title}
       </span>
-      
+
       {item.subtitle && (
         <span className={styles.subtitle}>
           {item.subtitle}

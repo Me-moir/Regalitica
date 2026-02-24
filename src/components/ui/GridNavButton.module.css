@@ -25,15 +25,11 @@
 }
 
 @media (min-width: 1024px) {
-  .gridButton {
-    padding: 1.5rem;
-  }
+  .gridButton { padding: 1.5rem; }
 }
 
 @media (min-width: 1280px) {
-  .gridButton {
-    padding: 2rem;
-  }
+  .gridButton { padding: 2rem; }
 }
 
 .title {
@@ -47,22 +43,15 @@
 }
 
 @media (min-width: 768px) {
-  .title {
-    font-size: 1rem;
-    text-align: right;
-  }
+  .title { font-size: 1rem; text-align: right; }
 }
 
 @media (min-width: 1024px) {
-  .title {
-    font-size: 1.25rem;
-  }
+  .title { font-size: 1.25rem; }
 }
 
 @media (min-width: 1280px) {
-  .title {
-    font-size: 1.5rem;
-  }
+  .title { font-size: 1.5rem; }
 }
 
 .active .title {
@@ -84,12 +73,12 @@
   .subtitle {
     display: block;
     font-size: 0.75rem;
-    color: var(--content-muted);
+    color: #E31B54;
     position: relative;
     z-index: 10;
     text-align: right;
     margin-top: 0.25rem;
-    opacity: 0.6;
+    opacity: 0.8;
     transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
@@ -105,7 +94,9 @@
   transition: opacity 0.3s;
   pointer-events: none;
   will-change: opacity;
-  background: radial-gradient(200px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(0, 255, 166, 0.8), rgba(255, 215, 0, 0.6), rgba(236, 72, 153, 0.6), rgba(147, 51, 234, 0.6), rgba(59, 130, 246, 0.5), transparent 70%);
+  background: radial-gradient(200px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(0,255,166,0.8), rgba(255,215,0,0.6), rgba(236,72,153,0.6),
+    rgba(147,51,234,0.6), rgba(59,130,246,0.5), transparent 70%);
   padding: 1px;
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
