@@ -138,7 +138,6 @@ const contactEmails = [
   { label: 'Support',      address: 'support@notus-regalia.com' },
 ];
 
-// Copy icon SVG
 function CopyIcon({ copied }: { copied: boolean }) {
   return copied ? (
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#E31B54" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -155,6 +154,7 @@ function CopyIcon({ copied }: { copied: boolean }) {
 const Footer = () => {
   const footerRef  = useRef<HTMLElement>(null);
   const splitRef   = useRef<HTMLDivElement>(null);
+  const nlBgRef    = useRef<HTMLDivElement>(null);
   const ctPanelRef = useRef<HTMLDivElement>(null);
 
   const [email, setEmail]                   = useState('');
@@ -162,6 +162,7 @@ const Footer = () => {
   const [showSuggestion, setShowSuggestion] = useState(false);
   const [copiedEmail, setCopiedEmail]       = useState<string | null>(null);
   const emailInputRef = useRef<HTMLInputElement>(null);
+  const [bandWidth, setBandWidth] = useState(0);
   const SUGGESTION = '@gmail.com';
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -182,6 +183,29 @@ const Footer = () => {
     });
   };
 
+  // Store seam x coords as {top, bottom} measured from the actual rendered element
+  const [seamX, setSeamX] = useState<{top: number; bottom: number} | null>(null);
+
+  useEffect(() => {
+    const measure = () => {
+      const band = splitRef.current;
+      const bg   = nlBgRef.current;
+      if (!band || !bg) return;
+      const bandRect = band.getBoundingClientRect();
+      const bgRect   = bg.getBoundingClientRect();
+      const top    = bgRect.right - bandRect.left;
+      const bottom = bgRect.right - 72 - bandRect.left;
+      setSeamX({ top, bottom });
+      setBandWidth(bandRect.width);
+    };
+    measure();
+    window.addEventListener('resize', measure, { passive: true });
+    return () => window.removeEventListener('resize', measure);
+  }, []);
+
+  const band3Ref = useRef<HTMLDivElement>(null);
+  const BORDER_THRESHOLD = 200; // px proximity to a border line to activate it
+
   useEffect(() => {
     const footer = footerRef.current;
     if (!footer) return;
@@ -189,14 +213,69 @@ const Footer = () => {
     const onMove = (e: MouseEvent) => {
       if (rafId) return;
       rafId = requestAnimationFrame(() => {
-        const rect = footer.getBoundingClientRect();
-        footer.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
-        footer.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+        const footerRect = footer.getBoundingClientRect();
+        const x = e.clientX - footerRect.left;
+        const y = e.clientY - footerRect.top;
+
+        footer.style.setProperty('--mouse-x', `${x}px`);
+        footer.style.setProperty('--mouse-y', `${y}px`);
+
+        // Footer very top border
+        footer.classList.toggle('border-top-active', y <= BORDER_THRESHOLD);
+
+        // footer-band3 top border — measure its top edge relative to the footer
+        const band3 = band3Ref.current;
+        if (band3) {
+          const b3Top = band3.getBoundingClientRect().top - footerRect.top;
+          band3.classList.toggle('border-top-active', Math.abs(y - b3Top) <= BORDER_THRESHOLD);
+        }
+
         rafId = null;
       });
     };
+    const onLeave = () => {
+      footer.classList.remove('border-top-active');
+      band3Ref.current?.classList.remove('border-top-active');
+    };
     footer.addEventListener('mousemove', onMove, { passive: true });
-    return () => { footer.removeEventListener('mousemove', onMove); if (rafId) cancelAnimationFrame(rafId); };
+    footer.addEventListener('mouseleave', onLeave);
+    return () => {
+      footer.removeEventListener('mousemove', onMove);
+      footer.removeEventListener('mouseleave', onLeave);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
+  }, []);
+
+  // Track split-band local mouse X for its own gradient border overlay
+  const bandBorderRef = useRef<HTMLDivElement>(null);
+  const [bandHovered, setBandHovered] = useState(false);
+
+  useEffect(() => {
+    const band = splitRef.current;
+    const borderEl = bandBorderRef.current;
+    if (!band || !borderEl) return;
+    let rafId: number | null = null;
+    const BAND_THRESHOLD = 200;
+    const onMove = (e: MouseEvent) => {
+      if (rafId) return;
+      rafId = requestAnimationFrame(() => {
+        const rect = band.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        borderEl.style.background = `radial-gradient(600px circle at ${x}px 0%, rgba(0,255,166,0.9), rgba(255,215,0,0.7), rgba(236,72,153,0.7), rgba(147,51,234,0.6), rgba(59,130,246,0.5), transparent 70%)`;
+        // Only activate when mouse is within threshold of the top border line
+        setBandHovered(y <= BAND_THRESHOLD);
+        rafId = null;
+      });
+    };
+    const onLeave = () => setBandHovered(false);
+    band.addEventListener('mousemove', onMove, { passive: true });
+    band.addEventListener('mouseleave', onLeave);
+    return () => {
+      band.removeEventListener('mousemove', onMove);
+      band.removeEventListener('mouseleave', onLeave);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
   }, []);
 
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
@@ -246,7 +325,7 @@ const Footer = () => {
             rgba(147,51,234,0.6), rgba(59,130,246,0.5), transparent 70%);
           opacity: 0; transition: opacity 0.35s ease; pointer-events: none;
         }
-        .glass-footer:hover::before { opacity: 1; }
+        .glass-footer.border-top-active::before { opacity: 1; }
         .glass-footer::after {
           content: ''; position: absolute; left: 0; right: 0; top: 0; height: 1px;
           transform-origin: top; transform: scaleY(0.35);
@@ -258,9 +337,7 @@ const Footer = () => {
           background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06) 20%, rgba(255,255,255,0.06) 80%, transparent);
         }
 
-        /* Bottom bar divider overrideable for theme */
         .footer-bottom { border-color: rgba(255,255,255,0.06); }
-
         .footer-copyright { color: rgba(255,255,255,0.45); }
 
         /* ══ SPLIT BAND ══ */
@@ -269,19 +346,18 @@ const Footer = () => {
           display: flex;
           height: 560px;
           overflow: hidden;
-          border-top: 1px solid rgba(255,255,255,0.07);
+          border-top: 1px solid rgba(255,255,255,0.22);
           background: #000000;
           isolation: isolate;
           color-scheme: dark;
         }
-        .split-band::before {
-          content: ''; position: absolute; top: -1px; left: 0; right: 0; height: 1px;
-          background: radial-gradient(600px circle at var(--mouse-x, 50%) 0%,
-            rgba(0,255,166,0.7), rgba(255,215,0,0.5), rgba(236,72,153,0.5),
-            rgba(147,51,234,0.45), rgba(59,130,246,0.4), transparent 70%);
-          opacity: 0; transition: opacity 0.35s ease; pointer-events: none; z-index: 10;
+
+        /* Inner gradient border overlay — sits INSIDE the band so overflow:hidden doesn't clip it */
+        .split-band-border {
+          position: absolute; top: 0; left: 0; right: 0; height: 1px;
+          opacity: 0; transition: opacity 0.35s ease; pointer-events: none; z-index: 20;
         }
-        .glass-footer:hover .split-band::before { opacity: 1; }
+        .split-band-border.is-hovered { opacity: 1; }
 
         /* ── Panels ── */
         .split-panel {
@@ -296,7 +372,6 @@ const Footer = () => {
           z-index: 1;
         }
 
-        /* Left panel — parallelogram BG leaning right (/) */
         .split-panel-nl { background: transparent; z-index: 1; }
         .split-panel-nl-bg {
           position: absolute;
@@ -305,8 +380,8 @@ const Footer = () => {
           background: #07070e;
           z-index: 0;
         }
+        @media (max-width: 768px) { .split-seam-line { display: none; } }
 
-        /* Right panel — same direction parallelogram, overlaps seam zone */
         .split-panel-ct {
           background: transparent;
           z-index: 2;
@@ -327,41 +402,44 @@ const Footer = () => {
           width: 100%;
           max-width: 560px;
         }
+        .split-panel-ct .split-panel-content {
+          max-width: 100%;
+        }
 
-        /* ── Typography — matched to footer-nav-link minimum (clamp 0.875rem) ── */
         .sp-eyebrow {
           display: inline-flex; align-items: center; gap: 0.6rem;
-          font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.24em;
+          font-size: clamp(0.72rem, 1.2vw, 0.82rem);
+          text-transform: uppercase; letter-spacing: 0.22em;
           font-weight: 700; color: #E31B54; margin-bottom: 1.25rem; white-space: nowrap;
         }
         .sp-eyebrow-dot {
-          width: 4px; height: 4px; border-radius: 50%; background: #E31B54; flex-shrink: 0;
+          width: 5px; height: 5px; border-radius: 50%; background: #E31B54; flex-shrink: 0;
           animation: pulse-dot 2s ease-in-out infinite;
         }
         @keyframes pulse-dot {
           0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(227,27,84,0.4); }
           50%       { opacity: 0.8; transform: scale(1.2); box-shadow: 0 0 0 4px rgba(227,27,84,0); }
         }
+
         .sp-title {
           font-size: clamp(2rem, 4vw, 3.25rem); font-weight: 300;
           color: #f1f5f9; letter-spacing: -0.03em; line-height: 1.05;
           margin-bottom: 1.75rem;
           white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
-        /* Match footer-nav-link: clamp(0.875rem, 2vw, 1.05rem) */
+
         .sp-sub {
-          font-size: clamp(0.72rem, 1.0vw, 0.88rem);
-          color: rgba(255,255,255,0.38);
-          line-height: 1.25; max-width: 44ch; margin-bottom: 3rem;
+          font-size: clamp(0.875rem, 2vw, 1.05rem);
+          color: rgba(255,255,255,0.45);
+          line-height: 1.65; max-width: 44ch; margin-bottom: 3rem;
           display: block; overflow-wrap: anywhere;
         }
         @media (max-width: 768px) {
-          .sp-sub { font-size: clamp(0.78rem, 1.6vw, 0.95rem); line-height: 1.6; max-width: 100%; }
+          .sp-sub { max-width: 100%; }
         }
 
-        /* Narrow the newsletter paragraph specifically in the right panel so it fits on ~2 lines */
         .split-panel-ct .sp-sub {
-          max-width: 80ch;
+          max-width: 100%;
         }
 
         /* ── Newsletter form ── */
@@ -369,8 +447,11 @@ const Footer = () => {
         @keyframes spin      { to { transform: rotate(360deg); } }
         @keyframes nlSlideIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-        .nl-slot { width: 100%; max-width: 620px; position: relative; animation: nlSlideIn 0.5s cubic-bezier(0.22,1,0.36,1) both; }
+        .nl-slot { width: 100%; max-width: 620px; height: 56px; flex-shrink: 0; position: relative; margin-left: auto; }
 
+        .nl-slot-inner {
+          position: absolute; inset: 0; display: flex; align-items: center; width: 100%;
+        }
         .nl-search-modal {
           width: 100%; border-radius: 4px;
           background: #1a1a1a; border: 1px solid #2a2a2a;
@@ -381,9 +462,8 @@ const Footer = () => {
         }
         .nl-search-modal:focus-within { border-color: #444; }
 
-        /* Match footer-nav-link min size */
         .nl-input {
-          flex: 1; background: transparent; border: none; outline: none;
+          width: 100%; background: transparent; border: none; outline: none;
           color: white; padding: 12px 0;
           font-size: clamp(0.875rem, 2vw, 1.05rem);
           font-family: inherit;
@@ -404,20 +484,40 @@ const Footer = () => {
         .nl-btn:hover:not(:disabled) { color: #ffffff; border-color: rgba(255,255,255,0.25); background: rgba(255,255,255,0.06); }
         .nl-btn:disabled { opacity: 0.25; cursor: not-allowed; }
 
+        /* Tab autocomplete pill */
         .nl-autocomplete-pill {
-          display: inline-flex; align-items: center; gap: 0.3rem; padding: 4px 10px; border-radius: 3px;
+          display: inline-flex; align-items: center; gap: 0.35rem; padding: 5px 10px; border-radius: 3px;
           font-size: 0.66rem; font-weight: 600; letter-spacing: 0.08em;
-          color: rgba(255,255,255,0.35); background: transparent; border: 1px solid rgba(255,255,255,0.1);
+          color: rgba(255,255,255,0.45); background: transparent; border: 1px solid rgba(255,255,255,0.15);
           text-transform: uppercase; cursor: pointer; white-space: nowrap; user-select: none;
-          transition: color 0.12s ease, border-color 0.12s ease;
+          font-family: inherit;
+          transition: color 0.12s ease, border-color 0.12s ease, background 0.12s ease;
         }
-        .nl-autocomplete-pill:hover { color: rgba(255,255,255,0.7); border-color: rgba(255,255,255,0.25); }
+        .nl-autocomplete-pill:hover { color: rgba(255,255,255,0.8); border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.04); }
+        .nl-tab-icon { display: inline-flex; align-items: center; opacity: 0.6; }
+
+        /* Ghost-text autocomplete */
+        .nl-input-wrap {
+          flex: 1; position: relative; display: flex; align-items: center; overflow: hidden;
+        }
+        .nl-input-wrap .nl-input { position: relative; z-index: 2; background: transparent; }
+        .nl-ghost-text {
+          position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+          font-size: clamp(0.875rem, 2vw, 1.05rem); font-family: inherit;
+          white-space: nowrap; pointer-events: none; z-index: 1;
+          color: transparent; /* typed portion invisible — input text sits on top */
+        }
+        .nl-ghost-suffix {
+          color: rgba(227, 27, 84, 0.45); /* faint red */
+          pointer-events: auto; cursor: text;
+        }
 
         .nl-success {
-          display: inline-flex; align-items: center; gap: 0.625rem;
+          display: flex; align-items: center; justify-content: flex-end;
+          width: 100%; gap: 0.625rem;
           color: rgba(255,255,255,0.7);
           font-size: clamp(0.875rem, 2vw, 1.05rem);
-          animation: fadeIn 350ms ease; font-weight: 400; padding: 1.25rem 0;
+          animation: fadeIn 350ms ease; font-weight: 400; padding: 0;
         }
         .nl-success i { color: #E31B54; }
         .spinner { width: 0.75rem; height: 0.75rem; border: 1.5px solid rgba(255,255,255,0.2); border-top-color: #ffffff; border-radius: 50%; animation: spin 0.6s linear infinite; }
@@ -425,14 +525,15 @@ const Footer = () => {
         /* ── Contact emails ── */
         .ct-email-list {
           display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: 2.5rem;
+          gap: 2.5rem 10rem;
         }
-        .ct-email-row { display: flex; flex-direction: column; gap: 0.4rem; min-width: 0; }
+        .ct-email-row { display: flex; flex-direction: column; gap: 0.5rem; min-width: 0; }
+
         .ct-email-label {
-          font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.16em;
-          color: rgba(255,255,255,0.28); font-weight: 500;
+          font-size: clamp(0.65rem, 1.4vw, 0.8rem);
+          text-transform: uppercase; letter-spacing: 0.18em;
+          color: rgba(255,255,255,0.35); font-weight: 600;
         }
-        /* Match footer-nav-link: clamp(0.875rem, 2vw, 1.05rem) */
         .ct-email-btn {
           display: inline-flex; align-items: center; gap: 0.6rem;
           font-family: ui-monospace, Menlo, monospace;
@@ -440,7 +541,7 @@ const Footer = () => {
           color: rgba(255,255,255,0.7); font-weight: 500; letter-spacing: 0.01em;
           cursor: pointer; background: none; border: none; padding: 0; text-align: left;
           transition: color 0.2s ease;
-          white-space: nowrap; /* keep email on single line */
+          white-space: nowrap;
           overflow: visible;
         }
         .ct-email-btn > span { display: inline-block; }
@@ -449,8 +550,7 @@ const Footer = () => {
         .ct-email-btn.is-copied { color: #E31B54; }
         .ct-copy-icon {
           display: inline-flex; align-items: center; flex-shrink: 0;
-          opacity: 0.35;
-          transition: opacity 0.2s ease;
+          opacity: 0.35; transition: opacity 0.2s ease;
           color: rgba(255,255,255,0.5);
         }
         .ct-email-btn.is-copied .ct-copy-icon { opacity: 1; color: #E31B54; }
@@ -470,7 +570,7 @@ const Footer = () => {
         .footer-band3 {
           padding: 4rem clamp(1rem, 5vw, 9rem);
           background: linear-gradient(160deg, #0a0a0f 0%, #0d0d14 60%, #080810 100%);
-          border-top: 1px solid rgba(255,255,255,0.07);
+          border-top: 1px solid rgba(255,255,255,0.22);
           position: relative; isolation: isolate;
         }
         .footer-band3::before {
@@ -480,7 +580,7 @@ const Footer = () => {
             rgba(147,51,234,0.45), rgba(59,130,246,0.4), transparent 70%);
           opacity: 0; transition: opacity 0.35s ease; pointer-events: none;
         }
-        .glass-footer:hover .footer-band3::before { opacity: 1; }
+        .footer-band3.border-top-active::before { opacity: 1; }
 
         .system-status { border: 1px solid rgba(255,255,255,0.04); background: rgba(255,255,255,0.015); }
         .system-status .preserve-system { color: inherit; }
@@ -508,7 +608,7 @@ const Footer = () => {
         .logo-badge-wrapper:hover::before { opacity: 1; }
         .logo-badge { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.5rem; border-radius: 1rem; background: transparent; z-index: 1; width: fit-content; }
 
-        .glass-box { display: inline-flex; align-items: center; justify-content: center; width: 2.25rem; height: 2.25rem; border-radius: 0.5rem; background: var(--hover-bg-10); border: 1px solid rgba(255,255,255,0.12); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); box-shadow: 0 2px 8px rgba(0,0,0,0.18), inset 0 1px 0 var(--glass-inset-top); color: var(--content-faint); transition: background 180ms ease, box-shadow 180ms ease, transform 180ms ease, color 180ms ease; }
+        .glass-box { display: inline-flex; align-items: center; justify-content: center; width: 4.5rem; height: 4.5rem; border-radius: 0.75rem; background: var(--hover-bg-10); border: 1px solid rgba(255,255,255,0.12); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); box-shadow: 0 2px 8px rgba(0,0,0,0.18), inset 0 1px 0 var(--glass-inset-top); color: var(--content-faint); transition: background 180ms ease, box-shadow 180ms ease, transform 180ms ease, color 180ms ease; }
         .glass-box:hover { background: var(--hover-bg-strong); box-shadow: 0 4px 14px rgba(0,0,0,0.26), inset 0 1px 0 var(--glass-inset-top); transform: translateY(-1px); color: var(--content-primary); }
 
         @media (max-width: 640px) {
@@ -535,7 +635,6 @@ const Footer = () => {
         :global(.light) .tech-link { color: #0f172a; }
         :global(.light) .tech-link::before, :global(.light) .tech-link::after { color: #EB1143; }
         :global(.light) .hud-border-top::before { background: linear-gradient(90deg, #EB1143, #c40e38); box-shadow: 0 0 8px rgba(235,17,67,0.5); }
-        /* Light-mode footer overrides for copyright and bottom divider */
         :global(.light) .footer-bottom { border-color: rgba(0,0,0,0.08) !important; }
         :global(.light) .footer-copyright { color: rgba(15,23,42,0.75) !important; }
       `}</style>
@@ -550,10 +649,45 @@ const Footer = () => {
 
       {/* ══ SPLIT BAND ══ */}
       <div ref={splitRef} className="relative z-10 split-band">
+        {/* Gradient border overlay — rendered INSIDE so overflow:hidden does not clip it */}
+        <div
+          ref={bandBorderRef}
+          className={`split-band-border${bandHovered ? ' is-hovered' : ''}`}
+        />
+        {seamX && (
+          <svg
+            aria-hidden
+            className="split-seam-line"
+            style={{
+              position: 'absolute', inset: 0,
+              width: '100%', height: '100%',
+              zIndex: 10, pointerEvents: 'none', overflow: 'visible',
+            }}
+          >
+            <defs>
+              <linearGradient id="seamGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%"   stopColor="rgba(255,255,255,0.08)" />
+                <stop offset="30%"  stopColor="rgba(255,255,255,0.45)" />
+                <stop offset="70%"  stopColor="rgba(255,255,255,0.45)" />
+                <stop offset="100%" stopColor="rgba(255,255,255,0.08)" />
+              </linearGradient>
+            </defs>
+            <line
+              x1={seamX.top}
+              y1={0}
+              x2={seamX.bottom}
+              y2={560}
+              stroke="url(#seamGrad)"
+              strokeWidth={1}
+              strokeDasharray="5 5"
+            />
+          </svg>
+        )}
 
-        {/* Left: Contact Us (content swapped here; background unchanged) */}
+
+        {/* Left: Contact Us */}
         <div className="split-panel split-panel-nl">
-          <div className="split-panel-nl-bg" />
+          <div className="split-panel-nl-bg" ref={nlBgRef} />
           <div className="split-panel-content">
             <div style={{ textAlign: 'left' }}>
               <p className="sp-eyebrow"><span className="sp-eyebrow-dot" />Get in Touch</p>
@@ -582,7 +716,7 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Right: Newsletter (content swapped here; DotPattern and bg remain) */}
+        {/* Right: Newsletter */}
         <div ref={ctPanelRef} className="split-panel split-panel-ct">
           <div className="split-panel-ct-bg" />
           <DotPattern
@@ -592,32 +726,50 @@ const Footer = () => {
             proximity={110} glowIntensity={0.85} waveSpeed={0.35}
             baseOpacity={0.99}
           />
-          <div className="split-panel-content" style={{ marginLeft: 'auto' }}>
+          <div className="split-panel-content" style={{ width: '100%', maxWidth: '100%' }}>
             <div style={{ textAlign: 'right' }}>
               <p className="sp-eyebrow" style={{ justifyContent: 'flex-end' }}><span className="sp-eyebrow-dot" />Notus Regalia Signal</p>
               <h2 className="sp-title">Newsletter</h2>
-              <p className="sp-sub" style={{ marginLeft: 'auto' }}>
+              <p className="sp-sub" style={{ width: '100%' }}>
                 Curated insights on emerging ideas, ventures, and moments that matter — delivered sparingly, always with intent. No noise. No algorithms. Just signal.
               </p>
             </div>
             <div className="nl-slot">
               {submitState === 'success' ? (
+                <div className="nl-slot-inner">
                 <p className="nl-success">
                   <i className="bi bi-check-circle-fill" />
                   You&apos;re in. Watch for the first dispatch.
                 </p>
+                </div>
               ) : (
+                <div className="nl-slot-inner">
                 <form onSubmit={handleNewsletterSubmit} style={{ width: '100%' }}>
-                  <div className="nl-search-modal">
-                    <input
-                      ref={emailInputRef} type="email" className="nl-input"
-                      placeholder="youremail@gmail.com" value={email}
-                      onChange={handleEmailChange} onKeyDown={handleEmailKeyDown}
-                      required disabled={submitState === 'loading'}
-                    />
+                  <div className="nl-search-modal" onClick={() => emailInputRef.current?.focus()} style={{ cursor: 'text' }}>
+                    <div className="nl-input-wrap">
+                      <input
+                        ref={emailInputRef} type="email" className="nl-input"
+                        placeholder="youremail@gmail.com" value={email}
+                        onChange={handleEmailChange} onKeyDown={handleEmailKeyDown}
+                        required disabled={submitState === 'loading'}
+                      />
+                      {showSuggestion && (
+                        <span className="nl-ghost-text" aria-hidden onClick={completeSuggestion}>
+                          {email}<span className="nl-ghost-suffix">@gmail.com</span>
+                        </span>
+                      )}
+                    </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginLeft: '1rem' }}>
                       {showSuggestion && (
-                        <button type="button" className="nl-autocomplete-pill" onClick={completeSuggestion}>Tab</button>
+                        <button type="button" className="nl-autocomplete-pill" onClick={completeSuggestion}>
+                          TAB
+                          <span className="nl-tab-icon">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="9 10 4 15 9 20" />
+                              <path d="M20 4v7a4 4 0 0 1-4 4H4" />
+                            </svg>
+                          </span>
+                        </button>
                       )}
                       <button type="submit" className="nl-btn" disabled={submitState === 'loading' || !email}>
                         {submitState === 'loading' ? <span className="spinner" /> : 'subscribe'}
@@ -625,6 +777,7 @@ const Footer = () => {
                     </div>
                   </div>
                 </form>
+                </div>
               )}
             </div>
           </div>
@@ -635,6 +788,7 @@ const Footer = () => {
 
       {/* ══ MAIN FOOTER ══ */}
       <div
+        ref={band3Ref}
         className="footer-band3 relative z-10 w-full pt-20 pb-10"
         style={{ paddingLeft: 'clamp(1rem, 5vw, 9rem)', paddingRight: 'clamp(1rem, 5vw, 9rem)' }}
       >
@@ -698,7 +852,7 @@ const Footer = () => {
           <div className="flex items-center gap-2.5">
             {['bi-twitter-x', 'bi-github', 'bi-discord', 'bi-linkedin'].map((icon, idx) => (
               <a key={idx} href="#" className="glass-box text-slate-400 transition-all duration-300 hover:text-teal-400" aria-label={icon.replace('bi-', '')}>
-                <i className={`bi ${icon} text-sm`} />
+                <i className={`bi ${icon} text-2xl`} />
               </a>
             ))}
           </div>
@@ -708,4 +862,4 @@ const Footer = () => {
   );
 };
 
-export default Footer;
+export default Footer;  

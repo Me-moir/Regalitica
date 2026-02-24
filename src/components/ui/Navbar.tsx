@@ -156,20 +156,34 @@ const SearchTabBtn = ({
   </div>
 );
 
-// ── Sticky theme tab: shown below "Show Nav" when navbar is collapsed ──
+// ── Sticky theme tab: purely CSS-driven toggle, zero React state ──
+// Clicking directly mutates document.documentElement classes — React is never
+// involved, so the tab-visible slide-in transition is never interrupted.
+// Both icons and both text labels live in the DOM permanently; CSS rules
+// keyed off :root.dark show/hide the correct one.
 const StickyThemeTab = ({ visible, isMobile }: { visible: boolean; isMobile: boolean }) => {
-  const { dark, toggle } = useDarkMode();
+  const handleClick = useCallback(() => {
+    const root = document.documentElement;
+    root.classList.toggle('dark');
+    root.classList.toggle('light');
+  }, []);
+
   return (
     <button
       className={`nav-theme-tab${visible ? ' tab-visible' : ''}`}
-      onClick={toggle}
-      aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
+      onClick={handleClick}
+      aria-label="Toggle light/dark mode"
     >
-      <i
-        className={`bi ${dark ? 'bi-sun' : 'bi-moon'} reveal-tab-icon`}
-        style={{ fontSize: '0.9rem' }}
-      />
-      {!isMobile && <span>{dark ? 'Light' : 'Dark'}</span>}
+      <span className="sticky-theme-icon reveal-tab-icon" aria-hidden>
+        <i className="bi bi-moon sticky-icon-moon" />
+        <i className="bi bi-sun  sticky-icon-sun" />
+      </span>
+      {!isMobile && (
+        <span className="sticky-theme-label">
+          <span className="sticky-label-dark">Dark</span>
+          <span className="sticky-label-light">Light</span>
+        </span>
+      )}
     </button>
   );
 };
@@ -197,7 +211,6 @@ const NAVBAR_CSS = `
 
 .glass-navbar {
   position: fixed; top: 0; left: 0; right: 0; z-index: 60;
-  /* Match contact-band visual while retaining liquid glass texture */
   background: linear-gradient(160deg, #0a0a0f 0%, #0d0d14 60%, #080810 100%);
   backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
   border-bottom: 1px solid rgba(255,255,255,0.07);
@@ -238,7 +251,6 @@ const NAVBAR_CSS = `
 .logo-icon svg { width: 20px; height: 20px; fill: rgba(255,255,255,0.92); }
 .logo-text { font-size: 1.18rem; font-weight: 800; letter-spacing: -0.03em; color: var(--content-primary); line-height: 1; }
 
-/* ── Shared base styles for both sticky side tabs ── */
 .nav-reveal-tab,
 .nav-theme-tab {
   position: fixed; right: 0; z-index: 59;
@@ -263,12 +275,31 @@ const NAVBAR_CSS = `
 .nav-theme-tab  { min-width: 118px; justify-content: flex-start; }
 .nav-reveal-tab.tab-visible,
 .nav-theme-tab.tab-visible  { opacity: 1; pointer-events: auto; transform: translateX(0); }
-.nav-theme-tab.tab-visible { transition-delay: 0.06s; }
+/* transition-delay removed — caused slide transition to re-run on every render */
 .nav-reveal-tab:hover,
 .nav-theme-tab:hover { color: var(--content-primary); box-shadow: -6px 4px 28px rgba(0,0,0,0.35); }
 .nav-reveal-tab:hover .reveal-tab-icon,
 .nav-theme-tab:hover  .reveal-tab-icon { transform: translateX(-2px); }
 .reveal-tab-icon { font-size: 0.82rem; transition: transform 0.2s cubic-bezier(0.34,1.18,0.64,1); }
+
+/* ── Sticky theme tab: CSS-only icon + label toggling ── */
+.sticky-theme-icon { position: relative; display: inline-flex; width: 0.9rem; height: 0.9rem; font-size: 0.9rem; flex-shrink: 0; }
+.sticky-icon-moon,
+.sticky-icon-sun  { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: opacity 0.18s ease; }
+/* default (dark mode): show sun, hide moon */
+.sticky-icon-moon { opacity: 1; }
+.sticky-icon-sun  { opacity: 0; }
+:root.dark .sticky-icon-moon { opacity: 0; }
+:root.dark .sticky-icon-sun  { opacity: 1; }
+/* label: both always in DOM, opacity-swap — display:none causes reflow which
+   re-triggers the parent button's opacity/transform transitions (the visible flash) */
+.sticky-theme-label { position: relative; display: inline-block; min-width: 2.6rem; }
+.sticky-label-dark,
+.sticky-label-light { transition: opacity 0.18s ease; }
+.sticky-label-dark  { opacity: 1; position: relative; }
+.sticky-label-light { opacity: 0; position: absolute; left: 0; top: 0; pointer-events: none; }
+:root.dark .sticky-label-dark  { opacity: 0; pointer-events: none; }
+:root.dark .sticky-label-light { opacity: 1; pointer-events: auto; }
 .nav-reveal-tab::before,
 .nav-theme-tab::before {
   content: ''; position: absolute; left: 0; top: 4px; bottom: 4px; width: 2.5px;
@@ -321,7 +352,6 @@ const NAVBAR_CSS = `
   opacity: 0; visibility: hidden; pointer-events: none;
 }
 
-/* ── Tab pill wrapper (shared by nav items AND right-control buttons) ── */
 .tab-item-border {
   display: inline-flex; flex-shrink: 0;
   border-radius: 10.5px;
@@ -439,7 +469,6 @@ const NAVBAR_CSS = `
   animation-delay: calc(var(--i, 0) * 0.04s);
 }
 
-/* ── ⌘K badge inside search button ── */
 .search-shortcut {
   display: inline-flex; align-items: center; padding: 2px 6px; border-radius: 5px;
   font-size: 0.72rem; font-weight: 600; color: var(--content-faint);
@@ -451,7 +480,6 @@ const NAVBAR_CSS = `
   .nav-center, .nav-divider.desktop-only { display: none; }
   .tab-sep, .tab-arrow-btn { display: none; }
   .tab-label-btn { padding: 6px 11px; font-size: 0.84rem; }
-  /* Hide "Hide" button on mobile — sidebar covers this UX */
   .collapse-btn-desktop { display: none !important; }
   .nav-reveal-tab { top: 12px; padding: 7px 11px 7px 10px; font-size: 0.74rem; }
   .nav-theme-tab  { top: calc(12px + 34px + 5px); padding: 7px 11px 7px 10px; font-size: 0.74rem; }
@@ -506,9 +534,6 @@ const NAVBAR_CSS = `
 .mob-subtab-btn.is-active { color: var(--content-primary); font-weight: 600; position: relative; }
 .mob-subtab-btn.is-active::before { content: ''; position: absolute; left: 36px; top: 50%; transform: translateY(-50%); width: 4px; height: 4px; border-radius: 50%; background: rgba(255,255,255,0.8); }
 
-/* ══════════════════════════════════════════════════════════════════════════
-   INFO HUB EXTENSION
-   ══════════════════════════════════════════════════════════════════════════ */
 .info-hub-outer {
   display: grid; grid-template-rows: 0fr; opacity: 0; pointer-events: none;
   border-top: 1px solid transparent;
@@ -611,6 +636,7 @@ const Navbar = ({
   const [mobileExpandedTab, setMobileExpandedTab] = useState<string | null>(null);
   const [hubExpanded, setHubExpanded]             = useState(true);
   const [navCollapsed, setNavCollapsed]           = useState(false);
+  const { dark: isDark, toggle: toggleDark } = useDarkMode();
 
   const navContainerRef  = useRef<HTMLDivElement>(null);
   const rafIdRef         = useRef<number | null>(null);
@@ -973,7 +999,7 @@ const Navbar = ({
             </div>
           </div>
 
-          {/* ── RIGHT CONTROLS: [Theme] [Hide] [Search] — no dividers ── */}
+          {/* ── RIGHT CONTROLS ── */}
           <div className={`nav-right-controls${isExpanded ? ' controls-hidden' : ''}`}>
             <ThemeToggleTabBtn isMobile={isMobile} />
             <HideNavTabBtn isMobile={isMobile} onClick={handleCollapseNav} />
