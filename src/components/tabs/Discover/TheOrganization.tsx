@@ -211,7 +211,7 @@ FounderCard.displayName = 'FounderCard';
 /* ─────────────────────────────────────────
    TEAMS SECTION
 ───────────────────────────────────────── */
-const Teams = () => {
+const TheOrganization = () => {
   const [activeFounder, setActiveFounder] = useState<Founder | null>(null);
   const handleExpand = useCallback((f: Founder) => {
     setActiveFounder(f);
@@ -490,4 +490,4 @@ const Teams = () => {
   );
 };
 
-export default memo(Teams);
+export default memo(TheOrganization);

@@ -62,7 +62,7 @@ const AboutLearnMoreButton = memo<AboutLearnMoreButtonProps>(({ href, onMouseMov
 ));
 AboutLearnMoreButton.displayName = "AboutLearnMoreButton";
 
-const AboutPanel = memo(() => {
+const TheCompany = memo(() => {
   const sectionRef = useRef<HTMLElement>(null);
   const navRef = useRef<HTMLDivElement>(null);
 
@@ -247,6 +247,6 @@ const AboutPanel = memo(() => {
   );
 });
 
-AboutPanel.displayName = "AboutPanel";
+TheCompany.displayName = "TheCompany";
 
-export default AboutPanel;
+export default TheCompany;

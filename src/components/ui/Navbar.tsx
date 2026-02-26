@@ -34,12 +34,10 @@ const NAV_ITEMS: NavItem[] = [
     label: 'Discover',
     icon: 'bi-rocket-takeoff',
     subtabs: [
-      { id: 'discover-overview',     label: 'Overview',     sectionId: 'section-overview' },
-      { id: 'discover-about',        label: 'About',        sectionId: 'section-about' },
-      { id: 'discover-direction',    label: 'Direction',    sectionId: 'section-direction' },
-      { id: 'discover-team',         label: 'Team',         sectionId: 'section-team' },
-      { id: 'discover-governance',   label: 'Governance',   sectionId: 'section-governance' },
-      { id: 'discover-affiliations', label: 'Affiliations', sectionId: 'section-affiliations' },
+      { id: 'discover-overview',      label: 'Overview',      sectionId: 'section-overview' },
+      { id: 'discover-thecompany',    label: 'The Company',   sectionId: 'section-TheCompany' },
+      { id: 'discover-theorganization',  label: 'The Organization',  sectionId: 'section-TheOrganization' },
+      { id: 'discover-strategiccapital',  label: 'Strategic Capital',  sectionId: 'section-StrategicCapital' },
     ],
   },
   {
@@ -89,27 +87,29 @@ function useNightMode() {
   return { night, toggle };
 }
 
-// ── Theme toggle — styled exactly like main nav tab buttons ──
+// ── Theme toggle button ──
 const ThemeToggleTabBtn = ({ isMobile }: { isMobile: boolean }) => {
   const { night, toggle } = useNightMode();
   return (
-    <div className="tab-item-border">
+    <div
+      className="tab-item-border nav-icon-btn-wrap"
+      data-tooltip={night ? 'Light mode' : 'Night mode'}
+    >
       <div className="tab-item">
         <button
           className="tab-label-btn"
           onClick={toggle}
           aria-label={night ? 'Switch to light mode' : 'Switch to night mode'}
-          style={{ padding: isMobile ? '11px 13px' : '11px 18px 11px 16px' }}
+          style={{ padding: '11px 13px' }}
         >
           <i className={`bi ${night ? 'bi-sun' : 'bi-moon'}`} style={{ fontSize: '0.85rem' }} />
-          {!isMobile && <span>{night ? 'Light' : 'Night'}</span>}
         </button>
       </div>
     </div>
   );
 };
 
-// ── Hide-navbar button — styled exactly like main nav tab buttons ──
+// ── Hide-navbar button — icon only with tooltip ──
 const HideNavTabBtn = ({
   isMobile,
   onClick,
@@ -117,22 +117,24 @@ const HideNavTabBtn = ({
   isMobile: boolean;
   onClick: () => void;
 }) => (
-  <div className="tab-item-border collapse-btn-desktop">
+  <div
+    className="tab-item-border collapse-btn-desktop nav-icon-btn-wrap"
+    data-tooltip="Hide nav"
+  >
     <div className="tab-item">
       <button
         className="tab-label-btn collapse-btn-desktop"
         onClick={onClick}
         aria-label="Hide navigation bar"
-        style={{ padding: isMobile ? '11px 13px' : '11px 18px 11px 16px' }}
+        style={{ padding: '11px 13px' }}
       >
         <i className="bi bi-eye-slash" style={{ fontSize: '0.85rem' }} />
-        {!isMobile && <span>Hide</span>}
       </button>
     </div>
   </div>
 );
 
-// ── Search button — styled exactly like main nav tab buttons ──
+// ── Search button ──
 const SearchTabBtn = ({
   isMobile,
   onClick,
@@ -156,11 +158,6 @@ const SearchTabBtn = ({
   </div>
 );
 
-// ── Sticky theme tab: purely CSS-driven toggle, zero React state ──
-// Clicking directly mutates document.documentElement classes — React is never
-// involved, so the tab-visible slide-in transition is never interrupted.
-// Both icons and both text labels live in the DOM permanently; CSS rules
-// keyed off :root.night show/hide the correct one.
 const StickyThemeTab = ({ visible, isMobile }: { visible: boolean; isMobile: boolean }) => {
   const handleClick = useCallback(() => {
     const root = document.documentElement;
@@ -193,21 +190,17 @@ const NAVBAR_CSS = `
   0%   { background-position: 0% 0%; }
   100% { background-position: 200% 0%; }
 }
+@keyframes slimTabIn {
+  from { opacity: 0; transform: translateX(8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
 
-/* Light-mode overrides: keep navbar visually white while retaining glass blur/shadow */
+/* ── Light-mode navbar ── */
 :root.light .glass-navbar {
   background: linear-gradient(to bottom, #f8fafc 0%, #eef2f6 60%);
   border-bottom: 1px solid rgba(0,0,0,0.08);
 }
 :root.light .glass-navbar::before { display: none; }
-@keyframes subIn {
-  from { opacity:0; transform:translateX(10px); }
-  to   { opacity:1; transform:translateX(0); }
-}
-@keyframes cardFadeUp {
-  from { opacity:0; transform:translateY(10px); }
-  to   { opacity:1; transform:translateY(0); }
-}
 
 .glass-navbar {
   position: fixed; top: 0; left: 0; right: 0; z-index: 60;
@@ -227,13 +220,14 @@ const NAVBAR_CSS = `
 }
 .glass-navbar::before {
   content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 1px;
-  background: radial-gradient(600px circle at var(--mouse-x, 50%) 100%,
-    rgba(0,255,166,0.9), rgba(255,215,0,0.7), rgba(236,72,153,0.7),
-    rgba(147,51,234,0.6), rgba(59,130,246,0.5), transparent 70%);
+  background: radial-gradient(400px circle at var(--mouse-x, 50%) 100%,
+    rgba(0,255,166,0.45), rgba(255,215,0,0.35), rgba(236,72,153,0.35),
+    rgba(147,51,234,0.28), rgba(59,130,246,0.22), transparent 70%);
   opacity: 0; transition: opacity 0.35s ease; pointer-events: none;
 }
 .glass-navbar:hover::before { opacity: 1; }
 
+/* ── Logo ── */
 .logo-mark {
   display: flex; align-items: center; gap: 12px; user-select: none;
   border: none; background: transparent; padding: 0; cursor: pointer;
@@ -248,9 +242,9 @@ const NAVBAR_CSS = `
   box-shadow: 0 0 14px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.08);
   overflow: hidden;
 }
-.logo-icon svg { width: 20px; height: 20px; fill: rgba(255,255,255,0.92); }
 .logo-text { font-size: 1.18rem; font-weight: 800; letter-spacing: -0.03em; color: var(--content-primary); line-height: 1; }
 
+/* ── Sticky reveal + theme tabs ── */
 .nav-reveal-tab,
 .nav-theme-tab {
   position: fixed; right: 0; z-index: 59;
@@ -271,128 +265,92 @@ const NAVBAR_CSS = `
 }
 .nav-reveal-tab { top: 16px; }
 .nav-theme-tab  { top: calc(16px + 38px + 6px); }
-.nav-reveal-tab,
-.nav-theme-tab  { min-width: 118px; justify-content: flex-start; }
+.nav-reveal-tab, .nav-theme-tab { min-width: 118px; justify-content: flex-start; }
 .nav-reveal-tab.tab-visible,
 .nav-theme-tab.tab-visible  { opacity: 1; pointer-events: auto; transform: translateX(0); }
-/* transition-delay removed — caused slide transition to re-run on every render */
 .nav-reveal-tab:hover,
 .nav-theme-tab:hover { color: var(--content-primary); box-shadow: -6px 4px 28px rgba(0,0,0,0.35); }
 .nav-reveal-tab:hover .reveal-tab-icon,
 .nav-theme-tab:hover  .reveal-tab-icon { transform: translateX(-2px); }
 .reveal-tab-icon { font-size: 0.82rem; transition: transform 0.2s cubic-bezier(0.34,1.18,0.64,1); }
 
-/* ── Sticky theme tab: CSS-only icon + label toggling ── */
 .sticky-theme-icon { position: relative; display: inline-flex; width: 0.9rem; height: 0.9rem; font-size: 0.9rem; flex-shrink: 0; }
-.sticky-icon-moon,
-.sticky-icon-sun  { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: opacity 0.18s ease; }
-/* default (night mode): show sun, hide moon */
+.sticky-icon-moon, .sticky-icon-sun { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: opacity 0.18s ease; }
 .sticky-icon-moon { opacity: 1; }
 .sticky-icon-sun  { opacity: 0; }
 :root.night .sticky-icon-moon { opacity: 0; }
 :root.night .sticky-icon-sun  { opacity: 1; }
-/* label: both always in DOM, opacity-swap — display:none causes reflow which
-   re-triggers the parent button's opacity/transform transitions (the visible flash) */
 .sticky-theme-label { position: relative; display: inline-block; min-width: 2.6rem; }
-.sticky-label-night,
-.sticky-label-light { transition: opacity 0.18s ease; }
-.sticky-label-night  { opacity: 1; position: relative; }
+.sticky-label-night, .sticky-label-light { transition: opacity 0.18s ease; }
+.sticky-label-night { opacity: 1; position: relative; }
 .sticky-label-light { opacity: 0; position: absolute; left: 0; top: 0; pointer-events: none; }
-:root.night .sticky-label-night  { opacity: 0; pointer-events: none; }
+:root.night .sticky-label-night { opacity: 0; pointer-events: none; }
 :root.night .sticky-label-light { opacity: 1; pointer-events: auto; }
 .nav-reveal-tab::before,
 .nav-theme-tab::before {
   content: ''; position: absolute; left: 0; top: 4px; bottom: 4px; width: 2.5px;
   border-radius: 999px;
-  background: linear-gradient(180deg,
-    rgba(220,20,60,1) 0%, rgba(200,15,50,0.9) 50%, rgba(180,10,40,0.75) 100%);
-  opacity: 0.9;
-  box-shadow: 0 0 6px rgba(220,20,60,0.6);
+  background: linear-gradient(180deg, rgba(220,20,60,1) 0%, rgba(200,15,50,0.9) 50%, rgba(180,10,40,0.75) 100%);
+  opacity: 0.9; box-shadow: 0 0 6px rgba(220,20,60,0.6);
 }
 
+/* ── Tooltip (bottom) ── */
+.nav-icon-btn-wrap { position: relative; }
+.nav-icon-btn-wrap::after {
+  content: attr(data-tooltip);
+  position: absolute; top: calc(100% + 8px); left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+  background: rgba(20,20,28,0.96); color: rgba(255,255,255,0.88);
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.03em; white-space: nowrap;
+  padding: 5px 9px; border-radius: 7px; border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4); pointer-events: none; opacity: 0;
+  transition: opacity 0.18s ease, transform 0.18s ease; z-index: 100;
+}
+.nav-icon-btn-wrap:hover::after { opacity: 1; transform: translateX(-50%) translateY(0); }
+:root.light .nav-icon-btn-wrap::after {
+  background: rgba(255,255,255,0.97); color: rgba(0,0,0,0.8);
+  border-color: rgba(0,0,0,0.12); box-shadow: 0 4px 16px rgba(0,0,0,0.14);
+}
+
+/* ── Layout ── */
 .nav-divider {
   width: 1px;
   background: linear-gradient(to bottom, transparent, var(--border-color), transparent);
   margin: 0 4px; flex-shrink: 0;
 }
-
-.nav-center {
-  position: relative; flex: 1; min-width: 0;
-  display: flex; align-items: center;
-  overflow: visible;
-}
-
-.tabs-row {
-  display: flex; align-items: center; gap: 12px; width: 100%;
-  transition: opacity 0.2s ease, transform 0.22s ease; pointer-events: auto;
-}
-.tabs-row.expanded { opacity: 0; transform: translateX(-16px); }
-.tabs-row.expanded .tab-label-btn { pointer-events: none; }
-
-.subs-row {
-  position: absolute; left: 0; top: 50%;
-  transform: translateY(-50%) translateX(20px);
-  width: 100%;
-  display: flex; align-items: center;
-  opacity: 0; pointer-events: none;
-  transition: opacity 0.22s ease, transform 0.24s ease;
-  white-space: nowrap;
-  overflow: visible;
-  z-index: 10;
-}
-.subs-row.expanded { opacity: 1; transform: translateY(-50%) translateX(0); pointer-events: auto; }
-
+.nav-center { position: relative; flex: 1; min-width: 0; display: flex; align-items: center; overflow: visible; }
+.tabs-row { display: flex; align-items: center; gap: 12px; width: 100%; pointer-events: auto; }
 .nav-right-controls {
   display: flex; align-items: center; gap: 8px;
-  flex-shrink: 0; margin-left: auto;
-  position: relative; z-index: 20;
-  transition: opacity 0.2s ease, visibility 0.2s ease;
-}
-.nav-right-controls.controls-hidden {
-  opacity: 0; visibility: hidden; pointer-events: none;
+  flex-shrink: 0; margin-left: auto; position: relative; z-index: 20;
 }
 
+/* ── Tab pill ── */
 .tab-item-border {
   display: inline-flex; flex-shrink: 0;
-  border-radius: 10.5px;
-  padding: 1px;
-  position: relative;
-  background: transparent;
+  border-radius: 10.5px; padding: 0.5px; position: relative; background: transparent;
 }
 .tab-item-border::before {
-  content: '';
-  position: absolute; inset: 0;
-  border-radius: 10.5px;
+  content: ''; position: absolute; inset: 0; border-radius: 10.5px;
   background: linear-gradient(90deg,
-    rgba(0,255,166,0.0) 0%, rgba(0,255,166,0.9) 15%,
-    rgba(255,215,0,0.7) 30%, rgba(236,72,153,0.7) 45%,
-    rgba(147,51,234,0.7) 60%, rgba(59,130,246,0.6) 75%,
+    rgba(0,255,166,0.0) 0%, rgba(0,255,166,0.55) 15%,
+    rgba(255,215,0,0.45) 30%, rgba(236,72,153,0.45) 45%,
+    rgba(147,51,234,0.45) 60%, rgba(59,130,246,0.4) 75%,
     rgba(0,255,166,0.0) 90%);
   background-size: 200% 100%;
   animation: orbitBorder 3s linear infinite;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
+  opacity: 0; transition: opacity 0.3s ease; pointer-events: none;
 }
 .tab-item-border:hover::before,
 .tab-item-border.is-active::before { opacity: 1; }
 
 .tab-item {
-  display: inline-flex; align-items: stretch; border-radius: 9.5px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.18), inset 0 1px 0 var(--glass-inset-top);
-  transition: box-shadow 0.2s ease; flex-shrink: 0;
-  background: var(--navbar-bg, #0f0f0f);
-  position: relative; width: 100%; z-index: 1;
+  display: inline-flex; align-items: stretch; border-radius: 9.5px; overflow: hidden;
+  box-shadow: inset 0 1px 0 var(--glass-inset-top); transition: box-shadow 0.2s ease;
+  flex-shrink: 0; background: var(--navbar-bg, #0f0f0f); position: relative; width: 100%; z-index: 1;
 }
-.tab-item-border:hover .tab-item {
-  box-shadow: 0 4px 14px rgba(0,0,0,0.26), inset 0 1px 0 var(--glass-inset-top);
-}
+.tab-item-border:hover .tab-item { box-shadow: 0 2px 6px rgba(0,0,0,0.12), inset 0 1px 0 var(--glass-inset-top); }
 .tab-item.is-active { background: var(--navbar-bg-active, #1a1a1a); }
-.night .tab-item:not(.is-active) {
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06), 0 2px 8px rgba(0,0,0,0.18), inset 0 1px 0 var(--glass-inset-top);
-  transition: box-shadow 0.25s ease;
-}
 
 :root.light .tab-item {
   background: #ffffff;
@@ -412,12 +370,158 @@ const NAVBAR_CSS = `
 .tab-label-btn {
   display: inline-flex; align-items: center; gap: 7px; border: none; background: transparent;
   cursor: pointer; font-weight: 500; letter-spacing: 0.01em; color: var(--content-faint);
-  padding: 11px 18px 11px 20px; font-size: 0.97rem; line-height: 1;
+  padding: 11px 14px 11px 20px; font-size: 0.97rem; line-height: 1;
   transition: color 0.15s ease; user-select: none;
 }
 .tab-label-btn:hover, .tab-label-btn.is-active { color: var(--content-primary); }
 .tab-label-btn.is-active { font-weight: 600; }
-/* ── Spring physics keyframe ── */
+
+.tab-sep { width: 1px; margin: 6px 0; background: var(--border-color); opacity: 0.45; flex-shrink: 0; pointer-events: none; }
+
+/* ── Arrow down button on each tab pill ── */
+.tab-arrow-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 32px; border: none; background: transparent; cursor: pointer;
+  color: var(--content-faint); transition: color 0.15s ease, background 0.15s ease;
+  flex-shrink: 0; padding: 0; border-radius: 0 8px 8px 0;
+}
+.tab-arrow-btn:hover { color: var(--content-primary); background: rgba(255,255,255,0.08); }
+.tab-arrow-btn .arrow-icon {
+  font-size: 0.62rem;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), color 0.15s ease;
+}
+.tab-arrow-btn.arrow-open .arrow-icon { transform: rotate(180deg); }
+.tab-arrow-btn.arrow-open { color: var(--content-primary); background: rgba(255,255,255,0.06); }
+
+/* ── Subtab strip — below main bar row, per-tab ── */
+.subtab-strip-outer {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  pointer-events: none;
+  border-top: 1px solid transparent;
+  transition:
+    grid-template-rows 0.38s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.28s ease,
+    border-top-color 0.3s ease;
+}
+.subtab-strip-outer.strip-visible {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  border-top-color: var(--border-color);
+  pointer-events: auto;
+}
+.subtab-strip-clip { overflow: hidden; min-height: 0; }
+.subtab-strip-inner {
+  display: flex;
+  align-items: stretch;
+  height: 50px;
+  overflow: hidden;
+}
+
+/* ── Label badge on left of strip ── */
+.strip-label {
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  width: 10vw; min-width: 10vw; max-width: 10vw;
+  flex-shrink: 0;
+  border-right: 1px solid var(--border-color);
+}
+.strip-label span {
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--content-muted); white-space: nowrap;
+}
+
+/* ── Tab buttons track (relative container for the sliding indicator) ── */
+.strip-tabs-track {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Individual subtab button in the strip ── */
+.strip-tab {
+  position: relative;
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 0 22px;
+  border: none; background: transparent;
+  color: var(--content-muted); font-size: 0.88rem; font-weight: 500;
+  cursor: pointer; flex-shrink: 0; white-space: nowrap;
+  transition: color 0.22s ease;
+  border-right: 1px solid var(--border-color);
+  letter-spacing: 0.01em;
+  z-index: 1;
+}
+.strip-tab:hover { color: var(--content-primary); }
+.strip-tab.strip-tab-active { color: var(--content-primary); font-weight: 600; }
+
+/* ── Sliding active indicator (pill bg + underline) ──
+   Lives absolutely inside .strip-tabs-track so it slides
+   across the full track width as left/width are updated.  */
+.strip-indicator {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+  /* left + width set via inline style from JS */
+  transition: left 0.32s cubic-bezier(0.4, 0, 0.2, 1),
+              width 0.32s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.18s ease;
+}
+.strip-indicator-bg {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.06);
+  transition: background 0.2s ease;
+}
+:root.light .strip-indicator-bg { background: rgba(0,0,0,0.065); }
+.strip-indicator-line {
+  position: absolute;
+  bottom: 0;
+  left: 14px;
+  right: 14px;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg,
+    transparent 0%, rgba(0,255,166,0.6) 15%, rgba(255,215,0,0.45) 30%,
+    rgba(236,72,153,0.45) 45%, rgba(147,51,234,0.45) 60%,
+    rgba(59,130,246,0.4) 75%, transparent 90%);
+  background-size: 200% 100%;
+  animation: orbitBorder 2.5s linear infinite;
+}
+:root.light .strip-indicator-line { display: none; }
+
+/* Staggered entrance animation for strip tabs — only on initial open */
+.subtab-strip-outer.strip-entering .strip-tab {
+  animation: slimTabIn 0.22s cubic-bezier(0.34,1.18,0.64,1) both;
+  animation-delay: calc(var(--si, 0) * 0.035s + 0.04s);
+}
+
+/* ── Collapse chevron at the far right of strip ── */
+.strip-collapse {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 0 20px;
+  border: none; background: transparent;
+  color: var(--content-muted); cursor: pointer; flex-shrink: 0;
+  transition: color 0.14s ease, background 0.14s ease;
+  border-left: 1px solid var(--border-color);
+  margin-left: auto;
+}
+.strip-collapse:hover { color: var(--content-primary); background: rgba(255,255,255,0.03); }
+.strip-collapse i { font-size: 0.7rem; transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1); }
+.strip-collapse:hover i { transform: translateY(-2px); }
+
+/* ── Search shortcut badge ── */
+.search-shortcut {
+  display: inline-flex; align-items: center; padding: 2px 6px; border-radius: 5px;
+  font-size: 0.72rem; font-weight: 600; color: var(--content-faint);
+  background: var(--hover-bg); border: 1px solid var(--border-color);
+  opacity: 0.7; letter-spacing: 0.03em; margin-left: 2px;
+}
+
+/* ── Spring press keyframe ── */
 @keyframes tabPress {
   0%   { transform: scale(1); }
   15%  { transform: scale(0.96); }
@@ -426,22 +530,15 @@ const NAVBAR_CSS = `
   88%  { transform: scale(1.004); }
   100% { transform: scale(1); }
 }
-
 .tab-pressed {
   animation: tabPress 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
   transform-origin: center !important;
 }
-
-/* ── Transform-origin on every interactive element ── */
 .tab-item-border,
 .tab-label-btn,
 .tab-arrow-btn,
-.sub-btn,
-.sub-parent,
-.sub-close,
-.info-hub-card,
-.info-slim-tab,
-.info-slim-expand,
+.strip-tab,
+.strip-collapse,
 .logo-mark,
 .mob-tab-btn,
 .mob-subtab-btn,
@@ -449,132 +546,23 @@ const NAVBAR_CSS = `
 .mob-search,
 .nav-reveal-tab,
 .nav-theme-tab,
-.mobile-burger {
-  transform-origin: center;
-}
+.mobile-burger { transform-origin: center; }
 
-/* ── Main nav tab borders ── */
-.tab-item-border:active {
-  animation: tabPress 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* ── Tab label & arrow buttons ── */
-.tab-label-btn:active {
-  animation: tabPress 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-.tab-arrow-btn:active {
-  animation: tabPress 0.72s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* ── Expanded subtab row ── */
-.sub-btn:active {
-  animation: tabPress 0.72s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-.sub-parent:active {
-  animation: tabPress 0.72s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-.sub-close:active {
-  animation: tabPress 0.68s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* ── Info hub expanded cards ── */
-.info-hub-card:active .card-content {
-  animation: tabPress 0.72s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* ── Info slim tabs & expand toggle ── */
-.info-slim-tab:active {
-  animation: tabPress 0.72s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-.info-slim-expand:active {
-  animation: tabPress 0.68s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* ── Logo mark — slightly longer, feels weighty ── */
-.logo-mark:active {
-  animation: tabPress 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* ── Mobile burger ── */
-.mobile-burger:active {
-  animation: tabPress 0.68s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* ── Mobile sidebar nav buttons ── */
+.tab-item-border:active { animation: tabPress 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.tab-label-btn:active   { animation: tabPress 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.tab-arrow-btn:active   { animation: tabPress 0.72s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.strip-tab:active       { animation: tabPress 0.72s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.strip-collapse:active  { animation: tabPress 0.68s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.logo-mark:active       { animation: tabPress 0.8s  cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.mobile-burger:active   { animation: tabPress 0.68s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .mob-tab-btn:active,
-.mob-subtab-btn:active {
-  animation: tabPress 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-.mob-close:active {
-  animation: tabPress 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-.mob-search:active {
-  animation: tabPress 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* ── Sticky reveal & theme tabs ── */
+.mob-subtab-btn:active  { animation: tabPress 0.7s  cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.mob-close:active       { animation: tabPress 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.mob-search:active      { animation: tabPress 0.7s  cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .nav-reveal-tab:active,
-.nav-theme-tab:active {
-  animation: tabPress 0.72s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-.tab-sep {
-  width: 1px; margin: 6px 0; background: var(--border-color); opacity: 0.45;
-  flex-shrink: 0; pointer-events: none;
-}
+.nav-theme-tab:active   { animation: tabPress 0.72s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
-.tab-arrow-btn {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 36px; border: none; background: transparent; cursor: pointer;
-  color: var(--content-faint); transition: color 0.15s ease, background 0.15s ease;
-  flex-shrink: 0; padding: 0; border-radius: 0 8px 8px 0;
-}
-.tab-arrow-btn:hover { color: var(--content-primary); background: rgba(255,255,255,0.12); }
-.tab-arrow-btn.active-arrow { color: var(--content-primary); background: rgba(255,255,255,0.16); }
-.tab-arrow-btn.info-expand-hint { color: rgba(0,0,0,0.7); }
-.tab-arrow-btn.info-expand-hint:hover { color: rgba(0,0,0,0.95); background: rgba(255,255,255,0.12); box-shadow: 0 8px 20px rgba(0,0,0,0.12); }
-
-.sub-parent {
-  display: inline-flex; align-items: center; gap: 6px; font-size: 0.96rem;
-  font-weight: 700; letter-spacing: -0.01em; color: var(--content-primary);
-  padding: 8px 10px 8px 6px; border: none; background: transparent;
-  flex-shrink: 0; user-select: none; cursor: pointer;
-}
-.sub-close {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 24px; height: 24px; border-radius: 6px; border: none; background: transparent;
-  color: var(--content-faint); font-size: 0.65rem; cursor: pointer;
-  flex-shrink: 0; transition: color 0.15s ease, background 0.15s ease; margin-left: -4px;
-}
-.sub-close:hover { color: var(--content-primary); background: var(--hover-bg-strong); }
-.sub-spacer { width: 12px; flex-shrink: 0; }
-.sub-sep {
-  display: inline-flex; align-items: center; color: var(--content-secondary);
-  font-size: 0.66rem; margin: 0 1px; flex-shrink: 0; opacity: 0.55; user-select: none;
-}
-.sub-btn {
-  display: inline-flex; align-items: center; padding: 8px 13px; font-size: 0.92rem;
-  font-weight: 500; color: var(--content-faint); border-radius: 8px; border: none;
-  background: transparent; cursor: pointer; flex-shrink: 0;
-  transition: color 0.12s ease, background 0.12s ease;
-}
-.sub-btn:hover { color: var(--content-primary); background: var(--hover-bg-strong); transform: translateY(-1px); }
-.sub-btn.is-active { color: var(--content-primary); font-weight: 600; background: var(--hover-bg-strong); position: relative; }
-.sub-btn.is-active::after {
-  content: ''; position: absolute; bottom: 3px; left: 12px; right: 12px;
-  height: 1.5px; border-radius: 999px; background: rgba(0,255,166,0.75);
-}
-.subs-row.expanded .sub-btn {
-  animation: subIn 0.24s cubic-bezier(0.34,1.18,0.64,1) both;
-  animation-delay: calc(var(--i, 0) * 0.04s);
-}
-
-.search-shortcut {
-  display: inline-flex; align-items: center; padding: 2px 6px; border-radius: 5px;
-  font-size: 0.72rem; font-weight: 600; color: var(--content-faint);
-  background: var(--hover-bg); border: 1px solid var(--border-color);
-  opacity: 0.7; letter-spacing: 0.03em; margin-left: 2px;
-}
-
+/* ── Mobile ── */
 @media (max-width: 640px) {
   .nav-center, .nav-divider.desktop-only { display: none; }
   .tab-sep, .tab-arrow-btn { display: none; }
@@ -582,6 +570,11 @@ const NAVBAR_CSS = `
   .collapse-btn-desktop { display: none !important; }
   .nav-reveal-tab { top: 12px; padding: 7px 11px 7px 10px; font-size: 0.74rem; }
   .nav-theme-tab  { top: calc(12px + 34px + 5px); padding: 7px 11px 7px 10px; font-size: 0.74rem; }
+  .nav-icon-btn-wrap::after { display: none; }
+  .strip-label { width: 10vw; min-width: 10vw; max-width: 10vw; justify-content: center; padding: 0; }
+  .strip-label span { font-size: 0.7rem; letter-spacing: 0.08em; }
+  .strip-tab { padding: 0 14px; font-size: 0.82rem; }
+  .strip-collapse { padding: 0 14px; }
 }
 
 .mobile-burger {
@@ -595,6 +588,7 @@ const NAVBAR_CSS = `
 .mobile-burger:hover { color: var(--content-primary); background: var(--hover-bg); }
 @media (max-width: 640px) { .mobile-burger { display: inline-flex; } }
 
+/* ── Mobile sidebar ── */
 .mob-overlay {
   position: fixed; inset: 0; z-index: 90;
   background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
@@ -632,94 +626,148 @@ const NAVBAR_CSS = `
 .mob-subtab-btn:hover { color: var(--content-primary); background: var(--hover-bg); }
 .mob-subtab-btn.is-active { color: var(--content-primary); font-weight: 600; position: relative; }
 .mob-subtab-btn.is-active::before { content: ''; position: absolute; left: 36px; top: 50%; transform: translateY(-50%); width: 4px; height: 4px; border-radius: 50%; background: rgba(255,255,255,0.8); }
-
-.info-hub-outer {
-  display: grid; grid-template-rows: 0fr; opacity: 0; pointer-events: none;
-  border-top: 1px solid transparent;
-  transition: grid-template-rows 0.42s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, border-top-color 0.35s ease;
-}
-.info-hub-outer.hub-visible { grid-template-rows: 1fr; opacity: 1; border-top-color: var(--border-color); pointer-events: auto; }
-.info-hub-clip { overflow: hidden; min-height: 0; }
-.info-hub-expanded { overflow: hidden; transition: max-height 0.44s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease; }
-.info-hub-expanded.state-hidden { max-height: 0; opacity: 0; pointer-events: none; }
-.info-hub-expanded.state-visible { max-height: 320px; opacity: 1; pointer-events: auto; }
-.info-hub-grid { display: flex; justify-content: center; }
-.info-hub-card {
-  position: relative; display: flex; flex-direction: column;
-  padding: 24px 22px 26px; border: none; background: transparent;
-  cursor: pointer; text-align: left; overflow: hidden;
-  border-right: 1px solid var(--border-color); transition: background 0.18s ease;
-}
-.info-hub-card:last-child { border-right: none; }
-.info-hub-card:hover:not(.card-active) { background: rgba(255,255,255,0.025); }
-.info-hub-card.card-active { background: rgba(255,255,255,0.03); }
-.card-hover-spot {
-  position: absolute; inset: 0; pointer-events: none;
-  background: radial-gradient(180px circle at var(--cx,50%) var(--cy,50%), rgba(255,255,255,0.04), transparent 70%);
-  opacity: 0; transition: opacity 0.18s ease; z-index: 1;
-}
-.info-hub-card:not(.card-active):hover .card-hover-spot { opacity: 1; }
-.card-content { position: relative; z-index: 2; display: flex; flex-direction: column; gap: 5px; }
-.info-hub-card-icon { font-size: 1.6rem; margin-bottom: 5px; color: var(--content-secondary); transition: color 0.18s ease, transform 0.26s cubic-bezier(0.34,1.56,0.64,1); }
-.info-hub-card.card-active .info-hub-card-icon { color: var(--content-primary); transform: translateY(-3px); }
-.info-hub-card-title { font-size: 0.93rem; font-weight: 700; letter-spacing: 0.01em; line-height: 1.2; color: var(--content-secondary); transition: color 0.18s ease, transform 0.26s cubic-bezier(0.34,1.56,0.64,1); }
-.info-hub-card.card-active .info-hub-card-title { color: var(--content-primary); transform: translateY(-3px); }
-.info-hub-card-desc { font-size: 0.79rem; line-height: 1.5; color: var(--content-muted); transition: color 0.18s ease, transform 0.26s cubic-bezier(0.34,1.56,0.64,1); }
-.info-hub-card.card-active .info-hub-card-desc { color: var(--content-primary); transform: translateY(-3px); }
-.info-hub-expanded.state-visible .info-hub-card {
-  animation: cardFadeUp 0.32s cubic-bezier(0.34,1.18,0.64,1) both;
-  animation-delay: calc(var(--ci, 0) * 0.045s + 0.06s);
-}
-.info-hub-slim { overflow: hidden; transition: max-height 0.38s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease; }
-.info-hub-slim.state-hidden { max-height: 0; opacity: 0; pointer-events: none; }
-.info-hub-slim.state-visible { max-height: 58px; opacity: 1; pointer-events: auto; }
-.info-hub-slim-inner { display: flex; align-items: stretch; overflow-x: auto; scrollbar-width: none; height: 54px; border-right: 1px solid var(--border-color); }
-.info-hub-slim-inner::-webkit-scrollbar { display: none; }
-.info-slim-label { display: flex; align-items: center; gap: 7px; padding: 0 40px; flex-shrink: 0; border-right: 1px solid var(--border-color); min-width: 210px; }
-.info-slim-label span { font-size: 0.74rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--content-muted); white-space: nowrap; }
-.info-slim-tab {
-  position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 7px;
-  padding: 0 20px; border: none; background: transparent;
-  color: var(--content-muted); font-size: 0.89rem; font-weight: 500;
-  cursor: pointer; flex-shrink: 0; white-space: nowrap;
-  transition: color 0.14s ease, background 0.14s ease;
-  min-width: 148px; border-right: 1px solid var(--border-color); letter-spacing: 0.01em;
-}
-.info-slim-tab:hover { color: var(--content-primary); background: rgba(255,255,255,0.04); }
-.info-slim-tab.slim-active { color: var(--content-primary); background: rgba(255,255,255,0.03); font-weight: 700; }
-.info-slim-tab.slim-active::after {
-  content: ''; position: absolute; bottom: 0; left: 14px; right: 14px; height: 2px; border-radius: 999px;
-  background: linear-gradient(90deg, transparent 0%, rgba(0,255,166,0.8) 15%, rgba(255,215,0,0.6) 30%, rgba(236,72,153,0.6) 45%, rgba(147,51,234,0.6) 60%, rgba(59,130,246,0.5) 75%, transparent 90%);
-  background-size: 200% 100%; animation: orbitBorder 2.5s linear infinite;
-}
-:root.light .info-hub-card.card-active,
-:root.light .info-slim-tab.slim-active { background: #000000; color: #ffffff; }
-:root.light .info-hub-card.card-active .info-hub-card-icon,
-:root.light .info-hub-card.card-active .info-hub-card-title,
-:root.light .info-hub-card.card-active .info-hub-card-desc { color: #ffffff; }
-.info-slim-expand {
-  display: inline-flex; align-items: center; justify-content: center;
-  padding: 0 20px; border: none; background: transparent;
-  color: var(--content-muted); cursor: pointer; flex-shrink: 0;
-  transition: color 0.14s ease, background 0.14s ease;
-  border-left: 1px solid var(--border-color); margin-left: auto;
-}
-.info-slim-expand:hover { color: var(--content-primary); background: rgba(255,255,255,0.03); }
-.info-slim-expand i { transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
-.info-slim-expand:hover i { transform: translateY(-2px); }
-
-@media (max-width: 640px) {
-  .info-hub-grid { grid-template-columns: repeat(2, 1fr); }
-  .info-hub-card { padding: 18px 15px 20px; }
-  .info-hub-card-icon { font-size: 1.3rem; }
-  .info-hub-card-desc { display: none; }
-  .info-hub-expanded.state-visible { max-height: 400px; }
-  .info-slim-label { padding: 0 14px; min-width: auto; }
-  .info-slim-tab { padding: 0 14px; font-size: 0.82rem; }
-  .info-slim-expand { padding: 0 15px; }
-}
 `;
 
+// ─────────────────────────────────────────────────────────────
+//  StripRow — subtab strip with a single sliding indicator
+// ─────────────────────────────────────────────────────────────
+interface StripRowProps {
+  item: NavItem;
+  isVisible: boolean;
+  activeSubtabId: string | null;
+  onSubtabClick: (sub: SubtabItem) => void;
+  onCollapse: () => void;
+}
+
+const StripRow = memo(({
+  item, isVisible, activeSubtabId, onSubtabClick, onCollapse,
+}: StripRowProps) => {
+  const btnRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const trackRef = useRef<HTMLDivElement | null>(null);
+
+  // indStyle: the CSS left/width for the sliding indicator
+  const [indStyle, setIndStyle] = useState<{ left: number; width: number } | null>(null);
+  // Whether to animate (false = instant snap, true = CSS transition)
+  const [animate, setAnimate] = useState(false);
+  const [entering, setEntering] = useState(false);
+  const hasPlacedRef = useRef(false);
+
+  const place = useCallback((shouldAnimate: boolean) => {
+    if (!activeSubtabId) return;
+    const idx = item.subtabs!.findIndex(s => s.id === activeSubtabId);
+    if (idx < 0) return;
+    const btn = btnRefs.current[idx];
+    const track = trackRef.current;
+    if (!btn || !track) return;
+
+    // offsetLeft is relative to offsetParent. Walk up until we hit the track
+    // to get the position relative to the track element specifically.
+    let left = 0;
+    let el: HTMLElement | null = btn;
+    while (el && el !== track) {
+      left += el.offsetLeft;
+      el = el.offsetParent as HTMLElement | null;
+    }
+    const width = btn.offsetWidth;
+
+    if (!shouldAnimate) {
+      // Disable transition, set position, then re-enable on next frame
+      setAnimate(false);
+      setIndStyle({ left, width });
+      requestAnimationFrame(() => setAnimate(true));
+    } else {
+      setAnimate(true);
+      setIndStyle({ left, width });
+    }
+
+    hasPlacedRef.current = true;
+  }, [activeSubtabId, item.subtabs]);
+
+  // Re-place when active subtab changes
+  useEffect(() => {
+    // Animate if we already have a position established, otherwise snap
+    place(hasPlacedRef.current);
+  }, [activeSubtabId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // When strip becomes visible, snap into position (DOM was hidden before)
+  useEffect(() => {
+    if (!isVisible) {
+      hasPlacedRef.current = false;
+      setAnimate(false);
+      setIndStyle(null);
+      setEntering(false);
+      return;
+    }
+    // Trigger entrance animation class, then remove it after tabs have animated in
+    setEntering(true);
+    const enterTimer = setTimeout(() => setEntering(false), 400);
+    // Wait one frame for the strip to render with real dimensions.
+    const t = setTimeout(() => place(false), 40);
+    return () => { clearTimeout(t); clearTimeout(enterTimer); };
+  }, [isVisible]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const indicatorCSSStyle: React.CSSProperties = {
+    left: indStyle?.left ?? 0,
+    width: indStyle?.width ?? 0,
+    opacity: indStyle ? 1 : 0,
+    // Inline transition overrides the CSS rule when we want a snap
+    transition: animate
+      ? 'left 0.32s cubic-bezier(0.4, 0, 0.2, 1), width 0.32s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.18s ease'
+      : 'none',
+  };
+
+  return (
+    <div className={`subtab-strip-outer${isVisible ? ' strip-visible' : ''}${entering ? ' strip-entering' : ''}`}>
+      <div className="subtab-strip-clip">
+        <div className="subtab-strip-inner">
+
+          <div className="strip-label">
+            <span>{item.label}</span>
+          </div>
+
+          {/* track: relative container — indicator absolutely positioned inside */}
+          <div className="strip-tabs-track" ref={trackRef}>
+            {/* The single sliding indicator */}
+            <div
+              className="strip-indicator"
+              style={indicatorCSSStyle}
+              aria-hidden
+            >
+              <div className="strip-indicator-bg" />
+              <div className="strip-indicator-line" />
+            </div>
+
+            {item.subtabs!.map((sub, idx) => (
+              <button
+                key={sub.id}
+                ref={el => { btnRefs.current[idx] = el; }}
+                className={`strip-tab${activeSubtabId === sub.id ? ' strip-tab-active' : ''}`}
+                style={{ '--si': idx } as React.CSSProperties}
+                onClick={() => onSubtabClick(sub)}
+              >
+                {sub.label}
+              </button>
+            ))}
+          </div>
+
+          <button
+            className="strip-collapse"
+            onClick={onCollapse}
+            aria-label={`Hide ${item.label} sections`}
+          >
+            <i className="bi bi-chevron-up" />
+          </button>
+
+        </div>
+      </div>
+    </div>
+  );
+});
+StripRow.displayName = 'StripRow';
+
+// ─────────────────────────────────────────────────────────────
+//  Main component
+// ─────────────────────────────────────────────────────────────
 const Navbar = ({
   activeTab,
   setActiveTab,
@@ -730,43 +778,30 @@ const Navbar = ({
 }: NavbarProps) => {
   const [isMobile, setIsMobile]                   = useState(false);
   const [searchOpen, setSearchOpen]               = useState(false);
-  const [expandedTab, setExpandedTab]             = useState<string | null>(null);
+  const [stripOpen, setStripOpen]                 = useState(false);
   const [mobileOpen, setMobileOpen]               = useState(false);
   const [mobileExpandedTab, setMobileExpandedTab] = useState<string | null>(null);
-  const [hubExpanded, setHubExpanded]             = useState(true);
   const [navCollapsed, setNavCollapsed]           = useState(false);
-  const { night: isNight, toggle: toggleNight } = useNightMode();
 
-  const navContainerRef  = useRef<HTMLDivElement>(null);
-  const rafIdRef         = useRef<number | null>(null);
-  const autoCloseRef     = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const tabClickCloseRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const tabClickOpenRef  = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const autoExpandedRef  = useRef(false);
-  const touchRef         = useRef<{ startX: number; startY: number } | null>(null);
-  const lastScrollYRef   = useRef(0);
-  const scrollRafRef     = useRef<number | null>(null);
-  const navCollapsedRef  = useRef(false);
+  const navContainerRef          = useRef<HTMLDivElement>(null);
+  const rafIdRef                 = useRef<number | null>(null);
+  const touchRef                 = useRef<{ startX: number; startY: number } | null>(null);
+  const navCollapsedRef          = useRef(false);
+  const manualOpenRef            = useRef(false);
+  const isProgrammaticScrollRef  = useRef(false);
+  const programmaticScrollTimer  = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [scrollSpySubtab, setScrollSpySubtab] = useState<string | null>(null);
 
-  const isInfoActive = activeTab === 'information';
-  const isExpanded   = expandedTab !== null;
-
+  // ── Collapse / show nav ──
   const handleCollapseNav = useCallback(() => {
     setNavCollapsed(true);
     navCollapsedRef.current = true;
-    setExpandedTab(null);
-
+    setStripOpen(false);
+    manualOpenRef.current = false;
     let hasScrolledAway = window.scrollY > 10;
     const restore = () => {
-      if (!hasScrolledAway) {
-        if (window.scrollY > 10) hasScrolledAway = true;
-        return;
-      }
-      if (window.scrollY <= 10) {
-        setNavCollapsed(false);
-        navCollapsedRef.current = false;
-        window.removeEventListener('scroll', restore);
-      }
+      if (!hasScrolledAway) { if (window.scrollY > 10) hasScrolledAway = true; return; }
+      if (window.scrollY <= 10) { setNavCollapsed(false); navCollapsedRef.current = false; window.removeEventListener('scroll', restore); }
     };
     window.addEventListener('scroll', restore, { passive: true });
   }, []);
@@ -776,39 +811,7 @@ const Navbar = ({
     navCollapsedRef.current = false;
   }, []);
 
-  useEffect(() => {
-    if (isInfoActive) setHubExpanded(true);
-  }, [isInfoActive]);
-
-  useEffect(() => {
-    if (!isInfoActive) return;
-    lastScrollYRef.current = window.scrollY;
-    const onScroll = () => {
-      if (scrollRafRef.current !== null) return;
-      scrollRafRef.current = requestAnimationFrame(() => {
-        scrollRafRef.current = null;
-        const y = window.scrollY;
-        if (y > 40 && y > lastScrollYRef.current) setHubExpanded(false);
-        lastScrollYRef.current = y;
-      });
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => {
-      window.removeEventListener('scroll', onScroll);
-      if (scrollRafRef.current !== null) cancelAnimationFrame(scrollRafRef.current);
-    };
-  }, [isInfoActive]);
-
-  useEffect(() => {
-    if (!isInfoActive || !hubExpanded) return;
-    const onClickOutside = (e: MouseEvent) => {
-      if (navContainerRef.current && !navContainerRef.current.contains(e.target as Node))
-        setHubExpanded(false);
-    };
-    document.addEventListener('mousedown', onClickOutside);
-    return () => document.removeEventListener('mousedown', onClickOutside);
-  }, [isInfoActive, hubExpanded]);
-
+  // ── Responsive ──
   useEffect(() => {
     let t: ReturnType<typeof setTimeout>;
     const check = () => { clearTimeout(t); t = setTimeout(() => setIsMobile(window.innerWidth < 640), 150); };
@@ -817,6 +820,7 @@ const Navbar = ({
     return () => { clearTimeout(t); window.removeEventListener('resize', check); };
   }, []);
 
+  // ── Mouse-position for gradient accent ──
   useEffect(() => {
     const el = navContainerRef.current;
     if (!el) return;
@@ -829,63 +833,83 @@ const Navbar = ({
       });
     };
     document.addEventListener('mousemove', onMove, { passive: true });
-    return () => {
-      document.removeEventListener('mousemove', onMove);
-      if (rafIdRef.current !== null) cancelAnimationFrame(rafIdRef.current);
-    };
+    return () => { document.removeEventListener('mousemove', onMove); if (rafIdRef.current !== null) cancelAnimationFrame(rafIdRef.current); };
   }, []);
 
-  const toggleExpand = useCallback((tabId: string) => {
-    if (tabClickCloseRef.current) { clearTimeout(tabClickCloseRef.current); tabClickCloseRef.current = null; }
-    if (tabClickOpenRef.current)  { clearTimeout(tabClickOpenRef.current);  tabClickOpenRef.current  = null; }
-    setExpandedTab(prev => prev === tabId ? null : tabId);
-  }, []);
-
-  const closeExpand = useCallback(() => {
-    if (tabClickCloseRef.current) { clearTimeout(tabClickCloseRef.current); tabClickCloseRef.current = null; }
-    if (tabClickOpenRef.current)  { clearTimeout(tabClickOpenRef.current);  tabClickOpenRef.current  = null; }
-    setExpandedTab(null);
-  }, []);
-
+  // When active tab changes: open strip, reset scroll-spy to first subtab
   useEffect(() => {
-    if (autoCloseRef.current) clearTimeout(autoCloseRef.current);
-    if (expandedTab && !autoExpandedRef.current)
-      autoCloseRef.current = setTimeout(() => setExpandedTab(null), 10_000);
-    if (!expandedTab) autoExpandedRef.current = false;
-    return () => { if (autoCloseRef.current) clearTimeout(autoCloseRef.current); };
-  }, [expandedTab]);
+    manualOpenRef.current = false;
+    const item = NAV_ITEMS.find(i => i.id === activeTab);
+    if (!item?.subtabs?.length) { setStripOpen(false); setScrollSpySubtab(null); return; }
+    setStripOpen(true);
+    setScrollSpySubtab(item.subtabs[0].id);
+  }, [activeTab]);
+
+  // Scroll-spy
+  useEffect(() => {
+    const item = NAV_ITEMS.find(i => i.id === activeTab);
+    if (!item?.subtabs?.length) return;
+
+    const sectionSubtabs = item.subtabs.filter(s => s.sectionId);
+    if (!sectionSubtabs.length) return;
+
+    const computeActive = () => {
+      const scrollY = window.scrollY + 120;
+      let active = sectionSubtabs[0].id;
+      for (const sub of sectionSubtabs) {
+        const el = document.getElementById(sub.sectionId!);
+        if (el && el.getBoundingClientRect().top + window.scrollY <= scrollY) {
+          active = sub.id;
+        }
+      }
+      return active;
+    };
+
+    const onScroll = () => {
+      if (isProgrammaticScrollRef.current) return;
+      setScrollSpySubtab(computeActive());
+    };
+
+    setScrollSpySubtab(computeActive());
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [activeTab]);
 
   useEffect(() => () => {
-    if (tabClickCloseRef.current) clearTimeout(tabClickCloseRef.current);
-    if (tabClickOpenRef.current)  clearTimeout(tabClickOpenRef.current);
+    if (programmaticScrollTimer.current) clearTimeout(programmaticScrollTimer.current);
   }, []);
 
+  // ── Tab label click ──
   const handleTabClick = useCallback((tabId: string) => {
-    const isNewTab = tabId !== activeTab;
     setActiveTab(tabId);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    if (isNewTab) {
-      if (tabClickOpenRef.current)  { clearTimeout(tabClickOpenRef.current);  tabClickOpenRef.current  = null; }
-      if (tabClickCloseRef.current) { clearTimeout(tabClickCloseRef.current); tabClickCloseRef.current = null; }
-      const navItem = NAV_ITEMS.find(i => i.id === tabId);
-      if (navItem?.subtabs?.length && tabId !== 'information') {
-        tabClickOpenRef.current = setTimeout(() => {
-          tabClickOpenRef.current = null;
-          autoExpandedRef.current = true;
-          setExpandedTab(tabId);
-          tabClickCloseRef.current = setTimeout(() => {
-            setExpandedTab(prev => prev === tabId ? null : prev);
-            tabClickCloseRef.current = null;
-          }, 3000);
-        }, 3000);
-      }
-    }
-  }, [setActiveTab, activeTab]);
+  }, [setActiveTab]);
 
+  // ── Arrow click ──
+  const handleArrowToggle = useCallback((tabId: string) => {
+    if (tabId !== activeTab) {
+      setActiveTab(tabId);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    setStripOpen(prev => {
+      const next = !prev;
+      manualOpenRef.current = next;
+      return next;
+    });
+  }, [activeTab, setActiveTab]);
+
+  // ── Subtab click inside the strip ──
   const handleSubtabClick = useCallback((parentTabId: string, sub: SubtabItem) => {
     setActiveTab(parentTabId);
     onSubtabClick?.(parentTabId, sub.id);
     if (sub.sectionId) {
+      setScrollSpySubtab(sub.id);
+      isProgrammaticScrollRef.current = true;
+      if (programmaticScrollTimer.current) clearTimeout(programmaticScrollTimer.current);
+      programmaticScrollTimer.current = setTimeout(() => {
+        isProgrammaticScrollRef.current = false;
+      }, 1200);
       requestAnimationFrame(() =>
         document.getElementById(sub.sectionId!)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
       );
@@ -894,21 +918,19 @@ const Navbar = ({
     }
   }, [setActiveTab, onSubtabClick]);
 
-  const handleInfoCardClick = useCallback((content: InfoContentType) => {
-    onInfoContentChange?.(content);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [onInfoContentChange]);
-
-  const handleInfoArrowClick = useCallback(() => {
-    if (isInfoActive) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      setHubExpanded(true);
+  // ── Info tab subtab click ──
+  const handleInfoSubtabClick = useCallback((sub: SubtabItem) => {
+    const match = informationGrids.find(g => g.id === sub.id);
+    if (match) {
+      onInfoContentChange?.(match.id);
     } else {
-      toggleExpand('information');
+      handleSubtabClick('information', sub);
     }
-  }, [isInfoActive, toggleExpand]);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [onInfoContentChange, handleSubtabClick]);
 
-  const openSearch  = useCallback(() => setSearchOpen(true), []);
+  // ── Search ──
+  const openSearch  = useCallback(() => setSearchOpen(true),  []);
   const closeSearch = useCallback(() => setSearchOpen(false), []);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -924,6 +946,7 @@ const Navbar = ({
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [setActiveTab, onSubtabClick]);
 
+  // ── Mobile sidebar ──
   const openMobile      = useCallback(() => setMobileOpen(true), []);
   const closeMobile     = useCallback(() => { setMobileOpen(false); setMobileExpandedTab(null); }, []);
   const toggleMobileTab = useCallback((id: string) => setMobileExpandedTab(p => p === id ? null : id), []);
@@ -956,49 +979,34 @@ const Navbar = ({
     if (dx > 60 && dy < dx) closeMobile();
   }, [closeMobile]);
 
-useEffect(() => {
-  document.body.style.overflow = mobileOpen ? 'hidden' : '';
-  return () => { document.body.style.overflow = ''; };
-}, [mobileOpen]);
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [mobileOpen]);
 
-useEffect(() => {
-  const SELECTORS = [
-    '.tab-item-border',
-    '.tab-label-btn',
-    '.tab-arrow-btn',
-    '.sub-btn',
-    '.sub-parent',
-    '.sub-close',
-    '.info-hub-card',
-    '.info-slim-tab',
-    '.info-slim-expand',
-    '.logo-mark',
-    '.mob-tab-btn',
-    '.mob-subtab-btn',
-    '.mob-close',
-    '.mob-search',
-    '.nav-reveal-tab',
-    '.nav-theme-tab',
-    '.mobile-burger',
-  ].join(', ');
+  // ── Spring press listener ──
+  useEffect(() => {
+    const SELECTORS = [
+      '.tab-item-border', '.tab-label-btn', '.tab-arrow-btn',
+      '.strip-tab', '.strip-collapse',
+      '.logo-mark', '.mob-tab-btn', '.mob-subtab-btn',
+      '.mob-close', '.mob-search', '.nav-reveal-tab', '.nav-theme-tab', '.mobile-burger',
+    ].join(', ');
 
-  const onPointerDown = (e: PointerEvent) => {
-    const target = (e.target as Element).closest(SELECTORS);
-    if (!target) return;
-    target.classList.remove('tab-pressed');
-    void (target as HTMLElement).offsetWidth;
-    target.classList.add('tab-pressed');
-    const cleanup = () => {
+    const onPointerDown = (e: PointerEvent) => {
+      const target = (e.target as Element).closest(SELECTORS);
+      if (!target) return;
       target.classList.remove('tab-pressed');
-      target.removeEventListener('animationend', cleanup);
+      void (target as HTMLElement).offsetWidth;
+      target.classList.add('tab-pressed');
+      const cleanup = () => { target.classList.remove('tab-pressed'); target.removeEventListener('animationend', cleanup); };
+      target.addEventListener('animationend', cleanup);
     };
-    target.addEventListener('animationend', cleanup);
-  };
+    document.addEventListener('pointerdown', onPointerDown);
+    return () => document.removeEventListener('pointerdown', onPointerDown);
+  }, []);
 
-  document.addEventListener('pointerdown', onPointerDown);
-  return () => document.removeEventListener('pointerdown', onPointerDown);
-}, []);
-
+  // ── Derived state ──
   const activeSet = useMemo(() => {
     const set = new Set<string>();
     for (const item of NAV_ITEMS) {
@@ -1007,8 +1015,6 @@ useEffect(() => {
     }
     return set;
   }, [activeTab, activeSubtab]);
-
-  const expandedItem = useMemo(() => NAV_ITEMS.find(i => i.id === expandedTab) ?? null, [expandedTab]);
 
   const barStyle = useMemo(() => ({
     height: isMobile ? '68px' : '84px',
@@ -1044,7 +1050,7 @@ useEffect(() => {
 
           <button
             className="logo-mark flex-shrink-0"
-            onClick={() => { handleTabClick('home'); closeExpand(); }}
+            onClick={() => handleTabClick('home')}
             aria-label="Go to home page"
           >
             <div className="logo-icon">
@@ -1060,84 +1066,52 @@ useEffect(() => {
 
           <div className="nav-divider desktop-only" style={{ height: '32px', alignSelf: 'center' }} />
 
+          {/* ── Tab pills ── */}
           <div className="nav-center">
-            <div className={`tabs-row${isExpanded ? ' expanded' : ''}`}>
+            <div className="tabs-row">
               {NAV_ITEMS.map((item) => {
-                const active       = activeSet.has(item.id);
-                const thisExpanded = expandedTab === item.id;
-                const isInfoItem   = item.id === 'information';
+                const active      = activeSet.has(item.id);
+                const hasSubtabs  = !!(item.subtabs?.length);
+                const isActiveTab = item.id === activeTab;
+                const arrowOpen   = isActiveTab && stripOpen;
                 return (
-                  <div key={item.id} className={`tab-item-border${active ? ' is-active' : ''}`}>
+                  <div
+                    key={item.id}
+                    className={`tab-item-border${active ? ' is-active' : ''}`}
+                  >
                     <div className={`tab-item${active ? ' is-active' : ''}`}>
                       <button
                         className={`tab-label-btn${active ? ' is-active' : ''}`}
-                        onClick={() => { if (thisExpanded && !isInfoItem) closeExpand(); else handleTabClick(item.id); }}
+                        onClick={() => handleTabClick(item.id)}
                         style={labelFontStyle}
                       >
                         <i className={`bi ${item.icon} text-xs`} />
                         {item.label}
                       </button>
-                      <span className="tab-sep" />
-                      <button
-                        className={[
-                          'tab-arrow-btn',
-                          thisExpanded && !isInfoItem ? 'active-arrow' : '',
-                          isInfoItem && isInfoActive && !hubExpanded ? 'info-expand-hint' : '',
-                        ].filter(Boolean).join(' ')}
-                        onClick={() => isInfoItem ? handleInfoArrowClick() : toggleExpand(item.id)}
-                        aria-label={
-                          isInfoItem
-                            ? (hubExpanded ? 'Collapse Info Hub' : 'Expand Info Hub cards')
-                            : (thisExpanded ? `Close ${item.label} sections` : `Show ${item.label} sections`)
-                        }
-                      >
-                        <i
-                          className={`bi ${thisExpanded && !isInfoItem ? 'bi-x-lg' : 'bi-chevron-right'}`}
-                          style={{
-                            fontSize: '0.65rem',
-                            color: isInfoItem && isInfoActive && !hubExpanded
-                              ? 'rgba(255,255,255,0.75)'
-                              : 'var(--content-secondary)',
-                            transition: 'color 0.2s ease',
-                          }}
-                        />
-                      </button>
+
+                      {hasSubtabs && (
+                        <>
+                          <span className="tab-sep" />
+                          <button
+                            className={`tab-arrow-btn${arrowOpen ? ' arrow-open' : ''}`}
+                            onClick={() => handleArrowToggle(item.id)}
+                            aria-label={isActiveTab
+                              ? (arrowOpen ? `Hide ${item.label} sections` : `Show ${item.label} sections`)
+                              : `Go to ${item.label}`}
+                          >
+                            <i className="bi bi-chevron-down arrow-icon" />
+                          </button>
+                        </>
+                      )}
                     </div>
                   </div>
                 );
               })}
             </div>
-
-            <div className={`subs-row${isExpanded ? ' expanded' : ''}`}>
-              {expandedItem && (
-                <>
-                  <button className="sub-parent" onClick={closeExpand}>
-                    <i className={`bi ${expandedItem.icon} text-xs`} />
-                    {expandedItem.label}
-                  </button>
-                  <button className="sub-close" onClick={closeExpand} aria-label="Close subtabs">
-                    <i className="bi bi-x-lg" />
-                  </button>
-                  <span className="sub-spacer" />
-                  {expandedItem.subtabs?.map((sub, idx) => (
-                    <span key={sub.id} style={{ display: 'contents' }}>
-                      {idx > 0 && <span className="sub-sep"><i className="bi bi-chevron-right" /></span>}
-                      <button
-                        className={`sub-btn${activeSubtab === sub.id ? ' is-active' : ''}`}
-                        style={{ '--i': idx } as React.CSSProperties}
-                        onClick={() => handleSubtabClick(expandedItem.id, sub)}
-                      >
-                        {sub.label}
-                      </button>
-                    </span>
-                  ))}
-                </>
-              )}
-            </div>
           </div>
 
-          {/* ── RIGHT CONTROLS ── */}
-          <div className={`nav-right-controls${isExpanded ? ' controls-hidden' : ''}`}>
+          {/* ── Right controls ── */}
+          <div className="nav-right-controls">
             <ThemeToggleTabBtn isMobile={isMobile} />
             <HideNavTabBtn isMobile={isMobile} onClick={handleCollapseNav} />
             <SearchTabBtn isMobile={isMobile} onClick={openSearch} />
@@ -1147,73 +1121,30 @@ useEffect(() => {
           </div>
         </div>
 
-        {/* ══ INFORMATION HUB EXTENSION ══ */}
-        <div className={`info-hub-outer${isInfoActive ? ' hub-visible' : ''}`}>
-          <div className="info-hub-clip">
-            <div className={`info-hub-expanded${hubExpanded ? ' state-visible' : ' state-hidden'}`}>
-              <div className="info-hub-grid">
-                {informationGrids.map((grid, idx) => {
-                  const isActive = activeInfoContent === grid.id;
-                  return (
-                    <button
-                      key={grid.id}
-                      className={`info-hub-card${isActive ? ' card-active' : ''}`}
-                      style={{ '--ci': idx } as React.CSSProperties}
-                      onClick={() => handleInfoCardClick(grid.id)}
-                      onMouseMove={(e) => {
-                        const r = e.currentTarget.getBoundingClientRect();
-                        e.currentTarget.style.setProperty('--cx', `${e.clientX - r.left}px`);
-                        e.currentTarget.style.setProperty('--cy', `${e.clientY - r.top}px`);
-                      }}
-                    >
-                      <span className="card-hover-spot" aria-hidden />
-                      <span className="card-content">
-                        <i className={`bi ${grid.icon} info-hub-card-icon`} />
-                        <span className="info-hub-card-title">{grid.title}</span>
-                        <span className="info-hub-card-desc">{grid.description}</span>
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+        {/* ══ SUBTAB STRIP — active tab only ══ */}
+        {NAV_ITEMS.filter(item => item.subtabs?.length).map((item) => {
+          const isActiveItem   = item.id === activeTab;
+          const isVisible      = isActiveItem && stripOpen;
+          const isInfoTab      = item.id === 'information';
+          const activeSubtabId = isInfoTab
+            ? (activeInfoContent as string | undefined)
+            : (isActiveItem ? scrollSpySubtab : undefined);
 
-            <div className={`info-hub-slim${!hubExpanded ? ' state-visible' : ' state-hidden'}`}>
-              <div className="info-hub-slim-inner">
-                <div className="info-slim-label" style={{ color: 'var(--content-muted)' }}>
-                  <i className="bi bi-pin" style={{ fontSize: '0.76rem', color: 'currentColor' }} />
-                  <span>Info Hub</span>
-                </div>
-                {informationGrids.map((grid) => {
-                  const isActive = activeInfoContent === grid.id;
-                  return (
-                    <button
-                      key={grid.id}
-                      className={`info-slim-tab${isActive ? ' slim-active' : ''}`}
-                      onClick={() => handleInfoCardClick(grid.id)}
-                    >
-                      <i className={`bi ${grid.icon}`} style={{ fontSize: '0.81rem' }} />
-                      {grid.title}
-                    </button>
-                  );
-                })}
-                <button
-                  className="info-slim-expand"
-                  onClick={() => setHubExpanded(true)}
-                  aria-label="Expand Info Hub"
-                  title="Expand Info Hub"
-                >
-                  <i className="bi bi-chevron-down" style={{ fontSize: '0.74rem' }} />
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+          return (
+            <StripRow
+              key={`strip-${item.id}`}
+              item={item}
+              isVisible={isVisible}
+              activeSubtabId={activeSubtabId ?? null}
+              onSubtabClick={(sub) => isInfoTab ? handleInfoSubtabClick(sub) : handleSubtabClick(item.id, sub)}
+              onCollapse={() => { manualOpenRef.current = false; setStripOpen(false); }}
+            />
+          );
+        })}
 
       </nav>
 
-
-      {/* MOBILE SIDEBAR */}
+      {/* ══ MOBILE SIDEBAR ══ */}
       <div className={`mob-overlay${mobileOpen ? ' open' : ''}`} onClick={closeMobile} />
       <div
         className={`mob-sidebar${mobileOpen ? ' open' : ''}`}

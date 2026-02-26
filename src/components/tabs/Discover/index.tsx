@@ -2,9 +2,9 @@
 import { memo } from 'react';
 import Overview from './OverviewGrids';
 import DiscoverHeader from './DiscoverHeader';
-import WorldPanel from './AboutPanel';
-import Teams from './Teams';
-import Affiliations from './StrategicCapital';
+import TheOrganization from './TheOrganization';
+import TheCompany from './TheCompany';
+import StrategicCapital from './StrategicCapital';
 
 const Discover = () => {
   return (
@@ -17,19 +17,19 @@ const Discover = () => {
         <Overview />
       </div>
 
-      {/* World panel: company / direction / governance / reachout */}
-      <div id="section-world">
-        <WorldPanel />
+      {/* About panel: company / direction / governance / reachout */}
+      <div id="section-TheCompany">
+        <TheCompany />
       </div>
 
       {/* Teams */}
-      <div id="section-teams">
-        <Teams />
+      <div id="section-TheOrganization">
+        <TheOrganization />
       </div>
 
-      {/* Affiliations */}
-      <div id="section-affiliations">
-        <Affiliations />
+      {/* StrategicCapital */}
+      <div id="section-StrategicCapital">
+        <StrategicCapital />
       </div>
     </div>
   );
