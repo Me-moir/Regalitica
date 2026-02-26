@@ -16,6 +16,7 @@ export type InfoContentType =
   | 'terms' 
   | 'policies' 
   | 'documents'
+  | 'investor-relations'
   | 'report';
 
 export interface ContentData {
@@ -77,6 +78,12 @@ export const informationGrids: InformationGrid[] = [
     icon: 'bi-folder',
     title: 'Documents',
     description: 'Official legal documents and filings'
+  },
+  {
+    id: 'investor-relations',
+    icon: 'bi-graph-up-arrow',
+    title: 'Investor Relations',
+    description: 'Financial disclosures, reports, and investor resources'
   },
   {
     id: 'report',
@@ -306,6 +313,40 @@ export const contentData: Record<string, ContentData> = {
         content: [
           'Violations of this policy may result in immediate termination of access, removal of content, and legal action if necessary.',
           'We reserve the right to investigate suspected violations and cooperate with law enforcement authorities when appropriate.'
+        ]
+      }
+    ]
+  },
+  'investor-relations': {
+    title: 'Investor Relations',
+    icon: 'bi-graph-up-arrow',
+    sections: [
+      {
+        heading: 'Overview',
+        content: [
+          'Notus Regalia is committed to maintaining transparent and open communication with its investor community. This section provides access to financial disclosures, performance updates, and investor resources.',
+          'As a pre-seed, stealth-phase holding entity, our investor relations materials reflect our current stage of development and long-term value creation strategy.'
+        ]
+      },
+      {
+        heading: 'Financial Disclosures',
+        content: [
+          'Periodic financial updates and capital allocation summaries are made available to accredited investors and stakeholders in accordance with applicable securities regulations.',
+          'For access to confidential financial materials, please contact our investor relations team to verify your accreditation status.'
+        ]
+      },
+      {
+        heading: 'Investor Resources',
+        content: [
+          'Registered investors may access pitch decks, due diligence materials, cap table summaries, and venture performance reports through our secure investor portal.',
+          'Quarterly updates are distributed to all active investors detailing portfolio progress, key milestones achieved, and forward-looking operational priorities.'
+        ]
+      },
+      {
+        heading: 'Contact Investor Relations',
+        content: [
+          'For inquiries related to investment opportunities, existing positions, or shareholder matters, please contact our investor relations team at ir@notusregalia.com.',
+          'All investor communications are handled in strict confidence and in compliance with applicable financial regulations and non-disclosure obligations.'
         ]
       }
     ]

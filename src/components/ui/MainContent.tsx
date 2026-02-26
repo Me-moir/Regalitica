@@ -5,7 +5,7 @@ import type { InfoContentType } from '@/data/information-data';
 const LandingTab     = lazy(() => import('@/components/tabs/Landing'));
 const DiscoverTab    = lazy(() => import('@/components/tabs/Discover'));
 const VenturesTab    = lazy(() => import('@/components/tabs/Ventures'));
-const InformationTab = lazy(() => import('@/components/tabs/Information/Information'));
+const InformationTab = lazy(() => import('@/components/tabs/Information'));
 
 interface MainContentProps {
   activeTab: string;

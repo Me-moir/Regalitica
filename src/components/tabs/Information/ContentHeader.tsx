@@ -2,12 +2,12 @@
 import { memo } from 'react';
 
 interface ContentHeaderProps {
-  icon: string;
+  icon?: string;
   title: string;
   isTransitioning?: boolean;
 }
 
-const ContentHeader = memo(({ icon, title, isTransitioning = false }: ContentHeaderProps) => {
+const ContentHeader = memo(({ title, isTransitioning = false }: ContentHeaderProps) => {
   return (
     <div
       className="mb-8 sm:mb-10 lg:mb-12"
@@ -17,19 +17,7 @@ const ContentHeader = memo(({ icon, title, isTransitioning = false }: ContentHea
         transition: 'opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
       }}
     >
-<div className="flex items-center justify-center gap-3 sm:gap-4 mb-3 sm:mb-4">
-        <div
-          className="text-2xl sm:text-3xl lg:text-4xl"
-          style={{
-            background:             'linear-gradient(135deg, rgba(0, 255, 166, 0.9), rgba(59, 130, 246, 0.9))',
-            WebkitBackgroundClip:   'text',
-            WebkitTextFillColor:    'transparent',
-            backgroundClip:         'text',
-          }}
-        >
-          <i className={`bi ${icon}`} />
-        </div>
-
+      <div className="flex items-center justify-center mb-3 sm:mb-4">
         <h2
           className="text-2xl sm:text-3xl lg:text-5xl font-bold"
           style={{

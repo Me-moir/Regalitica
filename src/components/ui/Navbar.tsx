@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { useState, useEffect, useRef, useCallback, useMemo, memo } from 'react';
 import SearchModal from './SearchModal';
 import ThemeToggle from './ThemeToggle';
-import { informationGrids, type InfoContentType } from '@/data/information-data';
+import { type InfoContentType } from '@/data/information-data';
 
 interface NavbarProps {
   activeTab: string;
@@ -45,13 +45,15 @@ const NAV_ITEMS: NavItem[] = [
     label: 'Information',
     icon: 'bi-pin',
     subtabs: [
-      { id: 'info-releases',     label: 'Releases' },
-      { id: 'info-media',        label: 'Media' },
-      { id: 'info-attributions', label: 'Attributions' },
-      { id: 'info-licenses',     label: 'Licenses' },
-      { id: 'info-terms',        label: 'Terms' },
-      { id: 'info-policies',     label: 'Policies' },
-      { id: 'info-disclaimer',   label: 'Disclaimer' },
+      { id: 'statements',          label: 'Releases' },
+      { id: 'news',                label: 'Media' },
+      { id: 'investor-relations',  label: 'Investor Relations' },
+      { id: 'attributions',        label: 'Attributions' },
+      { id: 'licenses',            label: 'Licenses' },
+      { id: 'terms',               label: 'Terms' },
+      { id: 'policies',            label: 'Policies' },
+      { id: 'documents',           label: 'Documents' },
+
     ],
   },
   {
@@ -438,7 +440,10 @@ const NAVBAR_CSS = `
   align-items: stretch;
   flex: 1;
   min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
 }
+.strip-tabs-track::-webkit-scrollbar { display: none; }
 
 /* ── Individual subtab button in the strip ── */
 .strip-tab {
@@ -621,7 +626,7 @@ const NAVBAR_CSS = `
 .mob-tab-chevron.open { transform: rotate(90deg); }
 .mob-subtabs { overflow: hidden; transition: max-height 0.25s ease, opacity 0.2s ease; }
 .mob-subtabs.collapsed { max-height: 0; opacity: 0; }
-.mob-subtabs.expanded { max-height: 300px; opacity: 1; }
+.mob-subtabs.expanded { max-height: 400px; opacity: 1; }
 .mob-subtab-btn { display: flex; align-items: center; gap: 8px; width: 100%; padding: 12px 20px 12px 50px; border: none; background: transparent; color: var(--content-faint); font-size: 0.93rem; font-weight: 400; cursor: pointer; transition: color 0.12s ease, background 0.12s ease; user-select: none; }
 .mob-subtab-btn:hover { color: var(--content-primary); background: var(--hover-bg); }
 .mob-subtab-btn.is-active { color: var(--content-primary); font-weight: 600; position: relative; }
@@ -645,9 +650,7 @@ const StripRow = memo(({
   const btnRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const trackRef = useRef<HTMLDivElement | null>(null);
 
-  // indStyle: the CSS left/width for the sliding indicator
   const [indStyle, setIndStyle] = useState<{ left: number; width: number } | null>(null);
-  // Whether to animate (false = instant snap, true = CSS transition)
   const [animate, setAnimate] = useState(false);
   const [entering, setEntering] = useState(false);
   const hasPlacedRef = useRef(false);
@@ -660,8 +663,6 @@ const StripRow = memo(({
     const track = trackRef.current;
     if (!btn || !track) return;
 
-    // offsetLeft is relative to offsetParent. Walk up until we hit the track
-    // to get the position relative to the track element specifically.
     let left = 0;
     let el: HTMLElement | null = btn;
     while (el && el !== track) {
@@ -671,7 +672,6 @@ const StripRow = memo(({
     const width = btn.offsetWidth;
 
     if (!shouldAnimate) {
-      // Disable transition, set position, then re-enable on next frame
       setAnimate(false);
       setIndStyle({ left, width });
       requestAnimationFrame(() => setAnimate(true));
@@ -683,13 +683,10 @@ const StripRow = memo(({
     hasPlacedRef.current = true;
   }, [activeSubtabId, item.subtabs]);
 
-  // Re-place when active subtab changes
   useEffect(() => {
-    // Animate if we already have a position established, otherwise snap
     place(hasPlacedRef.current);
   }, [activeSubtabId]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // When strip becomes visible, snap into position (DOM was hidden before)
   useEffect(() => {
     if (!isVisible) {
       hasPlacedRef.current = false;
@@ -698,10 +695,8 @@ const StripRow = memo(({
       setEntering(false);
       return;
     }
-    // Trigger entrance animation class, then remove it after tabs have animated in
     setEntering(true);
     const enterTimer = setTimeout(() => setEntering(false), 400);
-    // Wait one frame for the strip to render with real dimensions.
     const t = setTimeout(() => place(false), 40);
     return () => { clearTimeout(t); clearTimeout(enterTimer); };
   }, [isVisible]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -710,7 +705,6 @@ const StripRow = memo(({
     left: indStyle?.left ?? 0,
     width: indStyle?.width ?? 0,
     opacity: indStyle ? 1 : 0,
-    // Inline transition overrides the CSS rule when we want a snap
     transition: animate
       ? 'left 0.32s cubic-bezier(0.4, 0, 0.2, 1), width 0.32s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.18s ease'
       : 'none',
@@ -725,9 +719,7 @@ const StripRow = memo(({
             <span>{item.label}</span>
           </div>
 
-          {/* track: relative container — indicator absolutely positioned inside */}
           <div className="strip-tabs-track" ref={trackRef}>
-            {/* The single sliding indicator */}
             <div
               className="strip-indicator"
               style={indicatorCSSStyle}
@@ -918,16 +910,11 @@ const Navbar = ({
     }
   }, [setActiveTab, onSubtabClick]);
 
-  // ── Info tab subtab click ──
+  // ── Info tab subtab click — sub.id is the InfoContentType value directly ──
   const handleInfoSubtabClick = useCallback((sub: SubtabItem) => {
-    const match = informationGrids.find(g => g.id === sub.id);
-    if (match) {
-      onInfoContentChange?.(match.id);
-    } else {
-      handleSubtabClick('information', sub);
-    }
+    onInfoContentChange?.(sub.id as InfoContentType);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [onInfoContentChange, handleSubtabClick]);
+  }, [onInfoContentChange]);
 
   // ── Search ──
   const openSearch  = useCallback(() => setSearchOpen(true),  []);
@@ -1080,12 +1067,12 @@ const Navbar = ({
                     className={`tab-item-border${active ? ' is-active' : ''}`}
                   >
                     <div className={`tab-item${active ? ' is-active' : ''}`}>
+                      {/* ── Tab label — icon removed ── */}
                       <button
                         className={`tab-label-btn${active ? ' is-active' : ''}`}
                         onClick={() => handleTabClick(item.id)}
                         style={labelFontStyle}
                       >
-                        <i className={`bi ${item.icon} text-xs`} />
                         {item.label}
                       </button>
 

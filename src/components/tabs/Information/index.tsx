@@ -4,14 +4,15 @@ import type { InfoContentType } from '@/data/information-data';
 import Statements from './Statements';
 import InformationHero from './InformationHero';
 
-const NewsMedia    = lazy(() => import('./NewsMedia'));
-const Attributions = lazy(() => import('./Attributions'));
-const Licenses     = lazy(() => import('./Licenses'));
-const Terms        = lazy(() => import('./Terms'));
-const Privacy      = lazy(() => import('./Privacy'));
-const UsePolicy    = lazy(() => import('./UsePolicy'));
-const Documents    = lazy(() => import('./Documents'));
-const Report       = lazy(() => import('./Report'));
+const NewsMedia         = lazy(() => import('./NewsMedia'));
+const Attributions      = lazy(() => import('./Attributions'));
+const Licenses          = lazy(() => import('./Licenses'));
+const Terms             = lazy(() => import('./Terms'));
+const Privacy           = lazy(() => import('./Privacy'));
+const UsePolicy         = lazy(() => import('./UsePolicy'));
+const Documents         = lazy(() => import('./Documents'));
+const InvestorRelations = lazy(() => import('./InvestorRelations'));
+const Report            = lazy(() => import('./Report'));
 
 const LoadingFallback = () => (
   <div className="min-h-screen" style={{ background: 'var(--gradient-section)' }} />
@@ -34,6 +35,7 @@ const Information = memo(({ activeContent, onContentChange }: InformationProps) 
       import('./Privacy');
       import('./UsePolicy');
       import('./Documents');
+      import('./InvestorRelations');
       import('./Report');
     };
     if ('requestIdleCallback' in window) {
@@ -53,8 +55,6 @@ const Information = memo(({ activeContent, onContentChange }: InformationProps) 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, [activeContent, onContentChange]);
-
-
 
   const show = (key: InfoContentType) => activeContent === key;
 
@@ -163,6 +163,18 @@ const Information = memo(({ activeContent, onContentChange }: InformationProps) 
           }}>
             <Suspense fallback={<LoadingFallback />}>
               <Documents isTransitioning={isTransitioning} />
+            </Suspense>
+          </div>
+
+          <div style={{
+            position: show('investor-relations') ? 'relative' : 'absolute',
+            top: 0, left: 0, right: 0,
+            opacity: show('investor-relations') ? 1 : 0,
+            pointerEvents: show('investor-relations') ? 'auto' : 'none',
+            transition: 'opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+          }}>
+            <Suspense fallback={<LoadingFallback />}>
+              <InvestorRelations isTransitioning={isTransitioning} />
             </Suspense>
           </div>
 
