@@ -1,5 +1,5 @@
 "use client";
-import { memo, useMemo, useCallback, useEffect, useRef } from "react";
+import { memo, useMemo, useCallback, useRef } from "react";
 import { ABOUT_PANEL_ITEMS, ABOUT_PANEL_CONTENT } from "@/data/Discover-data";
 import { useAboutNavigation } from "@/hooks/useAboutNavigation";
 import { useAboutMouseTracking } from "@/hooks/useAboutMouseTracking";
@@ -65,14 +65,6 @@ AboutLearnMoreButton.displayName = "AboutLearnMoreButton";
 const AboutPanel = memo(() => {
   const sectionRef = useRef<HTMLElement>(null);
   const navRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (sectionRef.current) {
-      sectionRef.current.setAttribute("data-hydrated", "true");
-    }
-    if (navRef.current) {
-      navRef.current.setAttribute("data-hydrated", "true");
-    }
-  }, []);
 
   const {
     activeContent,
@@ -120,6 +112,7 @@ const AboutPanel = memo(() => {
       ref={sectionRef}
       className={styles.aboutSection}
       data-nosnippet="true"
+      data-hydrated="true"
       style={{ borderTop: '1px dashed var(--border-dashed)' }}
     >
         <div className={styles.noiseTexture} />
@@ -168,7 +161,7 @@ const AboutPanel = memo(() => {
           <div style={{ marginTop: "3rem" }}>
           <div className={styles.mainGrid}>
 
-            <div ref={navRef} className={styles.gridNavigation}>
+            <div ref={navRef} className={styles.gridNavigation} data-hydrated="true">
               <div className={styles.activeSelector} style={selectorStyles}>
                 <div className={styles.selectorBackground} />
                 <div className={styles.selectorBorder} />
@@ -227,9 +220,7 @@ const AboutPanel = memo(() => {
                   className={`${styles.tabContent} ${isTabTransitioning ? styles.transitioning : ""}`}
                   style={{ paddingTop: '2rem' }}
                 >
-                  <div className={styles.titleAccent}>
-                    <h3 className={styles.sectionTitle}>{currentSubsection.contentTitle}</h3>
-                  </div>
+                  <h3 className={styles.sectionTitle}>{currentSubsection.contentTitle}</h3>
                   {currentSubsection.description && (
                     <div className={styles.descriptionContainer}>
                       {currentSubsection.description.map((paragraph, index) => (

@@ -5,6 +5,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 0.25rem;
   padding: 0.625rem 1rem;
   background: transparent;
   border-right: 1px dashed var(--border-dashed);
@@ -21,15 +22,22 @@
     align-items: flex-end;
     padding: 1rem;
     white-space: normal;
+    gap: 0.35rem;
   }
 }
 
 @media (min-width: 1024px) {
-  .gridButton { padding: 1.5rem; }
+  .gridButton {
+    padding: 1.5rem;
+    gap: 0.4rem;
+  }
 }
 
 @media (min-width: 1280px) {
-  .gridButton { padding: 2rem; }
+  .gridButton {
+    padding: 2rem;
+    gap: 0.5rem;
+  }
 }
 
 .title {
@@ -40,10 +48,17 @@
   text-align: center;
   color: var(--content-faint);
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Ensure title never bleeds into subtitle */
+  display: block;
+  width: 100%;
+  line-height: 1.2;
 }
 
 @media (min-width: 768px) {
-  .title { font-size: 1rem; text-align: right; }
+  .title {
+    font-size: 1rem;
+    text-align: right;
+  }
 }
 
 @media (min-width: 1024px) {
@@ -72,14 +87,29 @@
 @media (min-width: 768px) {
   .subtitle {
     display: block;
-    font-size: 0.75rem;
+    font-size: 0.65rem;
     color: rgba(255, 255, 255, 0.35);
     position: relative;
     z-index: 10;
     text-align: right;
-    margin-top: 0.25rem;
+    /* Remove margin-top — gap on parent handles spacing */
+    margin-top: 0;
     opacity: 0.8;
     transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    line-height: 1.4;
+    width: 100%;
+  }
+}
+
+@media (min-width: 1024px) {
+  .subtitle {
+    font-size: 0.7rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .subtitle {
+    font-size: 0.75rem;
   }
 }
 
@@ -110,4 +140,3 @@
 .gridButton:hover .hoverGradient {
   opacity: 1;
 }
-

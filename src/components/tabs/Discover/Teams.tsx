@@ -48,31 +48,47 @@ function FounderModal({ founder, onClose }: { founder: Founder; onClose: () => v
       {/* Panel */}
       <div
         onClick={e => e.stopPropagation()}
-        className="fc-modal-panel"
+        className="fc-modal-outer"
+        onMouseMove={e => {
+          const el = e.currentTarget;
+          const rect = el.getBoundingClientRect();
+          el.style.setProperty('--mx', `${e.clientX - rect.left}px`);
+          el.style.setProperty('--my', `${e.clientY - rect.top}px`);
+        }}
         style={{
-          position: 'relative', display: 'flex', flexDirection: 'row',
-          width: '100%', maxWidth: '820px', maxHeight: '88vh',
-          borderRadius: '16px', overflow: 'hidden',
-          background: '#0d0d1a',
-          border: '1px solid rgba(255,255,255,0.10)',
-          boxShadow: '0 32px 80px rgba(0,0,0,0.9), 0 0 0 1px rgba(227,27,84,0.12)',
+          position: 'relative', width: '100%', maxWidth: '820px', maxHeight: '88vh',
+          borderRadius: '16px',
+          display: 'flex', flexDirection: 'column', /* cap height so children can scroll */
         }}
       >
-        {/* X close */}
+        <div className="fc-modal-gradient-border" />
+        <div
+          className="fc-modal-panel"
+          style={{
+            position: 'relative', display: 'flex', flexDirection: 'row',
+            width: '100%', flex: 1, minHeight: 0, /* minHeight:0 lets flex child shrink & scroll */
+            borderRadius: '16px', overflow: 'hidden',
+            background: '#0d0d1a',
+            border: '1px solid rgba(255,255,255,0.10)',
+            boxShadow: '0 32px 80px rgba(0,0,0,0.9), 0 0 0 1px rgba(227,27,84,0.12)',
+          }}
+        >
+        {/* Close — top right */}
         <div className="teams-tab-border" style={{ position: 'absolute', top: '14px', right: '14px', zIndex: 10 }}>
           <div className="teams-tab-item">
-            <button className="teams-tab-btn" onClick={onClose} aria-label="Close" style={{ padding: '7px 10px' }}>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+            <button className="teams-tab-btn modal-btn" onClick={onClose} aria-label="Close profile">
+              Close Profile
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" style={{ marginLeft: '4px', opacity: 0.6 }}>
                 <path d="M18 6 6 18M6 6l12 12" />
               </svg>
             </button>
           </div>
         </div>
 
-        {/* Portrait column */}
+        {/* Portrait column — no minHeight, fills panel height naturally */}
         <div style={{
           position: 'relative', flexShrink: 0, width: '280px',
-          overflow: 'hidden', minHeight: '480px',
+          overflow: 'hidden',
           background: 'linear-gradient(170deg, #0e0e1c 0%, #160c14 100%)',
         }}>
           {founder.src ? (
@@ -90,8 +106,8 @@ function FounderModal({ founder, onClose }: { founder: Founder; onClose: () => v
           }}>{founder.codename}</span>
         </div>
 
-        {/* Info column */}
-        <div className="fc-modal-info" style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '2.25rem 2.5rem 2rem 2rem', borderLeft: '1px solid rgba(255,255,255,0.06)', overflowY: 'auto', minWidth: 0 }}>
+        {/* Info column — minHeight:0 allows overflowY:auto to activate when content exceeds height */}
+        <div className="fc-modal-info" style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', padding: '2.25rem 2.5rem 2rem 2rem', borderLeft: '1px solid rgba(255,255,255,0.06)', overflowY: 'auto', minWidth: 0 }}>
           <div className="fc-modal-eyebrow" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontFamily: 'ui-monospace, Menlo, monospace', fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase' as const, fontWeight: 700, color: 'rgba(255,255,255,0.30)', marginBottom: '16px' }}>
             <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#E31B54', flexShrink: 0 }} />
             Founding Member · Since {founder.since}
@@ -104,13 +120,13 @@ function FounderModal({ founder, onClose }: { founder: Founder; onClose: () => v
             <span className="fc-modal-about-label" style={{ display: 'block', fontFamily: 'ui-monospace, Menlo, monospace', fontSize: '9px', textTransform: 'uppercase' as const, letterSpacing: '0.22em', color: 'rgba(255,255,255,0.25)', marginBottom: '10px' }}>About</span>
             <p className="fc-modal-bio" style={{ fontSize: '14px', lineHeight: 1.85, color: 'rgba(255,255,255,0.55)', margin: 0 }}>{founder.bio}</p>
           </div>
-          <div className="fc-modal-stats" style={{ display: 'flex', alignItems: 'stretch', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '10px', overflow: 'hidden', marginBottom: '24px', background: 'rgba(255,255,255,0.02)' }}>
+          <div className="fc-modal-stats" style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0, height: '80px', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '10px', overflow: 'hidden', marginBottom: '24px', background: 'rgba(255,255,255,0.02)' }}>
             {modalStats.map((s, i) => (
               <React.Fragment key={s.lab}>
                 {i > 0 && <div className="fc-modal-stat-sep" style={{ width: '1px', background: 'rgba(255,255,255,0.07)', flexShrink: 0 }} />}
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '16px 8px', gap: '6px' }}>
-                  <span className="fc-modal-stat-val" style={{ fontFamily: 'ui-monospace, Menlo, monospace', fontSize: '16px', fontWeight: 700, color: s.accent ? '#E31B54' : '#f1f5f9', letterSpacing: '-0.02em' }}>{s.val}</span>
-                  <span className="fc-modal-stat-lab" style={{ fontFamily: 'ui-monospace, Menlo, monospace', fontSize: '9px', textTransform: 'uppercase' as const, letterSpacing: '0.16em', color: 'rgba(255,255,255,0.25)', textAlign: 'center' as const }}>{s.lab}</span>
+                <div style={{ flex: '1 1 0', minWidth: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 10px', gap: '6px' }}>
+                  <span className={`fc-modal-stat-val${s.accent ? ' fc-modal-stat-accent' : ''}`} style={{ fontFamily: 'ui-monospace, Menlo, monospace', fontSize: '13px', fontWeight: 700, letterSpacing: '-0.02em', textAlign: 'center', whiteSpace: 'normal', overflowWrap: 'break-word', wordBreak: 'break-word', width: '100%', lineHeight: 1.3 }}>{s.val}</span>
+                  <span className="fc-modal-stat-lab" style={{ fontFamily: 'ui-monospace, Menlo, monospace', fontSize: '9px', textTransform: 'uppercase' as const, letterSpacing: '0.16em', textAlign: 'center' as const, whiteSpace: 'nowrap' }}>{s.lab}</span>
                 </div>
               </React.Fragment>
             ))}
@@ -124,12 +140,8 @@ function FounderModal({ founder, onClose }: { founder: Founder; onClose: () => v
                 </a>
               </div>
             </div>
-            <div className="teams-tab-border" style={{ marginLeft: 'auto' }}>
-              <div className="teams-tab-item">
-                <button className="teams-tab-btn modal-btn" onClick={onClose}>Close Profile</button>
-              </div>
-            </div>
           </div>
+        </div>
         </div>
       </div>
     </div>,
@@ -152,9 +164,9 @@ const FounderCard = memo(({ founder, index, onExpand }: { founder: Founder; inde
 
   return (
     <div ref={ref} className="fc-outer" style={{ animationDelay: `${index * 80}ms` }} onMouseMove={handleMouseMove} onClick={() => {
-  if (ref.current) ref.current.classList.add('fc-expanding');
-  onExpand(founder);
-}} tabIndex={0} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') onExpand(founder); }}>
+      if (ref.current) ref.current.classList.add('fc-expanding');
+      onExpand(founder);
+    }} tabIndex={0} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') onExpand(founder); }}>
       <div className="fc-gradient-border" />
       <div className="fc-inner">
         <div className="fc-portrait">
@@ -201,52 +213,47 @@ FounderCard.displayName = 'FounderCard';
 ───────────────────────────────────────── */
 const Teams = () => {
   const [activeFounder, setActiveFounder] = useState<Founder | null>(null);
-const handleExpand = useCallback((f: Founder) => {
-  setActiveFounder(f);
-}, []);
+  const handleExpand = useCallback((f: Founder) => {
+    setActiveFounder(f);
+  }, []);
 
-const handleClose = useCallback(() => {
-  setActiveFounder(null);
-  // Remove fc-expanding from all cards after modal closes
-  document.querySelectorAll('.fc-outer.fc-expanding').forEach(el => {
-    el.classList.remove('fc-expanding');
-  });
-}, []);
+  const handleClose = useCallback(() => {
+    setActiveFounder(null);
+    document.querySelectorAll('.fc-outer.fc-expanding').forEach(el => {
+      el.classList.remove('fc-expanding');
+    });
+  }, []);
 
-useEffect(() => {
-  const onPointerDown = (e: PointerEvent) => {
-    const target = (e.target as Element).closest(
-      '.teams-tab-border, .teams-tab-item'
-    );
-    if (!target) return;
-    const wrapper =
-      (e.target as Element).closest('.teams-tab-border') ??
-      target;
-    wrapper.classList.remove('teams-tab-pressed');
-    void (wrapper as HTMLElement).offsetWidth;
-    wrapper.classList.add('teams-tab-pressed');
-    const cleanup = () => {
+  useEffect(() => {
+    const onPointerDown = (e: PointerEvent) => {
+      const target = (e.target as Element).closest('.teams-tab-border, .teams-tab-item');
+      if (!target) return;
+      const wrapper = (e.target as Element).closest('.teams-tab-border') ?? target;
       wrapper.classList.remove('teams-tab-pressed');
-      wrapper.removeEventListener('animationend', cleanup);
+      void (wrapper as HTMLElement).offsetWidth;
+      wrapper.classList.add('teams-tab-pressed');
+      const cleanup = () => {
+        wrapper.classList.remove('teams-tab-pressed');
+        wrapper.removeEventListener('animationend', cleanup);
+      };
+      wrapper.addEventListener('animationend', cleanup);
     };
-    wrapper.addEventListener('animationend', cleanup);
-  };
-  document.addEventListener('pointerdown', onPointerDown);
-  return () => document.removeEventListener('pointerdown', onPointerDown);
-}, []);
+    document.addEventListener('pointerdown', onPointerDown);
+    return () => document.removeEventListener('pointerdown', onPointerDown);
+  }, []);
 
   return (
     <>
       <style>{`
 
-      .fc-outer.fc-expanding {
-  transform: none !important;
-  transition: none !important;
-}
-.fc-outer.fc-expanding .fc-gradient-border {
-  opacity: 0 !important;
-  transition: none !important;
-}
+        .fc-outer.fc-expanding {
+          transform: none !important;
+          transition: none !important;
+        }
+        .fc-outer.fc-expanding .fc-gradient-border {
+          opacity: 0 !important;
+          transition: none !important;
+        }
 
         @keyframes orbitBorder {
           0%   { background-position: 0% 0%; }
@@ -304,8 +311,10 @@ useEffect(() => {
         .teams-hero{ display:grid;grid-template-columns:1fr;gap:3rem;padding:5rem 2rem 4rem;position:relative;z-index:1; }
         @media(min-width:640px){.teams-hero{padding-left:4rem;padding-right:4rem;}}
         @media(min-width:768px){.teams-hero{grid-template-columns:1fr auto;gap:4rem;align-items:center;padding:6rem 6rem 5rem;}}
-        @media(min-width:1024px){.teams-hero{padding-left:10rem;padding-right:10rem;}}
-        @media(min-width:1280px){.teams-hero{padding-left:16rem;padding-right:16rem;}}
+        @media(min-width:1024px){.teams-hero{padding-left:6rem;padding-right:6rem;}}
+        @media(min-width:1280px){.teams-hero{padding-left:8rem;padding-right:8rem;}}
+        @media(min-width:1536px){.teams-hero{padding-left:12rem;padding-right:12rem;}}
+        @media(min-width:1920px){.teams-hero{padding-left:16rem;padding-right:16rem;}}
         .teams-hero-left{display:flex;flex-direction:column;}
         .teams-eyebrow{ display:inline-flex;align-items:center;gap:.5rem;font-size:.65rem;font-family:ui-monospace,Menlo,monospace;text-transform:uppercase;letter-spacing:.22em;font-weight:700;color:#E31B54;margin-bottom:1.25rem; }
         .teams-eyebrow-dot{ width:5px;height:5px;border-radius:50%;background:#E31B54;flex-shrink:0;animation:epulse 2s ease-in-out infinite; }
@@ -325,8 +334,10 @@ useEffect(() => {
         .founders-section{position:relative;z-index:1;padding:3rem 2rem 6rem;}
         @media(min-width:640px){.founders-section{padding-left:4rem;padding-right:4rem;}}
         @media(min-width:768px){.founders-section{padding:3rem 6rem 6rem;}}
-        @media(min-width:1024px){.founders-section{padding-left:10rem;padding-right:10rem;}}
-        @media(min-width:1280px){.founders-section{padding-left:16rem;padding-right:16rem;}}
+        @media(min-width:1024px){.founders-section{padding-left:6rem;padding-right:6rem;}}
+        @media(min-width:1280px){.founders-section{padding-left:8rem;padding-right:8rem;}}
+        @media(min-width:1536px){.founders-section{padding-left:12rem;padding-right:12rem;}}
+        @media(min-width:1920px){.founders-section{padding-left:16rem;padding-right:16rem;}}
         .founders-label-row{display:flex;align-items:center;gap:1rem;margin-bottom:1.75rem;}
         .founders-label{ font-size:0.8rem;font-family:ui-monospace,Menlo,monospace;text-transform:uppercase;letter-spacing:.22em;font-weight:700;color:rgba(255,255,255,.3);white-space:nowrap; }
         .founders-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.75rem;}
@@ -338,7 +349,6 @@ useEffect(() => {
         :root.light .fc-outer:hover{transform:translateY(-3px);box-shadow:0 6px 18px rgba(0,0,0,.10);}
         .fc-gradient-border{ position:absolute;inset:0;border-radius:.75rem;padding:1px;opacity:0;transition:opacity .4s ease;pointer-events:none;z-index:1;background:radial-gradient(400px circle at var(--mx,50%) var(--my,50%),rgba(0,255,166,.8),rgba(255,215,0,.6),rgba(236,72,153,.6),rgba(147,51,234,.6),rgba(59,130,246,.5),transparent 70%);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude; }
         .fc-outer:hover .fc-gradient-border{opacity:1;}
-        :root.light .fc-outer:hover .fc-gradient-border{opacity:0;}
         .fc-inner{ position:relative;z-index:2;display:flex;flex-direction:column;border-radius:calc(.75rem - 1px);overflow:hidden;background:var(--gradient-card,#0f0f1a);border:.75px solid var(--border-subtle,rgba(255,255,255,.05));height:100%; }
         :root.light .fc-inner{background:#ffffff;border:none;}
         .fc-portrait{ position:relative;width:100%;aspect-ratio:3/4;background:linear-gradient(170deg,#0e0e1c 0%,#160c14 100%);overflow:hidden;flex-shrink:0; }
@@ -364,6 +374,20 @@ useEffect(() => {
         .fc-btn { padding: 12px 18px !important; font-size: 0.93rem !important; font-weight: 600 !important; }
         .modal-btn { padding: 12px 20px !important; font-size: 0.93rem !important; font-weight: 600 !important; }
 
+        .fc-modal-outer {
+          position:relative; display:flex; flex-direction:column;
+          width:100%; max-width:820px; max-height:88vh; border-radius:16px;
+          transform-origin: center bottom;
+        }
+        .fc-modal-gradient-border {
+          position:absolute; inset:0; border-radius:16px; padding:1px;
+          opacity:0; transition:opacity .4s ease; pointer-events:none; z-index:10;
+          background:radial-gradient(700px circle at var(--mx,50%) var(--my,50%), rgba(0,255,166,.7),rgba(255,215,0,.5),rgba(236,72,153,.5),rgba(147,51,234,.5),rgba(59,130,246,.4),transparent 65%);
+          -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+          -webkit-mask-composite:xor; mask-composite:exclude;
+        }
+        .fc-modal-outer:hover .fc-modal-gradient-border { opacity:1; }
+
         :root.light .fc-modal-panel{ background:#f8fafc !important;border:1px solid rgba(0,0,0,.12) !important;box-shadow:0 24px 60px rgba(0,0,0,.14), 0 0 0 1px rgba(0,0,0,.06) !important; }
         :root.light .fc-modal-overlay{background:rgba(200,210,220,.55) !important;}
         :root.light .fc-modal-info{border-left:1px solid rgba(0,0,0,.08) !important;}
@@ -374,6 +398,9 @@ useEffect(() => {
         :root.light .fc-modal-bio{color:rgba(0,0,0,.6) !important;}
         :root.light .fc-modal-stats{border:1px solid rgba(0,0,0,.09) !important;background:rgba(0,0,0,.02) !important;}
         :root.light .fc-modal-stat-sep{background:rgba(0,0,0,.09) !important;}
+        .fc-modal-stat-val { color: #f1f5f9; }
+        .fc-modal-stat-accent { color: #E31B54 !important; }
+        .fc-modal-stat-lab { color: rgba(255,255,255,0.25); }
         :root.light .fc-modal-stat-val{color:#0f172a !important;}
         :root.light .fc-modal-stat-lab{color:rgba(0,0,0,.3) !important;}
         :root.light .fc-modal-footer{border-top:1px solid rgba(0,0,0,.08) !important;}
@@ -387,21 +414,42 @@ useEffect(() => {
         .founders-label-line{flex:1;height:1px;background:linear-gradient(to right,rgba(255,255,255,.08),transparent);}
 
         @keyframes teamsTabPress {
-  0%   { transform: scale(1); }
-  15%  { transform: scale(0.96); }
-  50%  { transform: scale(1.02); }
-  72%  { transform: scale(0.992); }
-  88%  { transform: scale(1.004); }
-  100% { transform: scale(1); }
-}
-.teams-tab-pressed {
-  animation: teamsTabPress 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
-  transform-origin: center !important;
-}
+          0%   { transform: scale(1); }
+          15%  { transform: scale(0.96); }
+          50%  { transform: scale(1.02); }
+          72%  { transform: scale(0.992); }
+          88%  { transform: scale(1.004); }
+          100% { transform: scale(1); }
+        }
+        .teams-tab-pressed {
+          animation: teamsTabPress 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+          transform-origin: center !important;
+        }
+        @keyframes modal-overlay-in {
+          from { opacity: 0; }
+          to   { opacity: 1; }
+        }
+        @keyframes modal-panel-in {
+          from {
+            opacity: 0;
+            transform: scale(0.94) translateY(16px);
+            filter: blur(4px);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            filter: blur(0px);
+          }
+        }
+        .fc-modal-overlay {
+          animation: modal-overlay-in 0.2s ease both;
+        }
+        .fc-modal-outer {
+          animation: modal-panel-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
 
       `}</style>
 
-      {/* ── mt-32 md:mt-52 adds the gap between AboutPanel's bottom border and Teams' top border ── */}
       <div style={{ paddingBottom: '8rem' }}>
         <section id="section-teams" className="teams-root">
           <div className="teams-hero">

@@ -162,8 +162,13 @@ const Footer = () => {
   const [showSuggestion, setShowSuggestion] = useState(false);
   const [copiedEmail, setCopiedEmail]       = useState<string | null>(null);
   const emailInputRef = useRef<HTMLInputElement>(null);
-  const [bandWidth, setBandWidth] = useState(0);
   const SUGGESTION = '@gmail.com';
+
+  // FIX: Use refs instead of state for seam coords and band hover.
+  // State causes re-renders which show the element popping in.
+  // Refs + direct DOM manipulation avoid the FOUC entirely.
+  const seamSvgRef = useRef<SVGSVGElement>(null);
+  const seamLineRef = useRef<SVGLineElement>(null);
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
@@ -183,28 +188,35 @@ const Footer = () => {
     });
   };
 
-  // Store seam x coords as {top, bottom} measured from the actual rendered element
-  const [seamX, setSeamX] = useState<{top: number; bottom: number} | null>(null);
-
+  // FIX: Measure seam and update SVG line attributes directly — no state, no re-render
   useEffect(() => {
     const measure = () => {
       const band = splitRef.current;
       const bg   = nlBgRef.current;
-      if (!band || !bg) return;
+      const line = seamLineRef.current;
+      const svg  = seamSvgRef.current;
+      if (!band || !bg || !line || !svg) return;
       const bandRect = band.getBoundingClientRect();
       const bgRect   = bg.getBoundingClientRect();
       const top    = bgRect.right - bandRect.left;
       const bottom = bgRect.right - 72 - bandRect.left;
-      setSeamX({ top, bottom });
-      setBandWidth(bandRect.width);
+      // Set SVG line attributes directly — bypasses React render cycle entirely
+      line.setAttribute('x1', String(top));
+      line.setAttribute('x2', String(bottom));
+      // Reveal the SVG now that coords are correct
+      svg.style.opacity = '1';
     };
-    measure();
+    // Run after first paint so getBoundingClientRect is accurate
+    const raf = requestAnimationFrame(measure);
     window.addEventListener('resize', measure, { passive: true });
-    return () => window.removeEventListener('resize', measure);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('resize', measure);
+    };
   }, []);
 
   const band3Ref = useRef<HTMLDivElement>(null);
-  const BORDER_THRESHOLD = 200; // px proximity to a border line to activate it
+  const BORDER_THRESHOLD = 200;
 
   useEffect(() => {
     const footer = footerRef.current;
@@ -216,20 +228,14 @@ const Footer = () => {
         const footerRect = footer.getBoundingClientRect();
         const x = e.clientX - footerRect.left;
         const y = e.clientY - footerRect.top;
-
         footer.style.setProperty('--mouse-x', `${x}px`);
         footer.style.setProperty('--mouse-y', `${y}px`);
-
-        // Footer very top border
         footer.classList.toggle('border-top-active', y <= BORDER_THRESHOLD);
-
-        // footer-band3 top border — measure its top edge relative to the footer
         const band3 = band3Ref.current;
         if (band3) {
           const b3Top = band3.getBoundingClientRect().top - footerRect.top;
           band3.classList.toggle('border-top-active', Math.abs(y - b3Top) <= BORDER_THRESHOLD);
         }
-
         rafId = null;
       });
     };
@@ -246,9 +252,8 @@ const Footer = () => {
     };
   }, []);
 
-  // Track split-band local mouse X for its own gradient border overlay
+  // FIX: bandBorder hover — direct DOM style mutation, no useState/re-render
   const bandBorderRef = useRef<HTMLDivElement>(null);
-  const [bandHovered, setBandHovered] = useState(false);
 
   useEffect(() => {
     const band = splitRef.current;
@@ -263,12 +268,12 @@ const Footer = () => {
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
         borderEl.style.background = `radial-gradient(600px circle at ${x}px 0%, rgba(0,255,166,0.9), rgba(255,215,0,0.7), rgba(236,72,153,0.7), rgba(147,51,234,0.6), rgba(59,130,246,0.5), transparent 70%)`;
-        // Only activate when mouse is within threshold of the top border line
-        setBandHovered(y <= BAND_THRESHOLD);
+        // Direct style mutation — no state, no re-render, no FOUC
+        borderEl.style.opacity = y <= BAND_THRESHOLD ? '1' : '0';
         rafId = null;
       });
     };
-    const onLeave = () => setBandHovered(false);
+    const onLeave = () => { borderEl.style.opacity = '0'; };
     band.addEventListener('mousemove', onMove, { passive: true });
     band.addEventListener('mouseleave', onLeave);
     return () => {
@@ -299,7 +304,7 @@ const Footer = () => {
 
   return (
     <footer ref={footerRef} className="relative overflow-hidden mt-20 z-10 text-slate-300 glass-footer">
-      <style jsx>{`
+      <style>{`
         footer { border-top: none; }
 
         .footer-grid-bg {
@@ -352,12 +357,11 @@ const Footer = () => {
           color-scheme: dark;
         }
 
-        /* Inner gradient border overlay — sits INSIDE the band so overflow:hidden doesn't clip it */
+        /* Inner gradient border overlay */
         .split-band-border {
           position: absolute; top: 0; left: 0; right: 0; height: 1px;
           opacity: 0; transition: opacity 0.35s ease; pointer-events: none; z-index: 20;
         }
-        .split-band-border.is-hovered { opacity: 1; }
 
         /* ── Panels ── */
         .split-panel {
@@ -484,7 +488,6 @@ const Footer = () => {
         .nl-btn:hover:not(:disabled) { color: #ffffff; border-color: rgba(255,255,255,0.25); background: rgba(255,255,255,0.06); }
         .nl-btn:disabled { opacity: 0.25; cursor: not-allowed; }
 
-        /* Tab autocomplete pill */
         .nl-autocomplete-pill {
           display: inline-flex; align-items: center; gap: 0.35rem; padding: 5px 10px; border-radius: 3px;
           font-size: 0.66rem; font-weight: 600; letter-spacing: 0.08em;
@@ -496,7 +499,6 @@ const Footer = () => {
         .nl-autocomplete-pill:hover { color: rgba(255,255,255,0.8); border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.04); }
         .nl-tab-icon { display: inline-flex; align-items: center; opacity: 0.6; }
 
-        /* Ghost-text autocomplete */
         .nl-input-wrap {
           flex: 1; position: relative; display: flex; align-items: center; overflow: hidden;
         }
@@ -505,10 +507,10 @@ const Footer = () => {
           position: absolute; left: 0; top: 50%; transform: translateY(-50%);
           font-size: clamp(0.875rem, 2vw, 1.05rem); font-family: inherit;
           white-space: nowrap; pointer-events: none; z-index: 1;
-          color: transparent; /* typed portion invisible — input text sits on top */
+          color: transparent;
         }
         .nl-ghost-suffix {
-          color: rgba(227, 27, 84, 0.45); /* faint red */
+          color: rgba(227, 27, 84, 0.45);
           pointer-events: auto; cursor: text;
         }
 
@@ -649,41 +651,44 @@ const Footer = () => {
 
       {/* ══ SPLIT BAND ══ */}
       <div ref={splitRef} className="relative z-10 split-band">
-        {/* Gradient border overlay — rendered INSIDE so overflow:hidden does not clip it */}
+        {/* FIX: always rendered, opacity:0 by default, set to 1 via ref after measurement */}
         <div
           ref={bandBorderRef}
-          className={`split-band-border${bandHovered ? ' is-hovered' : ''}`}
+          className="split-band-border"
+          style={{ opacity: 0, transition: 'opacity 0.35s ease' }}
         />
-        {seamX && (
-          <svg
-            aria-hidden
-            className="split-seam-line"
-            style={{
-              position: 'absolute', inset: 0,
-              width: '100%', height: '100%',
-              zIndex: 10, pointerEvents: 'none', overflow: 'visible',
-            }}
-          >
-            <defs>
-              <linearGradient id="seamGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%"   stopColor="rgba(255,255,255,0.08)" />
-                <stop offset="30%"  stopColor="rgba(255,255,255,0.45)" />
-                <stop offset="70%"  stopColor="rgba(255,255,255,0.45)" />
-                <stop offset="100%" stopColor="rgba(255,255,255,0.08)" />
-              </linearGradient>
-            </defs>
-            <line
-              x1={seamX.top}
-              y1={0}
-              x2={seamX.bottom}
-              y2={560}
-              stroke="url(#seamGrad)"
-              strokeWidth={1}
-              strokeDasharray="5 5"
-            />
-          </svg>
-        )}
 
+        {/* FIX: SVG always in DOM, invisible until coords measured — no conditional render */}
+        <svg
+          ref={seamSvgRef}
+          aria-hidden
+          className="split-seam-line"
+          style={{
+            position: 'absolute', inset: 0,
+            width: '100%', height: '100%',
+            zIndex: 10, pointerEvents: 'none', overflow: 'visible',
+            opacity: 0,
+            transition: 'opacity 0.2s ease',
+          }}
+        >
+          <defs>
+            <linearGradient id="seamGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%"   stopColor="rgba(255,255,255,0.08)" />
+              <stop offset="30%"  stopColor="rgba(255,255,255,0.45)" />
+              <stop offset="70%"  stopColor="rgba(255,255,255,0.45)" />
+              <stop offset="100%" stopColor="rgba(255,255,255,0.08)" />
+            </linearGradient>
+          </defs>
+          {/* FIX: placeholder coords 0/0 — useEffect sets real values via ref, no re-render */}
+          <line
+            ref={seamLineRef}
+            x1="0" y1="0"
+            x2="0" y2="560"
+            stroke="url(#seamGrad)"
+            strokeWidth={1}
+            strokeDasharray="5 5"
+          />
+        </svg>
 
         {/* Left: Contact Us */}
         <div className="split-panel split-panel-nl">
@@ -862,4 +867,4 @@ const Footer = () => {
   );
 };
 
-export default Footer;  
+export default Footer;

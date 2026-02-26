@@ -357,7 +357,7 @@ export const ABOUT_PANEL_CONTENT: Record<
 export type InvestorType =
   | 'Founder Capital'
   | 'Angel Investor'
-  | 'High-Net-Worth (HNW) Private Investor'
+  | 'Private Investor'
   | 'Strategic Investor'
   | 'Institutional Investor'
   | 'Seed Investor'
@@ -366,8 +366,8 @@ export type InvestorType =
 export type InvestmentStructure =
   | 'Equity'
   | 'SAFE'
-  | 'Convertible Note'
-  | 'Direct Investment';
+  | 'Convertible'
+  | 'Direct';
 
 export interface Investor {
   id: string;
@@ -395,6 +395,8 @@ export interface CapitalPhase {
   investors: Investor[];
   /** true = render investor cards; false = render Coming Soon block */
   live: boolean;
+  /** Optional date shown in the Coming Soon block, e.g. 'January 2027' */
+  comingSoonDate?: string;
 }
 
 export interface CapitalStat {
@@ -407,7 +409,7 @@ export interface CapitalStat {
 export const INVESTOR_TYPE_COLORS: Record<InvestorType, string> = {
   'Founder Capital':                       '#E31B54',
   'Angel Investor':                        '#f59e0b',
-  'High-Net-Worth (HNW) Private Investor': '#8b5cf6',
+  'Private Investor':                      '#8b5cf6',
   'Strategic Investor':                    '#3b82f6',
   'Institutional Investor':                '#06b6d4',
   'Seed Investor':                         '#10b981',
@@ -427,7 +429,7 @@ const PHASE_I_INVESTORS: Investor[] = [
       'Internal capital allocated directly by the founding team to establish the core architecture and initial R&D framework of the Notus continuum.',
     year: '2025',
     roundName: 'Phase I',
-    investmentStructure: 'Direct Investment',
+    investmentStructure: 'Direct',
     strategicImpact: ['Core system development', 'Infrastructure scaling', 'Research expansion'],
     link: '#',
   },
@@ -448,14 +450,14 @@ const PHASE_I_INVESTORS: Investor[] = [
   {
     id: 'inv-003',
     name: 'Meridian Private Office',
-    type: 'High-Net-Worth (HNW) Private Investor',
+    type: 'Private Investor',
     phase: 'phase-1',
     phaseLabel: 'Phase I — Foundational Capital',
     description:
       'A family office aligned with long-horizon mission ventures, joining Phase I to support the architecture and governance formation of the platform.',
     year: '2025',
     roundName: 'Phase I',
-    investmentStructure: 'Convertible Note',
+    investmentStructure: 'Convertible',
     strategicImpact: ['Infrastructure scaling', 'Research expansion', 'Market validation'],
     link: '#',
   },
@@ -481,29 +483,31 @@ export const CAPITAL_PHASES: CapitalPhase[] = [
   {
     id: 'phase-1',
     label: 'Phase I',
-    title: 'Phase I — Foundational Capital',
+    title: 'Phase I — Foundational Capital (Pre-Seed, Seed Capital)',
     description:
-      'Internal capital, founder allocation & early backers. Architecture, R&D groundwork, formation.',
+      'Initial seed funding from founders and early angel investors allocated toward foundational development, system architecture, and early-stage execution.',
     investors: PHASE_I_INVESTORS,
     live: true,
   },
   {
     id: 'phase-2',
     label: 'Phase II',
-    title: 'Phase II — Strategic Capital',
+    title: 'Phase II — Strategic Capital (Series A Stage)',
     description:
-      'Selective external investors. Productization, systems deployment, early contracts.',
+      'Selective external investors participating in structured growth funding to support product scaling, operational expansion, and early market deployment (Seed Extension).',
     investors: [],
     live: false,
+    comingSoonDate: 'January 2027',
   },
   {
     id: 'phase-3',
     label: 'Phase III',
-    title: 'Phase III — Institutional Capital',
+    title: 'Phase III — Institutional Capital (Series A+ ,Series B Stage)',
     description:
-      'VC / institutional / structured funds. National scaling, infrastructure expansion.',
+      'Institutional investors and structured funds supporting large-scale expansion, infrastructure development, and long-term market growth (Growth Stage).',
     investors: [],
     live: false,
+    comingSoonDate: 'October 2027',
   },
 ];
 
@@ -512,5 +516,5 @@ export const CAPITAL_PHASES: CapitalPhase[] = [
 export const CAPITAL_STATS: CapitalStat[] = [
   { value: String(PHASE_I_INVESTORS.length), label: 'Phase I Backers', accent: false },
   { value: '₱1.5M',                          label: 'Raised in Phase I', accent: true  },
-  { value: '2025–',                           label: 'Active Since',     accent: false },
+  { value: '2026',                           label: 'Active Since',     accent: false },
 ];
