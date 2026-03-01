@@ -54,7 +54,7 @@ interface AboutLearnMoreButtonProps {
 
 const AboutLearnMoreButton = memo<AboutLearnMoreButtonProps>(({ href, onMouseMove }) => (
   <div className={styles.lmBorder}>
-    <a href={href} className={styles.lmBtn} onMouseMove={onMouseMove}>
+    <a href={href} target="_blank" rel="noopener noreferrer" className={styles.lmBtn} onMouseMove={onMouseMove}>
       <span>Learn More</span>
       <i className="bi bi-arrow-up-right-square"></i>
     </a>

@@ -285,6 +285,7 @@ const Overview = memo(() => {
                 padding: '0.25rem',
                 transition: 'border-color 0.3s ease',
               }}
+              onClick={() => window.open('/overview', '_blank')}
               onMouseEnter={() => setLearnMoreHovered(true)}
               onMouseLeave={() => setLearnMoreHovered(false)}
               onMouseMove={(e) => {
