@@ -11,7 +11,10 @@ interface VenturesProps {
 }
 
 const Ventures = ({ activeSubtab }: VenturesProps) => {
-  const active = (activeSubtab as VenturesSubtab) ?? 'ventures-defense';
+  const active: VenturesSubtab =
+    activeSubtab === 'ventures-defense' || activeSubtab === 'ventures-civic-operations' || activeSubtab === 'ventures-healthcare'
+      ? activeSubtab
+      : 'ventures-defense';
 
   return (
     <>

@@ -1,5 +1,5 @@
 "use client";
-import { memo, useMemo, useCallback, useRef } from "react";
+import { memo, useMemo, useCallback, useRef, useState, useEffect } from "react";
 import { ABOUT_PANEL_ITEMS, ABOUT_PANEL_CONTENT } from "@/data/Discover-data";
 import { useAboutNavigation } from "@/hooks/useAboutNavigation";
 import { useAboutMouseTracking } from "@/hooks/useAboutMouseTracking";
@@ -65,6 +65,11 @@ AboutLearnMoreButton.displayName = "AboutLearnMoreButton";
 const TheCompany = memo(() => {
   const sectionRef = useRef<HTMLElement>(null);
   const navRef = useRef<HTMLDivElement>(null);
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
 
   const {
     activeContent,
@@ -112,7 +117,7 @@ const TheCompany = memo(() => {
       ref={sectionRef}
       className={styles.aboutSection}
       data-nosnippet="true"
-      data-hydrated="true"
+      data-hydrated={hydrated ? "true" : undefined}
       style={{ borderTop: '1px dashed var(--border-dashed)' }}
     >
         <div className={styles.noiseTexture} />
@@ -161,7 +166,7 @@ const TheCompany = memo(() => {
           <div style={{ marginTop: "3rem" }}>
           <div className={styles.mainGrid}>
 
-            <div ref={navRef} className={styles.gridNavigation} data-hydrated="true">
+            <div ref={navRef} className={styles.gridNavigation} data-hydrated={hydrated ? "true" : undefined}>
               <div className={styles.activeSelector} style={selectorStyles}>
                 <div className={styles.selectorBackground} />
                 <div className={styles.selectorBorder} />

@@ -9,7 +9,7 @@
   padding: 1rem 1.5rem;
   background: transparent;
   border-right: 1px dashed var(--border-dashed);
-  transition: all 0.3s;
+  transition: background 0.3s, color 0.3s, border-color 0.3s;
   contain: layout style paint;
   cursor: pointer;
   border-left: none;

@@ -490,6 +490,17 @@
   transition: opacity 0.2s ease;
 }
 
+/* ── Anti-FOUC: content panel ── */
+.contentPanel {
+  transition: opacity 0.2s ease;
+}
+.aboutSection:not([data-hydrated]) .contentPanel {
+  opacity: 0;
+}
+.aboutSection[data-hydrated] .contentPanel {
+  opacity: 1;
+}
+
 .overviewIndexTag {
   color: rgba(255, 255, 255, 0.55);
   background: rgba(255, 255, 255, 0.1);

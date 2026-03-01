@@ -420,18 +420,6 @@ const NAVBAR_CSS = `
   overflow: hidden;
 }
 
-/* ── Label badge on left of strip ── */
-.strip-label {
-  display: flex; align-items: center; justify-content: center; gap: 7px;
-  width: 10vw; min-width: 10vw; max-width: 10vw;
-  flex-shrink: 0;
-  border-right: 1px solid var(--border-color);
-}
-.strip-label span {
-  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.15em;
-  text-transform: uppercase; color: var(--content-muted); white-space: nowrap;
-}
-
 /* ── Tab buttons track (relative container for the sliding indicator) ── */
 .strip-tabs-track {
   position: relative;
@@ -575,8 +563,6 @@ const NAVBAR_CSS = `
   .nav-reveal-tab { top: 12px; padding: 7px 11px 7px 10px; font-size: 0.74rem; }
   .nav-theme-tab  { top: calc(12px + 34px + 5px); padding: 7px 11px 7px 10px; font-size: 0.74rem; }
   .nav-icon-btn-wrap::after { display: none; }
-  .strip-label { width: 10vw; min-width: 10vw; max-width: 10vw; justify-content: center; padding: 0; }
-  .strip-label { display: none !important; }
   .strip-tab { padding: 0 14px; font-size: 0.82rem; }
   .strip-collapse { padding: 0 14px; }
   .strip-collapse:hover i { transform: translateX(2px); }
@@ -775,10 +761,6 @@ const StripRow = memo(({
     <div className={`subtab-strip-outer${isVisible ? ' strip-visible' : ''}${entering ? ' strip-entering' : ''}`}>
       <div className="subtab-strip-clip">
         <div className="subtab-strip-inner">
-
-          <div className="strip-label">
-            <span>{item.label}</span>
-          </div>
 
           <div className="strip-tabs-track" ref={trackRef}>
             <div
