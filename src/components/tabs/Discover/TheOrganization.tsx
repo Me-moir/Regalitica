@@ -76,8 +76,8 @@ function FounderModal({ founder, onClose }: { founder: Founder; onClose: () => v
         {/* Close — top right */}
         <div className="teams-tab-border" style={{ position: 'absolute', top: '14px', right: '14px', zIndex: 10 }}>
           <div className="teams-tab-item">
-            <button className="teams-tab-btn modal-btn" onClick={onClose} aria-label="Close profile">
-              Close Profile
+            <button className="teams-tab-btn modal-btn fc-close-btn" onClick={onClose} aria-label="Close">
+              <span className="fc-close-full">Close</span>
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" style={{ marginLeft: '4px', opacity: 0.6 }}>
                 <path d="M18 6 6 18M6 6l12 12" />
               </svg>
@@ -432,12 +432,19 @@ const TheOrganization = () => {
         }
         @media(min-width:768px){
           .fc-modal-top-row{display:contents !important;}
-          .fc-modal-portrait-mobile{display:contents;}
+          .fc-modal-portrait-mobile{
+            position:relative;width:280px;min-width:280px;flex-shrink:0;
+            overflow:hidden;
+            background:linear-gradient(170deg,#0e0e1c 0%,#160c14 100%);
+          }
           .fc-modal-title-mobile{display:none !important;}
           .fc-modal-desktop-header{display:block;}
+          .fc-close-full{display:inline;}
         }
         @media(max-width:767px){
           .fc-modal-desktop-header{display:none !important;}
+          .fc-close-full{display:none;}
+          .fc-close-btn svg{margin-left:0 !important;}
         }
 
         .fc-modal-outer {

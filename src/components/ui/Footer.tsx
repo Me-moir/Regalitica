@@ -337,6 +337,8 @@ const Footer = ({ onNavigate }: FooterProps) => {
         { label: 'News & Media',       tabId: 'information', infoContent: 'news' },
         { label: 'Investor Relations', tabId: 'information', infoContent: 'investor-relations' },
         { label: 'Documents',          tabId: 'information', infoContent: 'documents' },
+        { label: 'Attributions',       tabId: 'information', infoContent: 'attributions' },
+        { label: 'Report',             tabId: 'information', infoContent: 'report' },
       ]
     },
     {

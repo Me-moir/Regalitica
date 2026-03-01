@@ -39,10 +39,20 @@ function EmailCopyButton({ email }: { email: string }) {
   const [copied, setCopied] = useState(false);
   const handleClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
-    navigator.clipboard.writeText(email).then(() => {
+    const doCopy = () => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    });
+    };
+    if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+      navigator.clipboard.writeText(email).then(doCopy).catch(() => {
+        // fallback for mobile / insecure context
+        fallbackCopy(email);
+        doCopy();
+      });
+    } else {
+      fallbackCopy(email);
+      doCopy();
+    }
   }, [email]);
   return (
     <span onClick={handleClick} className="sc-email-copy" title="Click to copy">
@@ -55,6 +65,19 @@ function EmailCopyButton({ email }: { email: string }) {
       </span>
     </span>
   );
+}
+
+function fallbackCopy(text: string) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.left = '-9999px';
+  ta.style.top = '-9999px';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  try { document.execCommand('copy'); } catch { /* noop */ }
+  document.body.removeChild(ta);
 }
 
 function DisclosureTooltip() {
@@ -217,8 +240,8 @@ function InvestorModal({ investor, onClose }: { investor: Investor; onClose: () 
               onPointerDown={e => springPress(e.currentTarget)}
             >
               <div className="sc-tab-item">
-                <button className="sc-tab-btn sc-modal-btn" onClick={onClose} aria-label="Close profile">
-                  Close Profile
+                <button className="sc-tab-btn sc-modal-btn sc-close-btn" onClick={onClose} aria-label="Close">
+                  <span className="sc-close-full">Close</span>
                   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" style={{ marginLeft: '4px', opacity: 0.6 }}>
                     <path d="M18 6 6 18M6 6l12 12" />
                   </svg>
@@ -965,6 +988,17 @@ const StrategicCapital = () => {
         :root.light .sc-modal-footer  { border-top: 1px solid rgba(0,0,0,.08) !important; }
         :root.light .sc-modal-role-tag { color: rgba(0,0,0,.45) !important; -webkit-text-fill-color: rgba(0,0,0,.45) !important; background: rgba(0,0,0,.04) !important; border: 1px solid rgba(0,0,0,.1) !important; }
         :root.light .sc-modal-impact-text { color: rgba(0,0,0,.65) !important; -webkit-text-fill-color: rgba(0,0,0,.65) !important; }
+
+        /* ── Mobile close button: x only ── */
+        @media(max-width:767px){
+          .sc-close-full{display:none;}
+          .sc-close-btn svg{margin-left:0 !important;}
+          .sc-modal-outer{max-width:100% !important;margin:0 8px;}
+          .sc-modal-btn{padding:10px 14px !important;font-size:0.82rem !important;}
+        }
+        @media(min-width:768px){
+          .sc-close-full{display:inline;}
+        }
       `}</style>
 
       <div style={{ paddingBottom: '8rem' }}>

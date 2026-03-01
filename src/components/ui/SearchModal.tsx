@@ -7,30 +7,66 @@ import { useState, useEffect, useRef, useCallback, useMemo, memo } from 'react';
 interface SearchModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onNavigate?: (tabId: string, subtabId?: string) => void;
+  onNavigate?: (tabId: string, subtabId?: string, infoContent?: string) => void;
 }
 
 interface SectionItem {
   label: string;
   tabId: string;
   subtabId?: string;
+  infoContent?: string;
   icon: string;
   aka?: string;
+  keywords: string[];
 }
 
-const FREQUENT: SectionItem[] = [
-  { label: 'The Company',       tabId: 'discover',    subtabId: 'discover-thecompany',        icon: 'bi-building',        aka: 'About Us, Company Profile' },
-  { label: 'The Organization',  tabId: 'discover',    subtabId: 'discover-theorganization',   icon: 'bi-people',          aka: 'Teams, Founders' },
-  { label: 'Strategic Capital',  tabId: 'discover',    subtabId: 'discover-strategiccapital',  icon: 'bi-graph-up-arrow',  aka: 'Seeds, Investors' },
+/* ── Comprehensive searchable sections with keyword mappings ── */
+const ALL_SECTIONS: SectionItem[] = [
+  // Landing
+  { label: 'Home',              tabId: 'home',                                                                  icon: 'bi-house',           aka: 'Landing, Main Page',                          keywords: ['home', 'landing', 'main', 'start', 'welcome', 'hero', 'portfolio', 'convergence'] },
+
+  // Discover
+  { label: 'Overview',          tabId: 'discover',    subtabId: 'discover-overview',                            icon: 'bi-grid',            aka: 'Summary, Dashboard',                          keywords: ['overview', 'summary', 'dashboard', 'about', 'discover', 'grids'] },
+  { label: 'The Company',       tabId: 'discover',    subtabId: 'discover-thecompany',                          icon: 'bi-building',        aka: 'About Us, Company Profile',                   keywords: ['company', 'about us', 'profile', 'mission', 'vision', 'who we are', 'notus', 'regalia', 'corporation', 'entity', 'holding', 'firm'] },
+  { label: 'The Organization',  tabId: 'discover',    subtabId: 'discover-theorganization',                     icon: 'bi-people',          aka: 'Teams, Leadership, Founders',                 keywords: ['organization', 'team', 'teams', 'leadership', 'founders', 'ceo', 'cto', 'cfo', 'coo', 'executives', 'management', 'people', 'staff', 'directors', 'board', 'officers', 'personnel'] },
+  { label: 'Strategic Capital', tabId: 'discover',    subtabId: 'discover-strategiccapital',                    icon: 'bi-graph-up-arrow',  aka: 'Investments, Seed, Investors',                keywords: ['capital', 'strategic', 'investments', 'investors', 'seed', 'funding', 'finance', 'venture capital', 'vc', 'fundraise', 'round', 'valuation'] },
+
+  // Information
+  { label: 'Releases',          tabId: 'information', infoContent: 'statements',                                icon: 'bi-bell',            aka: 'Statements, Announcements',                   keywords: ['releases', 'statements', 'announcements', 'press', 'notice', 'disclosure', 'public'] },
+  { label: 'News & Media',      tabId: 'information', infoContent: 'news',                                      icon: 'bi-images',          aka: 'Media, Coverage, Press',                      keywords: ['news', 'media', 'coverage', 'press', 'articles', 'blog', 'updates'] },
+  { label: 'Attributions',      tabId: 'information', infoContent: 'attributions',                               icon: 'bi-award',           aka: 'Credits, Acknowledgments',                    keywords: ['attributions', 'credits', 'acknowledgments', 'thanks', 'recognition'] },
+  { label: 'Licenses',          tabId: 'information', infoContent: 'licenses',                                   icon: 'bi-patch-check',     aka: 'Software Licensing, Open Source',              keywords: ['licenses', 'licensing', 'open source', 'software', 'mit', 'apache', 'gpl'] },
+  { label: 'Terms & Conditions',tabId: 'information', infoContent: 'terms',                                      icon: 'bi-unlock2',         aka: 'Terms of Service, TOS, Agreement',            keywords: ['terms', 'conditions', 'tos', 'terms of service', 'agreement', 'usage', 'rules'] },
+  { label: 'Policies',          tabId: 'information', infoContent: 'policies',                                   icon: 'bi-shield-check',    aka: 'Privacy, Cookie, Acceptable Use',             keywords: ['policies', 'policy', 'privacy', 'cookie', 'cookies', 'acceptable use', 'data', 'gdpr', 'data protection', 'consent', 'tracking', 'analytics'] },
+  { label: 'Documents',         tabId: 'information', infoContent: 'documents',                                  icon: 'bi-folder',          aka: 'Legal Documents, Filings',                    keywords: ['documents', 'filings', 'legal', 'paperwork', 'files', 'official'] },
+  { label: 'Investor Relations',tabId: 'information', infoContent: 'investor-relations',                         icon: 'bi-graph-up-arrow',  aka: 'Financial, Reports, Shareholders',            keywords: ['investor', 'investors', 'relations', 'financial', 'shareholders', 'equity', 'stock', 'dividends', 'ir', 'quarterly', 'annual report'] },
+  { label: 'Report a Problem',  tabId: 'information', infoContent: 'report',                                     icon: 'bi-flag',            aka: 'Issue, Bug, Complaint',                       keywords: ['report', 'problem', 'issue', 'bug', 'complaint', 'feedback', 'abuse', 'security', 'vulnerability', 'contact legal'] },
+
+  // Ventures
+  { label: 'Defense',           tabId: 'ventures',    subtabId: 'defense',                                      icon: 'bi-shield',          aka: 'Military, Security, Intelligence',            keywords: ['defense', 'military', 'security', 'intelligence', 'warfare', 'weapons', 'tactical', 'army', 'navy'] },
+  { label: 'Healthcare',        tabId: 'ventures',    subtabId: 'healthcare',                                   icon: 'bi-heart-pulse',     aka: 'Medical, Biotech, Health',                    keywords: ['healthcare', 'health', 'medical', 'biotech', 'pharma', 'hospital', 'clinical', 'patient', 'wellness'] },
+  { label: 'Civic Operations',  tabId: 'ventures',    subtabId: 'civic-operations',                             icon: 'bi-buildings',       aka: 'Government, Infrastructure, Public',          keywords: ['civic', 'operations', 'government', 'infrastructure', 'public', 'urban', 'city', 'municipal', 'community'] },
 ];
 
-const SUGGESTED: SectionItem[] = [
-  { label: 'Home',              tabId: 'home',                                                  icon: 'bi-house' },
-  { label: 'Overview',          tabId: 'discover',    subtabId: 'discover-overview',           icon: 'bi-grid' },
-  { label: 'Information',       tabId: 'information',                                           icon: 'bi-pin' },
-  { label: 'Ventures',          tabId: 'ventures',                                              icon: 'bi-crosshair' },
-  { label: 'Releases',          tabId: 'information', subtabId: 'statements',                   icon: 'bi-bell' },
-];
+const TRENDING: SectionItem[] = ALL_SECTIONS.filter(i =>
+  ['The Company', 'The Organization', 'Strategic Capital'].includes(i.label)
+);
+
+const SUGGESTED: SectionItem[] = ALL_SECTIONS.filter(i =>
+  ['Home', 'Overview', 'Releases', 'Ventures', 'Policies'].includes(i.label)
+).map(i => {
+  // For Ventures without a subtab, just point to the tab
+  if (i.label === 'Ventures') return { ...i, subtabId: undefined };
+  return i;
+});
+// Add a general Ventures entry
+const VENTURES_ENTRY: SectionItem = { label: 'Ventures', tabId: 'ventures', icon: 'bi-crosshair', aka: 'Portfolio Companies', keywords: ['ventures', 'portfolio'] };
+if (!SUGGESTED.find(s => s.label === 'Ventures')) {
+  SUGGESTED.push(VENTURES_ENTRY);
+}
+// Also add Information general entry
+const INFO_ENTRY: SectionItem = { label: 'Information', tabId: 'information', icon: 'bi-pin', aka: 'Info Hub', keywords: ['information', 'info'] };
+SUGGESTED.push(INFO_ENTRY);
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -199,6 +235,7 @@ const SearchModal = ({ isOpen, onClose, onNavigate }: SearchModalProps) => {
   const [query, setQuery] = useState('');
   const [frequentOpen, setFrequentOpen] = useState(true);
   const [suggestedOpen, setSuggestedOpen] = useState(true);
+  const [searchResultsOpen, setSearchResultsOpen] = useState(true);
   const inputRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -224,22 +261,60 @@ const SearchModal = ({ isOpen, onClose, onNavigate }: SearchModalProps) => {
   }, [onClose]);
 
   const handleItemClick = useCallback((item: SectionItem) => {
-    onNavigate?.(item.tabId, item.subtabId);
+    onNavigate?.(item.tabId, item.subtabId, item.infoContent);
     onClose();
   }, [onNavigate, onClose]);
 
-  // Memoised filtering — only recalculates when query changes
-  const filteredFrequent = useMemo(() => {
-    if (!query.trim()) return FREQUENT;
-    const q = query.toLowerCase();
-    return FREQUENT.filter(i => i.label.toLowerCase().includes(q) || (i.aka && i.aka.toLowerCase().includes(q)));
-  }, [query]);
+  // True if any search query is present
+  const hasQuery = query.trim().length > 0;
+
+  // Memoised keyword-based search across ALL_SECTIONS
+  const searchResults = useMemo(() => {
+    if (!hasQuery) return [];
+    const q = query.toLowerCase().trim();
+    const tokens = q.split(/\s+/);
+
+    return ALL_SECTIONS
+      .map(item => {
+        let score = 0;
+        const labelLower = item.label.toLowerCase();
+        const akaLower = (item.aka || '').toLowerCase();
+
+        // Exact label match
+        if (labelLower === q) score += 100;
+        // Label starts with query
+        else if (labelLower.startsWith(q)) score += 50;
+        // Label contains query
+        else if (labelLower.includes(q)) score += 30;
+        // AKA contains query
+        if (akaLower.includes(q)) score += 20;
+
+        // Keyword matching
+        for (const kw of item.keywords) {
+          for (const token of tokens) {
+            if (kw === token) score += 40;
+            else if (kw.startsWith(token)) score += 25;
+            else if (kw.includes(token)) score += 15;
+          }
+        }
+
+        return { item, score };
+      })
+      .filter(r => r.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .map(r => r.item);
+  }, [query, hasQuery]);
+
+  // When no query, show the Trending and Suggested sections
+  const filteredTrending = useMemo(() => {
+    if (hasQuery) return [];
+    return TRENDING;
+  }, [hasQuery]);
 
   const filteredSuggested = useMemo(() => {
-    if (!query.trim()) return SUGGESTED;
-    const q = query.toLowerCase();
-    return SUGGESTED.filter(i => i.label.toLowerCase().includes(q) || (i.aka && i.aka.toLowerCase().includes(q)));
-  }, [query]);
+    if (hasQuery) return [];
+    return SUGGESTED;
+  }, [hasQuery]);
 
   if (!isOpen) return null;
 
@@ -266,18 +341,44 @@ const SearchModal = ({ isOpen, onClose, onNavigate }: SearchModalProps) => {
 
           {/* Body */}
           <div className="search-body">
-            {filteredFrequent.length === 0 && filteredSuggested.length === 0 ? (
-              <div className="search-empty">No results found</div>
+            {/* When searching: show keyword results */}
+            {hasQuery ? (
+              searchResults.length === 0 ? (
+                <div className="search-empty">No results found</div>
+              ) : (
+                <div className="search-accordion">
+                  <div className="search-accordion-header" onClick={() => setSearchResultsOpen(v => !v)}>
+                    <i className={`bi bi-chevron-right chevron${searchResultsOpen ? ' open' : ''}`} />
+                    Results
+                  </div>
+                  <div className={`search-accordion-items ${searchResultsOpen ? 'expanded' : 'collapsed'}`}>
+                    {searchResults.map(item => (
+                      <div key={`${item.tabId}-${item.subtabId || ''}-${item.infoContent || ''}`} className="search-item" onClick={() => handleItemClick(item)}>
+                        <i className={`bi ${item.icon}`} />
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                          <span>{item.label}</span>
+                          {item.aka && (
+                            <span style={{ fontSize: '0.72rem', color: 'var(--content-faint)', opacity: 0.6, fontWeight: 400 }}>
+                              {item.aka}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )
             ) : (
+              /* When not searching: show Trending and Suggested */
               <>
-                {filteredFrequent.length > 0 && (
+                {filteredTrending.length > 0 && (
                   <div className="search-accordion">
                     <div className="search-accordion-header" onClick={() => setFrequentOpen(v => !v)}>
                       <i className={`bi bi-chevron-right chevron${frequentOpen ? ' open' : ''}`} />
                       Trending
                     </div>
                     <div className={`search-accordion-items ${frequentOpen ? 'expanded' : 'collapsed'}`}>
-                      {filteredFrequent.map(item => (
+                      {filteredTrending.map(item => (
                         <div key={item.label} className="search-item" onClick={() => handleItemClick(item)}>
                           <i className={`bi ${item.icon}`} />
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>

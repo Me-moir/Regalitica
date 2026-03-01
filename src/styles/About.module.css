@@ -118,6 +118,37 @@
   .gridNavigation { flex-direction: column; overflow-x: visible; height: 100%; border-bottom: none; margin-top: 0; }
 }
 
+/* ── Mobile scroll hint (floats above grid tabs) ── */
+.scrollHint {
+  display: none;
+}
+@media (max-width: 767px) {
+  .scrollHint {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    position: absolute;
+    top: -28px;
+    right: 12px;
+    z-index: 20;
+    font-family: ui-monospace, Menlo, monospace;
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.3);
+    pointer-events: none;
+    animation: scrollHintPulse 2.5s ease-in-out infinite;
+  }
+}
+@keyframes scrollHintPulse {
+  0%, 100% { opacity: 0.5; transform: translateX(0); }
+  50%      { opacity: 1;   transform: translateX(3px); }
+}
+:global(:root.light) .scrollHint {
+  color: rgba(0, 0, 0, 0.3);
+}
+
 .navDivider { display: none; }
 @media (min-width: 768px) {
   .navDivider {

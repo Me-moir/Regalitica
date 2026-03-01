@@ -970,11 +970,25 @@ const Navbar = ({
     return () => window.removeEventListener('keydown', onKey);
   }, []);
 
-  const handleSearchNavigate = useCallback((tabId: string, subtabId?: string) => {
+  const handleSearchNavigate = useCallback((tabId: string, subtabId?: string, infoContent?: string) => {
     setActiveTab(tabId);
     if (subtabId) onSubtabClick?.(tabId, subtabId);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [setActiveTab, onSubtabClick]);
+    if (infoContent) onInfoContentChange?.(infoContent as import('@/data/information-data').InfoContentType);
+    // Find matching subtab's sectionId so we can scroll to it
+    const navItem = NAV_ITEMS.find(i => i.id === tabId);
+    const sub = navItem?.subtabs?.find(s => s.id === subtabId);
+    if (sub?.sectionId) {
+      // Give time for the tab to render, then scroll
+      setTimeout(() => {
+        const el = document.getElementById(sub.sectionId!);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 450);
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [setActiveTab, onSubtabClick, onInfoContentChange]);
 
   // ── Mobile sidebar ──
   const openMobile      = useCallback(() => setMobileOpen(true), []);

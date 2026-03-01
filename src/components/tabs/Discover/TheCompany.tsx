@@ -163,7 +163,13 @@ const TheCompany = memo(() => {
           </div>
 
           {/* ── Panel ── */}
-          <div style={{ marginTop: "3rem" }}>
+          <div style={{ marginTop: "3rem", position: 'relative' }}>
+
+          {/* Mobile scroll hint tooltip */}
+          <div className={styles.scrollHint} aria-hidden="true">
+            Scroll <i className="bi bi-chevron-right" style={{ fontSize: '0.6rem' }} />
+          </div>
+
           <div className={styles.mainGrid}>
 
             <div ref={navRef} className={styles.gridNavigation} data-hydrated={hydrated ? "true" : undefined}>

@@ -68,11 +68,11 @@ const HeroSection = () => {
           padding: 1px;
           background: radial-gradient(
             200px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-            rgba(227, 27, 84, 0.85),
-            rgba(235, 17, 67, 0.7),
-            rgba(196, 14, 56, 0.6),
-            rgba(159, 10, 42, 0.5),
-            rgba(120, 5, 30, 0.4),
+            rgba(0, 255, 166, 0.9),
+            rgba(255, 215, 0, 0.7),
+            rgba(236, 72, 153, 0.7),
+            rgba(147, 51, 234, 0.6),
+            rgba(59, 130, 246, 0.5),
             transparent 70%
           );
           -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
