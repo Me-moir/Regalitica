@@ -4,7 +4,7 @@ import { OverviewContent } from '@/data/Discover-data';
 import styles from '@/styles/ui.module.css';
 import aboutStyles from '@/styles/About.module.css';
 
-const Overview = memo(() => {
+const Overview = memo(({ onLearnMore }: { onLearnMore?: () => void }) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [learnMoreHovered, setLearnMoreHovered] = useState(false);
 
@@ -285,7 +285,7 @@ const Overview = memo(() => {
                 padding: '0.25rem',
                 transition: 'border-color 0.3s ease',
               }}
-              onClick={() => window.open('/overview', '_blank')}
+              onClick={() => onLearnMore?.()}
               onMouseEnter={() => setLearnMoreHovered(true)}
               onMouseLeave={() => setLearnMoreHovered(false)}
               onMouseMove={(e) => {

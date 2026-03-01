@@ -90,9 +90,13 @@ function DisclosureTooltip() {
   const calcPos = useCallback(() => {
     if (!ref.current) return;
     const rect = ref.current.getBoundingClientRect();
+    const tooltipW = Math.min(300, window.innerWidth - 24);
+    const rawLeft = rect.left + rect.width / 2;
+    const pad = 12;
+    const clampedLeft = Math.max(pad + tooltipW / 2, Math.min(rawLeft, window.innerWidth - pad - tooltipW / 2));
     setTooltipPos({
       top: rect.top + window.scrollY - 10,
-      left: rect.left + rect.width / 2,
+      left: clampedLeft,
     });
   }, []);
 
@@ -583,7 +587,7 @@ const StrategicCapital = () => {
 
         /* Tooltip */
         .sc-disclosure-tooltip {
-          position: fixed; width: 300px; padding: 14px 16px;
+          position: fixed; width: 300px; max-width: calc(100vw - 24px); padding: 14px 16px;
           background: linear-gradient(160deg, #050508 0%, #09090f 50%, #0d0509 100%);
           border: 1px solid rgba(227,27,84,0.5); border-radius: 10px;
           font-size: 12px; line-height: 1.7;

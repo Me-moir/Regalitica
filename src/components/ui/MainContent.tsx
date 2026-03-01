@@ -2,10 +2,10 @@
 import { useState, useEffect, useRef, Suspense, lazy } from 'react';
 import type { InfoContentType } from '@/data/information-data';
 
-const LandingTab     = lazy(() => import('@/components/tabs/Landing'));
-const DiscoverTab    = lazy(() => import('@/components/tabs/Discover'));
-const TechnologiesTab = lazy(() => import('@/components/tabs/Ventures'));
-const InformationTab = lazy(() => import('@/components/tabs/Information'));
+const LandingTab     = lazy(() => import('@/components/ParentCompany/Landing'));
+const DiscoverTab    = lazy(() => import('@/components/ParentCompany/Discover'));
+const TechnologiesTab = lazy(() => import('@/components/ParentCompany/Technologies'));
+const InformationTab = lazy(() => import('@/components/ParentCompany/Information'));
 
 interface MainContentProps {
   activeTab: string;

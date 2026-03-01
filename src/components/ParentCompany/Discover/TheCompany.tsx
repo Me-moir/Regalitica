@@ -48,21 +48,21 @@ const AboutTabButton = memo<AboutTabButtonProps>(({ label, isActive, onClick, on
 AboutTabButton.displayName = "AboutTabButton";
 
 interface AboutLearnMoreButtonProps {
-  href: string;
-  onMouseMove?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
+  onClick: () => void;
+  onMouseMove?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
-const AboutLearnMoreButton = memo<AboutLearnMoreButtonProps>(({ href, onMouseMove }) => (
+const AboutLearnMoreButton = memo<AboutLearnMoreButtonProps>(({ onClick, onMouseMove }) => (
   <div className={styles.lmBorder}>
-    <a href={href} target="_blank" rel="noopener noreferrer" className={styles.lmBtn} onMouseMove={onMouseMove}>
+    <button className={styles.lmBtn} onClick={onClick} onMouseMove={onMouseMove} style={{ cursor: 'pointer' }}>
       <span>Learn More</span>
       <i className="bi bi-arrow-up-right-square"></i>
-    </a>
+    </button>
   </div>
 ));
 AboutLearnMoreButton.displayName = "AboutLearnMoreButton";
 
-const TheCompany = memo(() => {
+const TheCompany = memo(({ onLearnMore }: { onLearnMore?: (page: string) => void }) => {
   const sectionRef = useRef<HTMLElement>(null);
   const navRef = useRef<HTMLDivElement>(null);
   const [hydrated, setHydrated] = useState(false);
@@ -99,18 +99,6 @@ const TheCompany = memo(() => {
     [selectorPosition]
   );
 
-  const getLearnMoreLink = useCallback(() => {
-    const links: Record<AboutContentType, string> = {
-      company: "/company",
-      philosophy: "/philosophy",
-      ecosystem: "/ecosystem",
-      direction: "/direction",
-      governance: "/governance",
-      ethics: "/ethics",
-    };
-    return links[activeContent];
-  }, [activeContent]);
-
   return (
     <div style={{ paddingBottom: '8rem' }}>
     <section
@@ -118,7 +106,12 @@ const TheCompany = memo(() => {
       className={styles.aboutSection}
       data-nosnippet="true"
       data-hydrated={hydrated ? "true" : undefined}
-      style={{ borderTop: '1px dashed var(--border-dashed)' }}
+      style={{
+        borderTop: '1px dashed var(--border-dashed)',
+        opacity: hydrated ? 1 : 0,
+        transition: hydrated ? 'opacity 0.25s ease' : 'none',
+        pointerEvents: hydrated ? 'auto' : 'none',
+      }}
     >
         <div className={styles.noiseTexture} />
 
@@ -172,7 +165,7 @@ const TheCompany = memo(() => {
 
           <div className={styles.mainGrid}>
 
-            <div ref={navRef} className={styles.gridNavigation} data-hydrated={hydrated ? "true" : undefined}>
+            <div ref={navRef} className={styles.gridNavigation} data-hydrated={hydrated ? "true" : undefined} style={{ opacity: hydrated ? 1 : 0, transition: hydrated ? 'opacity 0.2s ease' : 'none' }}>
               <div className={styles.activeSelector} style={selectorStyles}>
                 <div className={styles.selectorBackground} />
                 <div className={styles.selectorBorder} />
@@ -243,7 +236,7 @@ const TheCompany = memo(() => {
 
                 <div className={styles.learnMoreSection}>
                   <div className={styles.learnMoreInner}>
-                    <AboutLearnMoreButton href={getLearnMoreLink()} onMouseMove={handleMouseMove} />
+                    <AboutLearnMoreButton onClick={() => onLearnMore?.(activeContent)} onMouseMove={handleMouseMove} />
                   </div>
                 </div>
 

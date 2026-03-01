@@ -411,6 +411,7 @@ const TheOrganization = () => {
           .fc-modal-top-row{
             display:flex !important;flex-direction:row !important;
             border-bottom:1px solid rgba(255,255,255,.08);
+            min-height:160px;
           }
           .fc-modal-portrait-mobile{
             position:relative;width:30%;min-width:30%;max-width:30%;flex-shrink:0;
@@ -418,7 +419,7 @@ const TheOrganization = () => {
             background:linear-gradient(170deg,#0e0e1c 0%,#160c14 100%);
           }
           .fc-modal-title-mobile{
-            flex:1;display:flex;flex-direction:column;justify-content:center;
+            flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;
             padding:1rem 1rem;min-width:0;width:70%;
           }
           .fc-modal-chip{display:none !important;}

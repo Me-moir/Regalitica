@@ -68,8 +68,6 @@ const Information = memo(({ activeContent, onContentChange }: InformationProps) 
           background:   'var(--gradient-section)',
           borderTop:    '1px dashed var(--border-dashed)',
           borderBottom: '1px dashed var(--border-dashed)',
-          borderLeft:   '1px dashed var(--border-dashed)',
-          borderRight:  '1px dashed var(--border-dashed)',
         }}
       >
         <div

@@ -226,9 +226,9 @@ const DefenseTab = () => {
               <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', padding: '0 clamp(2.5rem, 5vw, 4.5rem) 0 clamp(3.5rem, 7vw, 6rem)', marginBottom: '1.5rem' }}>
                 {[{ label: 'Request Briefing', icon: 'bi-arrow-right', primary: true }, { label: 'Visit Website', icon: 'bi-arrow-up-right', primary: false }].map(btn => (
                   <div key={btn.label} className="dv-lm-border" style={{ display: 'inline-flex', flexShrink: 0, borderRadius: '10.5px', padding: '1px', position: 'relative', background: 'transparent', isolation: 'isolate' }}>
-                    <button onClick={() => window.open('/defense', '_blank')} className={`dv-lm-btn${!btn.primary ? ' dv-btn-secondary' : ''}`} style={{ position: 'relative', zIndex: 1, display: 'inline-flex', alignItems: 'center', gap: 8, border: 'none', borderRadius: '9.5px', padding: btn.primary ? '0.75rem 1.5rem' : '0.75rem 1.25rem', fontSize: '0.85rem', fontWeight: btn.primary ? 600 : 500, letterSpacing: '0.01em', lineHeight: 1, cursor: 'pointer', whiteSpace: 'nowrap', background: btn.primary ? '#E31B54' : 'var(--navbar-bg, #0f0f0f)', color: btn.primary ? '#fff' : 'var(--content-faint)', boxShadow: btn.primary ? '0 4px 16px rgba(227,27,84,0.3)' : '0 2px 8px rgba(0,0,0,0.18), inset 0 1px 0 var(--glass-inset-top)', transition: 'all 0.15s ease' }}>
+                    <a href="/defense" rel="noopener noreferrer" className={`dv-lm-btn${!btn.primary ? ' dv-btn-secondary' : ''}`} style={{ position: 'relative', zIndex: 1, display: 'inline-flex', alignItems: 'center', gap: 8, border: 'none', borderRadius: '9.5px', padding: btn.primary ? '0.75rem 1.5rem' : '0.75rem 1.25rem', fontSize: '0.85rem', fontWeight: btn.primary ? 600 : 500, letterSpacing: '0.01em', lineHeight: 1, cursor: 'pointer', whiteSpace: 'nowrap', background: btn.primary ? '#E31B54' : 'var(--navbar-bg, #0f0f0f)', color: btn.primary ? '#fff' : 'var(--content-faint)', boxShadow: btn.primary ? '0 4px 16px rgba(227,27,84,0.3)' : '0 2px 8px rgba(0,0,0,0.18), inset 0 1px 0 var(--glass-inset-top)', transition: 'all 0.15s ease', textDecoration: 'none' }}>
                       {btn.label}<i className={`bi ${btn.icon}`} style={{ fontSize: '0.8rem' }} />
-                    </button>
+                    </a>
                   </div>
                 ))}
               </div>

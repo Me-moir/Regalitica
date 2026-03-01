@@ -830,6 +830,17 @@ const Navbar = ({
   const isProgrammaticScrollRef  = useRef(false);
   const programmaticScrollTimer  = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [scrollSpySubtab, setScrollSpySubtab] = useState<string | null>(null);
+  const [discoverDetailOpen, setDiscoverDetailOpen] = useState(false);
+
+  // ── Listen for discover detail page events ──
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const open = (e as CustomEvent).detail?.open ?? false;
+      setDiscoverDetailOpen(open);
+    };
+    window.addEventListener('discover-detail', handler);
+    return () => window.removeEventListener('discover-detail', handler);
+  }, []);
 
   // ── Collapse / show nav ──
   const handleCollapseNav = useCallback(() => {
@@ -1177,9 +1188,37 @@ const Navbar = ({
         </div>
 
         {/* ══ SUBTAB STRIP — active tab only ══ */}
+        {/* When discover detail page is active, show "Return to Previous Page" strip */}
+        {activeTab === 'discover' && discoverDetailOpen && stripOpen && (
+          <div className="subtab-strip-outer strip-visible">
+            <div className="subtab-strip-clip">
+              <div className="subtab-strip-inner">
+                <div className="strip-tabs-track">
+                  <button
+                    className="strip-tab strip-tab-active"
+                    onClick={() => window.dispatchEvent(new CustomEvent('discover-detail-back'))}
+                    style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+                  >
+                    <i className="bi bi-arrow-left" style={{ fontSize: '0.7rem' }} />
+                    Return to Previous Page
+                  </button>
+                </div>
+                <button
+                  className="strip-collapse"
+                  onClick={() => { manualOpenRef.current = false; setStripOpen(false); }}
+                  aria-label="Hide strip"
+                >
+                  <i className="bi bi-chevron-up" />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        {/* Normal strips — hidden when discover detail is active */}
         {NAV_ITEMS.filter(item => item.subtabs?.length).map((item) => {
           const isActiveItem   = item.id === activeTab;
-          const isVisible      = isActiveItem && stripOpen;
+          const isDiscoverWithDetail = item.id === 'discover' && discoverDetailOpen;
+          const isVisible      = isActiveItem && stripOpen && !isDiscoverWithDetail;
           const isInfoTab      = item.id === 'information';
           const activeSubtabId = isInfoTab
             ? (activeInfoContent as string | undefined)

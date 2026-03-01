@@ -1,6 +1,6 @@
 "use client";
 import { memo, useCallback } from 'react';
-import Threads from '@/components/tabs/Landing/Threads';
+import Threads from '@/components/ParentCompany/Landing/Threads';
 
 
 const HeroSection = () => {
