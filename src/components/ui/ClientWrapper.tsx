@@ -10,6 +10,7 @@ const VALID_TABS: TabType[] = ['home', 'discover', 'information', 'affiliations'
 
 const ClientWrapper = () => {
   const [activeTab, setActiveTab]               = useState<TabType>('home');
+  const [activeSubtab, setActiveSubtab]         = useState<string | undefined>(undefined);
   const [activeInfoContent, setActiveInfoContent] = useState<InfoContentType>('statements');
 
   const isValidTab = useCallback((tab: string): tab is TabType => {
@@ -57,17 +58,24 @@ const handleInfoContentChange = useCallback((content: InfoContentType) => {
   setActiveInfoContent(content);
 }, []);
 
+  const handleSubtabClick = useCallback((parentTabId: string, subtabId: string) => {
+    setActiveSubtab(subtabId);
+  }, []);
+
   return (
     <div className="min-h-screen theme-transition" style={{ background: 'var(--surface-primary)', color: 'var(--content-primary)' }}>
       <Navbar
         activeTab={activeTab}
         setActiveTab={handleTabChange}
+        activeSubtab={activeSubtab}
+        onSubtabClick={handleSubtabClick}
         activeInfoContent={activeInfoContent}
         onInfoContentChange={handleInfoContentChange}
       />
       <main>
         <MainContent
           activeTab={activeTab}
+          activeSubtab={activeSubtab}
           activeInfoContent={activeInfoContent}
           onInfoContentChange={handleInfoContentChange}
         />

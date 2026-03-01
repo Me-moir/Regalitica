@@ -2,7 +2,7 @@
 import { memo, useState } from 'react';
 import { OverviewContent } from '@/data/Discover-data';
 import styles from '@/styles/ui.module.css';
-import aboutStyles from '@/styles/about.module.css';
+import aboutStyles from '@/styles/About.module.css';
 
 const Overview = memo(() => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);

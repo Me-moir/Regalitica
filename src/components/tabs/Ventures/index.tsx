@@ -1,6 +1,8 @@
 "use client";
 import { useState } from 'react';
-import VenturesTab from './Defense';
+import DefenseTab from './Defense';
+import CivicTab from './Civic';
+import HealthcareTab from './Healthcare';
 
 type VenturesSubtab = 'ventures-defense' | 'ventures-civic-operations' | 'ventures-healthcare';
 
@@ -13,9 +15,9 @@ const Ventures = ({ activeSubtab }: VenturesProps) => {
 
   return (
     <>
-      {active === 'ventures-defense' && <VenturesTab />}
-      {active === 'ventures-civic-operations' && <VenturesTab />}
-      {active === 'ventures-healthcare' && <VenturesTab />}
+      {active === 'ventures-defense' && <DefenseTab />}
+      {active === 'ventures-civic-operations' && <CivicTab />}
+      {active === 'ventures-healthcare' && <HealthcareTab />}
     </>
   );
 };

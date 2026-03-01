@@ -9,6 +9,7 @@ const InformationTab = lazy(() => import('@/components/tabs/Information'));
 
 interface MainContentProps {
   activeTab: string;
+  activeSubtab?: string;
   activeInfoContent: InfoContentType;
   onInfoContentChange: (content: InfoContentType) => void;
 }
@@ -22,7 +23,7 @@ const TabLoadingFallback = () => (
   </div>
 );
 
-const MainContent = ({ activeTab, activeInfoContent, onInfoContentChange }: MainContentProps) => {
+const MainContent = ({ activeTab, activeSubtab, activeInfoContent, onInfoContentChange }: MainContentProps) => {
   const [displayedTab, setDisplayedTab] = useState(activeTab);
   const mainContentRef = useRef<HTMLDivElement>(null);
 
@@ -42,7 +43,7 @@ const MainContent = ({ activeTab, activeInfoContent, onInfoContentChange }: Main
       case 'discover':
         return <DiscoverTab />;
       case 'ventures':
-        return <VenturesTab />;
+        return <VenturesTab activeSubtab={activeSubtab} />;
       case 'information':
         return (
           <InformationTab

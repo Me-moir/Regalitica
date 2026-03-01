@@ -62,9 +62,9 @@ const NAV_ITEMS: NavItem[] = [
     icon: 'bi-crosshair',
     isSpecial: true,
     subtabs: [
-      { id: 'ventures-defense',         label: 'Strategic Defense & Intelligence' },
+      { id: 'ventures-defense',         label: 'Defense Sector' },
+      { id: 'ventures-healthcare',       label: 'Healthcare Sector' },
       { id: 'ventures-civic-operations', label: 'Civic Integration' },
-      { id: 'ventures-healthcare',       label: 'Healthcare' },
     ],
   },
 ];
@@ -833,8 +833,8 @@ const Navbar = ({
     const item = NAV_ITEMS.find(i => i.id === activeTab);
     if (!item?.subtabs?.length) { setStripOpen(false); setScrollSpySubtab(null); return; }
     setStripOpen(true);
-    setScrollSpySubtab(item.subtabs[0].id);
-  }, [activeTab]);
+    setScrollSpySubtab(activeSubtab ?? item.subtabs[0].id);
+  }, [activeTab, activeSubtab]);
 
   // Scroll-spy
   useEffect(() => {
@@ -1114,7 +1114,7 @@ const Navbar = ({
           const isInfoTab      = item.id === 'information';
           const activeSubtabId = isInfoTab
             ? (activeInfoContent as string | undefined)
-            : (isActiveItem ? scrollSpySubtab : undefined);
+            : (isActiveItem ? (activeSubtab ?? scrollSpySubtab) : undefined);
 
           return (
             <StripRow
